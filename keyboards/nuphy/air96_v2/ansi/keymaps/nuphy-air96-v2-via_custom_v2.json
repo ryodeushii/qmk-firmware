@@ -1,0 +1,253 @@
+{
+	"name": "NuPhy Air96 V2",
+	"vendorId": "0x19F5",
+	"productId": "0x3265",
+	"matrix": {
+		"rows": 6,
+		"cols": 21
+	},
+	"layouts": {
+		"keymap": [
+			["0,0","0,2","0,3","0,4","0,5","0,6","0,7","0,8","0,9","0,10","0,11","0,12","0,13","0,14","2,14","1,15","2,15","1,16","2,16"],
+			["1,0","1,1","1,2","1,3","1,4","1,5","1,6","1,7","1,8","1,9","1,10","1,11","1,12",{"w":2},"1,13","1,17","1,18","1,19","1,20"],
+			[{"w":1.5},"2,0","2,1","2,2","2,3","2,4","2,5","2,6","2,7","2,8","2,9","2,10","2,11","2,12",{"w":1.5},"2,13","2,17","2,18","2,19",{"h":2},"2,20"],
+			[{"w": 1.75},"3,0","3,1","3,2","3,3","3,4","3,5","3,6","3,7","3,8","3,9","3,10","3,11",{"w":2.25},"3,13","3,17","3,18","3,19"],
+			[{"w":2.25},"4,0","4,2","4,3","4,4","4,5","4,6","4,7","4,8","4,9","4,10","4,11",{"w": 1.75},"4,13","4,15","4,17","4,18","4,19",{"h":2},"4,20"],
+			[{"w":1.25},"5,0",{"w":1.25},"5,1",{"w":1.25},"5,2",{"w":6.25},"5,6","5,9","5,10","5,13","5,14","5,15","5,16","5,17","5,19"]
+		]
+	},
+	"menus": [
+	{
+		"label": "Lighting",
+		"content": [
+		{
+			"label": "Backlight",
+			"content": [
+			{
+				"label": "Brightness",
+				"type": "range",
+				"options": [0, 255],
+				"content": ["id_qmk_rgb_matrix_brightness", 3, 1]
+			},
+			{
+				"label": "Effect",
+				"type": "dropdown",
+				"content": ["id_qmk_rgb_matrix_effect", 3, 2],
+				"options": [
+					"All Off",
+					"Solid Color",
+					"Gradient Up/Down",
+					"Gradient Left/Right",
+					"Breathing",
+					"Band Sat.",
+					"Band Val.",
+					"Pinwheel Sat.",
+					"Pinwheel Val.",
+					"Spiral Sat.",
+					"Spiral Val.",
+					"Cycle All",
+					"Cycle Left/Right",
+					"Cycle Up/Down",
+					"Rainbow Moving Chevron",
+					"Cycle Out/In",
+					"Cycle Out/In Dual",
+					"Cycle Pinwheel",
+					"Cycle Spiral",
+					"Dual Beacon",
+					"Rainbow Beacon",
+					"Rainbow Pinwheels",
+					"Raindrops",
+					"Jellybean Raindrops",
+					"Hue Breathing",
+					"Hue Pendulum",
+					"Hue Wave",
+					"Typing Heatmap",
+					"Digital Rain",
+					"Reactive Simple",
+					"Reactive",
+					"Reactive Wide",
+					"Reactive Multiwide",
+					"Reactive Cross",
+					"Reactive Multicross",
+					"Reactive Nexus",
+					"Reactive MultiNexus",
+					"Splash",
+					"MultiSplash",
+					"Solid Splash",
+					"Solid MultiSplash"
+				]
+			},
+			{
+				"showIf": "{id_qmk_rgb_matrix_effect} != 0",
+				"label": "Effect Speed",
+				"type": "range",
+				"options": [0, 255],
+				"content": ["id_qmk_rgb_matrix_effect_speed", 3, 3]
+			},
+			{
+				"showIf": "{id_qmk_rgb_matrix_effect} != 0",
+				"label": "Color",
+				"type": "color",
+				"content": ["id_qmk_rgb_matrix_color", 3, 4]
+			}
+		  ]
+		}
+		]
+	}
+	],
+"keycodes": [
+	"qmk_lighting"
+],
+"customKeycodes": [
+ 		{
+			"name": "RF\nDFU",
+			"title": "RF DFU",
+			"shortName": "RF_DFU"
+		},
+		{
+			"name": "Link\nUSB",
+			"title": "Link USB",
+			"shortName": "LnkUSB"
+		},
+		{
+			"name": "Link\nRF",
+			"title": "Link RF",
+			"shortName": "LnkRF"
+		},
+		{
+			"name": "Link\nBLE_1",
+			"title": "Link BLE_1",
+			"shortName": "LnkBLE1"
+		},
+		{
+			"name": "Link\nBLE_2",
+			"title": "Link BLE_2",
+			"shortName": "LnkBLE2"
+		},
+		{
+			"name": "Link\nBLE_3",
+			"title": "Link BLE_3",
+			"shortName": "LnkBLE3"
+		},
+		{
+			"name": "Mac\nVoice",
+			"title": "Mac Voice | F5",
+			"shortName": "Voice"
+		},
+		{
+			"name": "Mac\nDND",
+			"title": "Mac DND",
+			"shortName": "Dnd"
+		},
+		{
+			"name": "Task",
+			"title": "Mac Task | Calc",
+			"shortName": "Task"
+		},
+		{
+			"name": "Search",
+			"title": "Search",
+			"shortName": "Search"
+		},
+		{
+			"name": "Print\n Whole",
+			"title": "Print Whole | PrintScreen",
+			"shortName": "PrtScr"
+		},
+		{
+			"name": "Print\n Area",
+			"title": "Print Area | PrintScreen",
+			"shortName": "PrtAr"
+		},
+		{
+			"name": "Side\nLight+",
+			"title": "Side Light +",
+			"shortName": "Sd_L+"
+		},
+		{
+			"name": "Side\nLight-",
+			"title": "Side Light -",
+			"shortName": "Sd_L-"
+		},
+		{
+			"name": "Side\nMode",
+			"title": "Side Next Mode",
+			"shortName": "Sd_Md"
+		},
+		{
+			"name": "Side\nColor",
+			"title": "Side Next Color",
+			"shortName": "Sd_Col"
+		},
+		{
+			"name": "Side\nFast",
+			"title": "Side Speed +",
+			"shortName": "Sd_Fst"
+		},
+		{
+			"name": "Side\nSlow",
+			"title": "Side Speed -",
+			"shortName": "Sd_Slw"
+		},
+		{
+			"name": "Side\nOne",
+			"title": "Show One Side",
+			"shortName": "Sd_One"
+		},
+		{
+			"name": "Dev\nReset",
+			"title": "Device Reset",
+			"shortName": "DvRst"
+		},
+		{
+			"name": "Sleep\nMode",
+			"title": "Sleep Mode",
+			"shortName": "Sleep"
+		},
+		{
+			"name": "Bat\nShow",
+			"title": "Battery Show",
+			"shortName": "Bat_Show"
+		},
+		{
+			"name": "Bat\nNumeric",
+			"title": "Battery Show Numeric",
+			"shortName": "Bat_Nr"
+		},
+		{
+			"name": "RGB\nTest",
+			"title": "RGB Test",
+			"shortName": "RGB_Tst"
+		},
+		{
+			"name": "NumLock\nIns",
+			"title": "NumLock on hold | Ins",
+			"shortName": "Num_Ins"
+		},
+		{
+			"name": "Indicator\nToggle",
+			"title": "SysLed Ind Toggle",
+			"shortName": "Ind_Tg"
+		},
+		{
+			"name": "Sleep\nTrigger",
+			"title": "Trigger Sleep",
+			"shortName": "Sleep_Trg"
+		},
+		{
+			"name": "Game\nMode",
+			"title": "Trigger Game Mode",
+			"shortName": "Game_Mode"
+		},
+		{
+			"name": "Caps_Word\nTrigger",
+			"title": "Trigger Caps_Word",
+			"shortName": "Caps_Word"
+		},
+		{
+			"name": "L_GUI\nTrigger",
+			"title": "Trigger LGUI",
+			"shortName": "Lgui_Tg"
+		}
+	]
+}

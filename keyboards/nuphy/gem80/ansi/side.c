@@ -1,4 +1,4 @@
-// Copyright 2023 Persama (@Persama)
+// Copyright 2023 Ryodeushii (@ryodeushii)
 // SPDX-License-Identifier: GPL-2.0-or-later
 #include <stdint.h>
 #include "ansi.h"

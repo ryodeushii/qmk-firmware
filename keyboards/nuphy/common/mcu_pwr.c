@@ -285,8 +285,9 @@ void led_pwr_wake_handle(void) {
         pwr_rgb_led_on();
         // Change any LED's state so the LED driver flushes after turning on for solid colours.
         // Without doing this, the WS2812 driver wouldn't flush as the previous state is the same as current.
-        rgb_matrix_set_color_all(0, 0, 0);
-        rgb_matrix_update_pwm_buffers();
+        // FIXME: verify, after daily driving myself no issues with matrix wakeup so far
+        // rgb_matrix_set_color_all(0, 0, 0);
+        // rgb_matrix_update_pwm_buffers();
     }
     if (side_led_powered_off) {
         pwr_side_led_on();

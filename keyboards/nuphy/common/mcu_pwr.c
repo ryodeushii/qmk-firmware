@@ -34,6 +34,7 @@ extern DEV_INFO_STRUCT dev_info;
 static bool side_led_powered_off = 0;
 static bool rgb_led_powered_off  = 0;
 static bool tim6_enabled         = false;
+static bool sleeping             = false;
 
 static bool rgb_led_on  = 0;
 static bool side_led_on = 0;
@@ -226,13 +227,20 @@ void exit_deep_sleep(void) {
  */
 void enter_light_sleep(void) {
 #if (WORK_MODE == THREE_MODE)
+    dev_sts_sync();
+
     if (dev_info.rf_state == RF_CONNECT)
         uart_send_cmd(CMD_SET_CONFIG, 5, 5);
     else
         uart_send_cmd(CMD_SLEEP, 5, 5);
-    clear_report_buffer_and_queue();
+
 #endif
     led_pwr_sleep_handle();
+
+#if (WORK_MODE == THREE_MODE)
+    clear_report_buffer_and_queue();
+#endif
+    sleeping = true;
 }
 
 /**
@@ -240,9 +248,10 @@ void enter_light_sleep(void) {
  * @note This is Nuphy's "open sourced" wake logic. It's not deep sleep.
  */
 void exit_light_sleep(void) {
-    // NOTE: hack to force enable all leds
-    rgb_led_powered_off  = 1;
-    side_led_powered_off = 1;
+    sleeping = false;
+    // // NOTE: hack to force enable all leds
+    // rgb_led_powered_off  = 1;
+    // side_led_powered_off = 1;
 
     led_pwr_wake_handle();
 #if (WORK_MODE == THREE_MODE)
@@ -302,8 +311,8 @@ void pwr_rgb_led_off(void) {
 }
 
 void pwr_rgb_led_on(void) {
-    // if (sleeping || rgb_led_on) return;
-    if (rgb_led_on) return;
+    if (sleeping || rgb_led_on) return;
+    // if (rgb_led_on) return;
     // LED power supply on
     gpio_set_pin_output(DC_BOOST_PIN);
     gpio_write_pin_high(DC_BOOST_PIN);
@@ -319,8 +328,8 @@ void pwr_side_led_off(void) {
 }
 
 void pwr_side_led_on(void) {
-    // if (sleeping || side_led_on) return;
-    if (side_led_on) return;
+    if (sleeping || side_led_on) return;
+    // if (side_led_on) return;
     gpio_set_pin_output(DRIVER_SIDE_CS_PIN);
     gpio_write_pin_low(DRIVER_SIDE_CS_PIN);
     side_led_on = 1;

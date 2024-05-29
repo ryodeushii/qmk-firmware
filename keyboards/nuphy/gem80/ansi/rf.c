@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include "user_kb.h"
 #include "uart.h" // qmk uart.h
-#include "rf_queue.h"
+#include "common/rf_queue.h"
 
 USART_MGR_STRUCT Usart_Mgr;
 // clang-format off

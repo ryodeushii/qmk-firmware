@@ -63,7 +63,6 @@ bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) {
     if (f_wakeup_prepare) {
 #if CONSOLE_ENABLE
         xprintf("Early wake with keycode |  %u | and record pressed? ( %u )\n", keycode, record->event.pressed);
-
 #endif
         f_wakeup_prepare = 0;
         if (g_config.sleep_toggle && !g_config.deep_sleep_toggle) exit_light_sleep();

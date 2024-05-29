@@ -16,8 +16,8 @@
 #pragma once
 
 #include "quantum.h"
-#include "common/remote_kb.h"
-#include "common/bitc_led.h"
+#include "remote_kb.h"
+#include "bitc_led.h"
 
 #ifdef VIA_ENABLE
 enum custom_keycodes {

@@ -200,6 +200,7 @@ void exit_deep_sleep(void) {
     // power on LEDs This is missing from Nuphy's logic.
     rgb_led_powered_off  = 1;
     side_led_powered_off = 1;
+    sleeping             = false;
     led_pwr_wake_handle();
 
     // 重新初始化系统时钟

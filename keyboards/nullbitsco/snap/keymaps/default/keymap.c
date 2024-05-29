@@ -14,7 +14,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
-#include "common/remote_kb.h"
+#include "remote_kb.h"
 
 // clang-format off
 enum layers {

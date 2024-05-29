@@ -536,7 +536,7 @@
                             ]
                         },
                         {
-                            "label": "DEEP Sleep Enable",
+                            "label": "Deep Sleep Enable (RF only)",
                             "showIf": "{id_sleep_toggle} == 1",
                             "type": "toggle",
                             "content": [

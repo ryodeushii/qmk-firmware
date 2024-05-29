@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef VIA_ENABLE
 #    include "eeprom.h"
 #    include "via.h"
+#else
+#    include "eeconfig.h"
 #endif
 
 extern bool            f_rf_sw_press;
@@ -64,7 +66,7 @@ bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) {
 
 #endif
         f_wakeup_prepare = 0;
-        if (g_config.sleep_enable) exit_light_sleep();
+        if (g_config.sleep_toggle && !g_config.deep_sleep_toggle) exit_light_sleep();
     }
 
     return pre_process_record_user(keycode, record);
@@ -309,7 +311,7 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
 
         case SLEEP_MODE:
             if (record->event.pressed) {
-                g_config.sleep_enable = !g_config.sleep_enable;
+                g_config.sleep_toggle = !g_config.sleep_toggle;
                 f_sleep_show          = 1;
                 save_config_to_eeprom();
             }
@@ -407,6 +409,11 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
                 adjust_sleep_timeout(0);
             }
             return false;
+        case DEEP_SLEEP_TOGGLE:
+            if (record->event.pressed) {
+                toggle_deep_sleep();
+            }
+            return false;
 
         default:
             return true;
@@ -486,20 +493,21 @@ void housekeeping_task_kb(void) {
 kb_config_t g_config;
 
 void init_g_config(void) {
-    g_config.usb_sleep_toggle = true;
-
-    g_config.caps_indication_type = CAPS_INDICATOR_SIDE;
+    // custom functions
+    g_config.sleep_toggle         = true;
+    g_config.usb_sleep_toggle     = true;
+    g_config.deep_sleep_toggle    = true;
+    g_config.sleep_timeout        = 5;
     g_config.debounce_press_ms    = DEBOUNCE;
     g_config.debounce_release_ms  = DEBOUNCE;
-    g_config.sleep_timeout        = 5;
-    g_config.sleep_enable         = true;
-
-    g_config.side_rgb        = 1;
+    g_config.caps_indication_type = CAPS_INDICATOR_SIDE;
+    // top LED
     g_config.side_mode       = 0;
-    g_config.side_speed      = 2;
     g_config.side_brightness = 3;
+    g_config.side_speed      = 2;
+    g_config.side_rgb        = 1;
     g_config.side_color      = 0;
-
+    // right LED
     g_config.logo_mode       = 0;
     g_config.logo_brightness = 3;
     g_config.logo_speed      = 2;
@@ -528,7 +536,7 @@ void via_init_kb(void) {
     init_g_config();
     // If the EEPROM has the magic, the data is good.
     // OK to load from EEPROM
-    if (via_eeprom_is_valid()) {
+    if (eeconfig_is_enabled()) {
         load_config_from_eeprom();
     } else {
         save_config_to_eeprom();
@@ -548,6 +556,9 @@ void via_config_set_value(uint8_t *data)
         case id_usb_sleep_toggle:
             g_config.usb_sleep_toggle = *value_data;
             break;
+        case id_deep_sleep_toggle:
+            g_config.deep_sleep_toggle = *value_data;
+            break;
         case id_debounce_press:
             g_config.debounce_press_ms = *value_data;
             break;
@@ -561,7 +572,7 @@ void via_config_set_value(uint8_t *data)
             g_config.caps_indication_type = *value_data;
             break;
         case id_sleep_toggle:
-            g_config.sleep_enable = *value_data;
+            g_config.sleep_toggle = *value_data;
             break;
 
         case id_side_light_mode:
@@ -602,6 +613,9 @@ void via_config_get_value(uint8_t *data) {
         case id_usb_sleep_toggle:
             *value_data = g_config.usb_sleep_toggle;
             break;
+        case id_deep_sleep_toggle:
+            *value_data = g_config.deep_sleep_toggle;
+            break;
         case id_debounce_press:
             *value_data = g_config.debounce_press_ms;
             break;
@@ -615,7 +629,7 @@ void via_config_get_value(uint8_t *data) {
             *value_data = g_config.caps_indication_type;
             break;
         case id_sleep_toggle:
-            *value_data = g_config.sleep_enable;
+            *value_data = g_config.sleep_toggle;
             break;
 
         case id_side_light_mode:
@@ -644,6 +658,7 @@ void via_config_get_value(uint8_t *data) {
     }
 #    if CONSOLE_ENABLE
     xprintf("[GET]VALUE_ID: %u DATA: %u\n", *value_id, *value_data);
+    xprintf("G_CONFIG_SIZE: %u \n", sizeof(g_config));
 #    endif
 }
 

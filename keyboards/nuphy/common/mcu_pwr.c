@@ -31,7 +31,6 @@ extern DEV_INFO_STRUCT dev_info;
 // extern bool            flush_side_leds;
 
 // static bool f_usb_deinit         = 0;
-static bool sleeping             = false;
 static bool side_led_powered_off = 0;
 static bool rgb_led_powered_off  = 0;
 static bool tim6_enabled         = false;
@@ -234,7 +233,6 @@ void enter_light_sleep(void) {
     clear_report_buffer_and_queue();
 #endif
     led_pwr_sleep_handle();
-    sleeping = true;
 }
 
 /**
@@ -242,7 +240,6 @@ void enter_light_sleep(void) {
  * @note This is Nuphy's "open sourced" wake logic. It's not deep sleep.
  */
 void exit_light_sleep(void) {
-    sleeping = false;
     // NOTE: hack to force enable all leds
     rgb_led_powered_off  = 1;
     side_led_powered_off = 1;
@@ -285,9 +282,8 @@ void led_pwr_wake_handle(void) {
         pwr_rgb_led_on();
         // Change any LED's state so the LED driver flushes after turning on for solid colours.
         // Without doing this, the WS2812 driver wouldn't flush as the previous state is the same as current.
-        // FIXME: verify, after daily driving myself no issues with matrix wakeup so far
-        // rgb_matrix_set_color_all(0, 0, 0);
-        // rgb_matrix_update_pwm_buffers();
+        rgb_matrix_set_color_all(0, 0, 0);
+        rgb_matrix_update_pwm_buffers();
     }
     if (side_led_powered_off) {
         pwr_side_led_on();

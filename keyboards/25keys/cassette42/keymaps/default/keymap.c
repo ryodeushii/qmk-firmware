@@ -15,7 +15,7 @@
  */
 #include QMK_KEYBOARD_H
 
-#include "common/oled_helper.h"
+#include "oled_helper.h"
 
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {

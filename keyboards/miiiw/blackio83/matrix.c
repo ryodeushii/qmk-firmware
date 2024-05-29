@@ -16,7 +16,7 @@
 
 #include "quantum.h"
 #include "matrix.h"
-#include "common/shift_register.h"
+#include "shift_register.h"
 
 static uint8_t read_rows(void);
 static void    init_cols(void);

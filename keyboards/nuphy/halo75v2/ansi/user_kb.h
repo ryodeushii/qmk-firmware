@@ -189,3 +189,5 @@ void pwr_rgb_led_on(void);
 void led_pwr_sleep_handle(void);
 void led_pwr_wake_handle(void);
 void toggle_deep_sleep(void);
+
+extern uint8_t f_power_show;

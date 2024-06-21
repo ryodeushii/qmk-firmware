@@ -402,6 +402,7 @@ void keyboard_post_init_kb(void) {
 }
 
 bool rgb_matrix_indicators_kb(void) {
+    if (f_power_show) return false;
     if (rf_blink_cnt) {
         uint8_t col = 4;
         if (dev_info.link_mode >= LINK_BT_1 && dev_info.link_mode <= LINK_BT_3) {
@@ -416,6 +417,7 @@ bool rgb_matrix_indicators_kb(void) {
 }
 
 bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
+    if (f_power_show) return false;
     if (keymap_config.no_gui) {
         // fixed position in top right corner, key position in matrix is (0,16), led index is (16)
         rgb_matrix_set_color(get_led_index(0, 15), 0x00, 0x80, 0x00);

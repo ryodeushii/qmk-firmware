@@ -1,8 +1,8 @@
-/* Copyright 2022 @fOmey
+/* Copyright 2024 Cipulot
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -16,4 +16,4 @@
 
 #pragma once
 
-#define RGB_MATRIX_LED_COUNT 96
+#define VIA_EEPROM_LAYOUT_OPTIONS_SIZE 2

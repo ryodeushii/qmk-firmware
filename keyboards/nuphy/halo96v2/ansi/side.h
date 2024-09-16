@@ -47,6 +47,7 @@ const uint8_t light_value_tab[101] =
 	255,
 };
 
+
 const uint8_t breathe_data_tab[BREATHE_TAB_LEN]=
 {
 	0,		1,		2,		3,		4,		5,		6,		7,

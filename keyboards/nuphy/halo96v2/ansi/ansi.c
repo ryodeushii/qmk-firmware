@@ -46,7 +46,7 @@ extern uint16_t        rf_linking_time;
 extern DEV_INFO_STRUCT dev_info;
 extern uint8_t         rf_blink_cnt;
 
-extern void light_speed_contol(uint8_t fast);
+extern void light_speed_control(uint8_t fast);
 extern void light_level_control(uint8_t brighten);
 extern void side_color_control(uint8_t dir);
 extern void side_mode_a_control(uint8_t dir);
@@ -257,13 +257,13 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
 
         case SIDE_SPI:
             if (record->event.pressed) {
-                light_speed_contol(1);
+                light_speed_control(1);
             }
             return false;
 
         case SIDE_SPD:
             if (record->event.pressed) {
-                light_speed_contol(0);
+                light_speed_control(0);
             }
             return false;
 
@@ -514,8 +514,6 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
                                 if (dev_info.link_mode != LINK_USB) {
                                     rgb_matrix_set_color(index, RGB_BLUE);
                                 }
-                            } else if (keycode > KC_NUM_LOCK && keycode <= KC_KP_DOT) {
-                                rgb_matrix_set_color(index, RGB_RED);
                             } else if (keycode >= SOCDON && keycode <= SOCDTOG) {
                                 rgb_matrix_set_color(index, RGB_BLUE);
                             } else if (keycode > KC_TRNS) {

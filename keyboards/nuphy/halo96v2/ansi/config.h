@@ -28,7 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define NRF_TEST_PIN B5
 #define NRF_WAKEUP_PIN C4
 
-#define RGB_MATRIX_LED_FLUSH_LIMIT  32
 #define RGB_DRIVER_SDB1             C6
 #define RGB_DRIVER_SDB2             C7
 

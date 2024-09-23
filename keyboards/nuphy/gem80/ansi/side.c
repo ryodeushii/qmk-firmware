@@ -52,7 +52,6 @@ RGB  side_leds[SIDE_LED_NUM] = {0};
 void side_ws2812_setleds(RGB *ledarray, uint16_t leds);
 void rgb_matrix_update_pwm_buffers(void);
 void logo_led_loop(void);
-void set_logo_rgb(uint8_t r, uint8_t g, uint8_t b);
 
 /**
  * @brief  side leds set color vaule.
@@ -101,7 +100,7 @@ void light_level_control(uint8_t brighten) {
  * @param  dir: 0 - decrease, 1 - increase.
  * @note  save to eeprom.
  */
-void light_speed_contol(uint8_t fast) {
+void light_speed_control(uint8_t fast) {
     if ((g_config.side_speed) > LIGHT_SPEED_MAX) (g_config.side_speed) = LIGHT_SPEED_MAX / 2;
 
     if (fast) {
@@ -495,18 +494,9 @@ static void side_breathe_mode_show(void) {
 static void side_static_mode_show(void) {
     if (side_play_point >= SIDE_COLOR_MAX) side_play_point = 0;
 
-    if (g_config.side_use_custom_color) {
-        HSV hsv = g_config.side_custom_color;
-        hsv.v   = rgb_matrix_config.hsv.v;
-        RGB rgb = hsv_to_rgb(hsv);
-        r_temp  = rgb.r;
-        g_temp  = rgb.g;
-        b_temp  = rgb.b;
-    } else {
-        r_temp = side_color_lib[g_config.side_color][0] >> 2;
-        g_temp = side_color_lib[g_config.side_color][1] >> 2;
-        b_temp = side_color_lib[g_config.side_color][2] >> 2;
-    }
+    r_temp = side_color_lib[g_config.side_color][0] >> 2;
+    g_temp = side_color_lib[g_config.side_color][1] >> 2;
+    b_temp = side_color_lib[g_config.side_color][2] >> 2;
 
     count_rgb_light(side_light_table[g_config.side_brightness]);
 

@@ -137,7 +137,7 @@ void light_level_control(uint8_t brighten) {
  * @param  dir: 0 - decrease, 1 - increase.
  * @note  save to eeprom.
  */
-void light_speed_contol(uint8_t fast) {
+void light_speed_control(uint8_t fast) {
     if ((g_config.side_speed) > LIGHT_SPEED_MAX) (g_config.side_speed) = LIGHT_SPEED_MAX / 2;
 
     if (fast) {
@@ -246,11 +246,6 @@ void side_mode_b_control(uint8_t dir) {
 void set_left_rgb(uint8_t r, uint8_t g, uint8_t b) {
     for (int i = 0; i < 5; i++)
         user_set_side_rgb_color(SIDE_INDEX + i, r, g, b);
-}
-
-void set_logo_rgb(uint8_t r, uint8_t g, uint8_t b) {
-    for (int i = 35; i < 37; i++)
-        rgb_matrix_set_color(SIDE_INDEX + i, r, g, b);
 }
 
 void set_all_side_off(void) {
@@ -690,32 +685,23 @@ static void side_static_mode_show(void) {
 
     if (side_play_point >= SIDE_COLOR_MAX) side_play_point = 0;
 
-    if (g_config.side_use_custom_color) {
-        HSV hsv = g_config.side_custom_color;
-        hsv.v   = rgb_matrix_config.hsv.v;
-        RGB rgb = hsv_to_rgb(hsv);
-        r_temp  = rgb.r;
-        g_temp  = rgb.g;
-        b_temp  = rgb.b;
-    } else {
+    for (int i = 0; i < side_line; i++) {
         r_temp = side_color_lib[g_config.side_color][0];
         g_temp = side_color_lib[g_config.side_color][1];
         b_temp = side_color_lib[g_config.side_color][2];
-    }
 
-    for (int i = 0; i < side_line; i++) {
         if ((side_led_index_tab[i] <= SIDE_INDEX + 9) && (side_led_index_tab[i] >= SIDE_INDEX)) {
-            r_temp = r_temp * 0.7;
-            g_temp = g_temp * 0.7;
-            b_temp = b_temp * 0.7;
+            r_temp = side_color_lib_1[g_config.side_color][0] * 0.7;
+            g_temp = side_color_lib_1[g_config.side_color][1] * 0.7;
+            b_temp = side_color_lib_1[g_config.side_color][2] * 0.7;
         }
 
         count_rgb_light(side_light_table[g_config.side_brightness]);
 
         if (is_side_rgb_on(i))
-            user_set_side_rgb_color(side_led_index_tab[i], r_temp, g_temp, b_temp);
+            rgb_matrix_set_color(side_led_index_tab[i], r_temp, g_temp, b_temp);
         else
-            user_set_side_rgb_color(side_led_index_tab[i], 0, 0, 0);
+            rgb_matrix_set_color(side_led_index_tab[i], 0, 0, 0);
     }
 }
 

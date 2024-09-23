@@ -573,8 +573,6 @@ void init_g_config(void) {
     g_config.battery_indicator_brightness = DEFAULT_BATTERY_INDICATOR_BRIGHTNESS;
     g_config.toggle_custom_keys_highlight = DEFAULT_LIGHT_CUSTOM_KEYS;
     g_config.detect_numlock_state         = DEFAULT_DETECT_NUMLOCK;
-    g_config.side_use_custom_color        = DEFAULT_SIDE_USE_CUSTOM_COLOR;
-    g_config.side_custom_color            = rgb_matrix_get_hsv();
     g_config.battery_indicator_numeric    = DEFAULT_BATTERY_INDICATOR_NUMERIC;
     g_config.show_socd_indicator          = DEFAULT_SHOW_SOCD_INDICATOR;
 }
@@ -665,12 +663,6 @@ void via_config_set_value(uint8_t *data) {
         case id_toggle_detect_numlock_state:
             g_config.detect_numlock_state = *value_data;
             break;
-        case id_side_use_custom_color:
-            g_config.side_use_custom_color = *value_data;
-            break;
-        case id_side_custom_color:
-            _set_color(&(g_config.side_custom_color), value_data);
-            break;
         case id_battery_indicator_numeric:
             g_config.battery_indicator_numeric = *value_data;
             break;
@@ -733,12 +725,6 @@ void via_config_get_value(uint8_t *data) {
             break;
         case id_toggle_detect_numlock_state:
             *value_data = g_config.detect_numlock_state;
-            break;
-        case id_side_use_custom_color:
-            *value_data = g_config.side_use_custom_color;
-            break;
-        case id_side_custom_color:
-            _get_color(&(g_config.side_custom_color), value_data);
             break;
         case id_battery_indicator_numeric:
             *value_data = g_config.battery_indicator_numeric;

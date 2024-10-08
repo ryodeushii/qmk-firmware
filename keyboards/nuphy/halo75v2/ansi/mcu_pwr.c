@@ -267,8 +267,10 @@ void pwr_rgb_led_off(void) {
     // LED power supply off
     gpio_set_pin_output(DC_BOOST_PIN);
     gpio_write_pin_low(DC_BOOST_PIN);
-    gpio_set_pin_input(RGB_DRIVER_SDB1);
-    gpio_set_pin_input(RGB_DRIVER_SDB2);
+    gpio_set_pin_output(RGB_DRIVER_SDB1);
+    gpio_write_pin_low(RGB_DRIVER_SDB1);
+    gpio_set_pin_output(RGB_DRIVER_SDB2);
+    gpio_write_pin_low(RGB_DRIVER_SDB2);
     rgb_led_on = 0;
 }
 

@@ -26,7 +26,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #undef HAL_USE_I2C
 #define HAL_USE_I2C TRUE
 
-#undef HAL_USE_DMA
-#define HAL_USE_DMA TRUE
-
 #include_next <halconf.h>

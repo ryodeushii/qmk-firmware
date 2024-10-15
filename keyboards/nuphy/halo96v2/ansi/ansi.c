@@ -482,7 +482,7 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
         }
 
         if (showNumLock) {
-            rgb_matrix_set_color(get_led_index(1, 15), 0x00, 0xff, 0xff);
+            rgb_matrix_set_color(get_led_index(1, 14), 0x00, 0x80, 0x00);
         }
     }
 

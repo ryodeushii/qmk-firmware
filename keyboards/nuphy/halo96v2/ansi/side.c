@@ -74,23 +74,6 @@ extern bool            f_bat_hold;
 extern kb_config_t     g_config;
 extern uint16_t        rf_link_show_time;
 
-#define KEY_NUMLOCK_INDEX 33
-const uint8_t rgb_point_index[] = {
-    KEY_NUMLOCK_INDEX, SIDE_INDEX, SIDE_INDEX + 1, SIDE_INDEX + 2, SIDE_INDEX + 3, SIDE_INDEX + 4,
-};
-
-extern uint8_t g_pwm_buffer[DRIVER_COUNT][328];
-bool           is_side_rgb_off(void) {
-    is31_led led;
-    for (int i = 0; i < sizeof(rgb_point_index); i++) {
-        memcpy_P(&led, (&g_is31_leds[rgb_point_index[i]]), sizeof(led));
-        if ((g_pwm_buffer[led.driver][led.r] != 0) || (g_pwm_buffer[led.driver][led.g] != 0) || (g_pwm_buffer[led.driver][led.b] != 0)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 /**
  * @brief suspend_power_down_kb
  *

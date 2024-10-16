@@ -685,39 +685,6 @@ void bat_charging_breathe(void) {
 }
 
 /**
- * @brief  bat_charging_design.
- */
-void bat_charging_design(uint8_t init, uint8_t r, uint8_t g, uint8_t b) {
-    static uint32_t interval_timer = 0;
-    static uint16_t show_mask      = 0x00;
-    static bool     f_move_trend   = 0;
-    uint16_t        bit_mask       = 1;
-    uint8_t         i;
-
-    if (timer_elapsed32(interval_timer) > 100) {
-        interval_timer = timer_read32();
-
-        if (f_move_trend) {
-            show_mask >>= 1;
-            if (show_mask == 0x1f >> (side_line - init)) f_move_trend = 0;
-        } else {
-            show_mask <<= 1;
-            show_mask |= 1;
-            if (show_mask == 0x7f) f_move_trend = 1;
-        }
-    }
-
-    for (i = 0; i < side_line; i++) {
-        if (show_mask & bit_mask) {
-            rgb_matrix_set_color(i, r, g, b);
-        } else {
-            rgb_matrix_set_color(i, 0x00, 0x00, 0x00);
-        }
-        bit_mask <<= 1;
-    }
-}
-
-/**
  * @brief  rf state indicate
  */
 #define RF_LED_LINK_PERIOD 500
@@ -836,11 +803,7 @@ void    bat_percent_led(uint8_t bat_percent) {
 
     if (f_charging) {
         low_bat_blink_cnt = 6;
-#if (CHARGING_SHIFT)
-        bat_charging_design(bat_end_led, bat_r >> 2, bat_g >> 2, bat_b >> 2);
-#else
         bat_charging_breathe();
-#endif
     } else if (bat_percent < 10) {
         low_bat_show();
     } else {

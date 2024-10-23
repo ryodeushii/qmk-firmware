@@ -486,7 +486,8 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
         }
     }
 
-    rgb_matrix_set_color(RGB_MATRIX_LED_COUNT - 1, 0, 0, 0);
+    //Fix for flashing halo led below < (left arrow) key
+    //rgb_matrix_set_color(RGB_MATRIX_LED_COUNT - 1, 0, 0, 0);
 
     if (g_config.toggle_custom_keys_highlight) {
         uint8_t layer = get_highest_layer(layer_state);

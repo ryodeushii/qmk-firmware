@@ -486,7 +486,7 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
         }
     }
 
-    rgb_matrix_set_color(RGB_MATRIX_LED_COUNT - 1, 0, 0, 0);
+    rgb_matrix_set_color(98, 0, 0, 0); // SIDE_INDEX = 99 -> first side led, so we set all current matrix to "off", apply custom and static effect applied to the rest
 
     if (g_config.toggle_custom_keys_highlight) {
         uint8_t layer = get_highest_layer(layer_state);

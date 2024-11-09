@@ -15,3 +15,4 @@ OPT ?= 2
 # CONSOLE_ENABLE = yes
 
 SRC += common/features/socd_cleaner.c
+SLEEP_LED_ENABLE = no

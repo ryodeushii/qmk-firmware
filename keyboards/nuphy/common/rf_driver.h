@@ -1,5 +1,4 @@
 #include "quantum/quantum.h"
-
 #define UART_HEAD 0x5A
 #define FUNC_VALID_LEN 32
 #define UART_MAX_LEN 64
@@ -8,7 +7,6 @@
 
 #define LINK_TIMEOUT (100 * 120)
 #define LINK_TIMEOUT_ALT (100 * 5)
-#define TIMER_STEP 10
 #define POWER_DOWN_DELAY (24)
 
 typedef enum {

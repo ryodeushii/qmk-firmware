@@ -18,25 +18,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "user_kb.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "common/config.h"
 #include "config.h"
 #include "eeconfig.h"
 #include "color.h"
 #include "host.h"
 #include "common/rf_driver.h"
-#include "common/links.h"
-#include "common/config.h"
 
-DEV_INFO_STRUCT dev_info = {
-    .rf_battery = 100,
-    .link_mode  = LINK_USB,
-    .rf_state   = RF_IDLE,
-};
+extern DEV_INFO_STRUCT dev_info;
+
 bool f_bat_hold              = 0;
 bool f_sys_show              = 0;
 bool f_sleep_show            = 0;
-bool f_usb_sleep_show        = 0;
-bool f_deep_sleep_show       = 0;
-bool f_send_channel          = 0;
 bool f_dial_sw_init_ok       = 0;
 bool f_rf_sw_press           = 0;
 bool f_dev_reset_press       = 0;
@@ -45,29 +38,18 @@ bool f_debounce_press_show   = 0;
 bool f_debounce_release_show = 0;
 bool f_sleep_timeout_show    = 0;
 
-uint8_t        rf_blink_cnt          = 0;
-uint8_t        rf_sw_temp            = 0;
-uint8_t        host_mode             = 0;
-uint16_t       rf_linking_time       = 0;
-uint16_t       rf_link_show_time     = 0;
-uint32_t       no_act_time           = 0;
-uint16_t       dev_reset_press_delay = 0;
-uint16_t       rf_sw_press_delay     = 0;
-uint16_t       rgb_test_press_delay  = 0;
-uint16_t       rgb_led_last_act      = 0;
-uint16_t       side_led_last_act     = 0;
-host_driver_t *m_host_driver         = 0;
-RGB            bat_pct_rgb           = {.r = 0x80, .g = 0x80, .b = 0x00};
+uint8_t  rf_blink_cnt          = 0;
+uint8_t  rf_sw_temp            = 0;
+uint16_t dev_reset_press_delay = 0;
+uint16_t rf_sw_press_delay     = 0;
+uint16_t rgb_test_press_delay  = 0;
 
+extern uint16_t           rf_linking_time;
+extern uint32_t           no_act_time;
 extern bool               f_rf_new_adv_ok;
 extern report_keyboard_t *keyboard_report;
 extern report_nkro_t     *nkro_report;
 extern host_driver_t      rf_host_driver;
-extern uint8_t            logo_mode;
-extern uint8_t            logo_light;
-extern uint8_t            logo_speed;
-extern uint8_t            logo_rgb;
-extern uint8_t            logo_color;
 
 /**
  * @brief  gpio initial.
@@ -193,58 +175,6 @@ void long_press_key(void) {
         }
     } else {
         rgb_test_press_delay = 0;
-    }
-}
-
-/**
- * @brief  Release all keys, clear keyboard report.
- */
-void break_all_key(void) {
-    bool nkro_temp = keymap_config.nkro;
-
-    clear_weak_mods();
-    clear_mods();
-    clear_keyboard();
-
-    // break nkro key
-    keymap_config.nkro = 1;
-    memset(nkro_report, 0, sizeof(report_nkro_t));
-    host_nkro_send(nkro_report);
-    wait_ms(10);
-
-    // break byte key
-    keymap_config.nkro = 0;
-    memset(keyboard_report, 0, sizeof(report_keyboard_t));
-    host_keyboard_send(keyboard_report);
-    wait_ms(10);
-
-    keymap_config.nkro = nkro_temp;
-
-    void clear_report_buffer(void);
-    clear_report_buffer();
-}
-
-/**
- * @brief  switch device link mode.
- * @param mode : link mode
- */
-void switch_dev_link(uint8_t mode) {
-    if (mode > LINK_USB) return;
-
-    break_all_key();
-
-    dev_info.link_mode = mode;
-
-    dev_info.rf_state = RF_IDLE;
-    f_send_channel    = 1;
-
-    if (mode == LINK_USB) {
-        host_mode = HOST_USB_TYPE;
-        host_set_driver(m_host_driver);
-        rf_link_show_time = 0;
-    } else {
-        host_mode = HOST_RF_TYPE;
-        host_set_driver(&rf_host_driver);
     }
 }
 
@@ -396,34 +326,6 @@ void dial_sw_fast_scan(void) {
 }
 
 /**
- * @brief  timer process.
- */
-void timer_pro(void) {
-    static uint32_t interval_timer = 0;
-    static bool     f_first        = true;
-
-    if (f_first) {
-        f_first        = false;
-        interval_timer = timer_read32();
-        m_host_driver  = host_get_driver();
-    }
-
-    // step 10ms
-    if (timer_elapsed32(interval_timer) < TIMER_STEP) return;
-    interval_timer = timer_read32();
-
-    if (rf_link_show_time < RF_LINK_SHOW_TIME) rf_link_show_time++;
-
-    if (no_act_time < 0xffffffff) no_act_time++;
-#if (WORK_MODE == THREE_MODE)
-    if (rf_linking_time < 0xffff) rf_linking_time++;
-#endif
-    if (rgb_led_last_act < 0xffff) rgb_led_last_act++;
-
-    if (side_led_last_act < 0xffff) side_led_last_act++;
-}
-
-/**
  * @brief User config to default setting.
  */
 void kb_config_reset(void) {
@@ -444,153 +346,4 @@ void load_eeprom_data(void) {
         kb_config_reset();
         return;
     }
-}
-/**
- * @brief toggle usb sleep on/off
- */
-void toggle_usb_sleep(void) {
-    f_usb_sleep_show          = 1;
-    keyboard_config.common.usb_sleep_toggle = !keyboard_config.common.usb_sleep_toggle;
-    save_config_to_eeprom();
-}
-
-/**
- * @brief Toggle caps indication between side led / under key / off
- */
-void toggle_caps_indication(void) {
-    if (keyboard_config.common.caps_indicator_type == CAPS_INDICATOR_OFF) {
-        keyboard_config.common.caps_indicator_type = CAPS_INDICATOR_SIDE; // set to initial state, when last state reached
-    } else {
-        keyboard_config.common.caps_indicator_type += 1;
-    }
-
-    save_config_to_eeprom();
-}
-
-/**
- * @brief Updates RGB value for current bat percentage.
- */
-void update_bat_pct_rgb(void) {
-    uint8_t bat_pct = dev_info.rf_battery;
-
-    if (bat_pct > 100) {
-        bat_pct = 100;
-    }
-    // 120 hue is green, 0 is red on a 360 degree wheel but QMK is a uint8_t
-    // so it needs to convert to relative to 255 - so green is actually 85.
-    uint8_t h = 85;
-    if (bat_pct <= 20) {
-        h = 0; // red
-    } else if (bat_pct <= 40) {
-        h = 21; // orange
-    } else if (bat_pct <= 80) {
-        h = 43; // yellow
-    }
-
-    HSV hsv = {
-        .h = h,
-        .s = 255,
-        .v = 128, // 50% max brightness
-    };
-
-    bat_pct_rgb = hsv_to_rgb_nocie(hsv); // this results in same calculation as color pickers.
-}
-
-/**
- * @brief Wrapper for rgb_matrix_set_color for sleep.c logic usage.
- */
-void user_set_rgb_color(int index, uint8_t red, uint8_t green, uint8_t blue) {
-    if (red || green || blue) {
-        rgb_led_last_act = 0;
-        pwr_rgb_led_on(); // turn on LEDs
-    }
-    rgb_matrix_set_color(index, red, green, blue);
-}
-
-/**
- * @brief Handle LED power
- * @note Turn off LEDs if not used to save some power. This is ported
- *       from older Nuphy leaks.
- */
-void led_power_handle(void) {
-    static uint32_t interval = 0;
-
-    if (timer_elapsed32(interval) < 500) // only check once in a while, less flickering for unhandled cases
-        return;
-
-    interval = timer_read32();
-
-    if (rgb_led_last_act > 100) { // 10ms intervals
-        if (rgb_matrix_is_enabled() && rgb_matrix_get_val() != 0) {
-            pwr_rgb_led_on();
-        } else { // brightness is 0 or RGB off.
-            pwr_rgb_led_off();
-        }
-    }
-
-    if (side_led_last_act > 100) { // 10ms intervals
-        if (keyboard_config.lights.side_brightness == 0) {
-            pwr_side_led_off();
-        } else {
-            pwr_side_led_on();
-        }
-    }
-}
-
-uint8_t get_led_index(uint8_t row, uint8_t col) {
-    return g_led_config.matrix_co[row][col];
-}
-
-/**
- * @brief get LED if for first digit from double digit number. Esc = 0
- */
-uint8_t two_digit_decimals_led(uint8_t value) {
-    if (value > 99) {
-        return get_led_index(0, 0);
-    }
-
-    uint8_t dec = value / 10;
-
-    uint8_t dec_led_idx = get_led_index(0, dec);
-
-    return dec_led_idx;
-}
-
-/**
- * @brief get LED if for second digit from double digit number 0 = 0
- */
-uint8_t two_digit_ones_led(uint8_t value) {
-    if (value > 99) {
-        return get_led_index(0, 0);
-    }
-
-    uint8_t ones = value % 10;
-    if (ones == 0) {
-        ones = 10;
-    }
-    uint8_t ones_led_idx = get_led_index(1, ones);
-
-    return ones_led_idx;
-}
-
-void adjust_sleep_timeout(uint8_t dir) {
-    if (keyboard_config.common.sleep_toggle) {
-        if (keyboard_config.common.sleep_timeout > 1 && !dir) {
-            keyboard_config.common.sleep_timeout -= SLEEP_TIMEOUT_STEP;
-        } else if (keyboard_config.common.sleep_timeout < 60 && dir) {
-            keyboard_config.common.sleep_timeout += SLEEP_TIMEOUT_STEP;
-        }
-        save_config_to_eeprom();
-    }
-}
-
-uint32_t get_sleep_timeout(void) {
-    if (!keyboard_config.common.sleep_toggle) return 0;
-    return keyboard_config.common.sleep_timeout * 60 * 1000 / TIMER_STEP;
-}
-
-void toggle_deep_sleep(void) {
-    f_deep_sleep_show          = 1;
-    keyboard_config.common.deep_sleep_toggle = !keyboard_config.common.deep_sleep_toggle;
-    save_config_to_eeprom();
 }

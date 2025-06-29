@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "color.h"
 #include "common/features/socd_cleaner.h"
 #include "common/rf_driver.h"
-#include "common/links.h"
 #include "common/config.h"
 #include "common/keycodes.h"
 #include "common/via.h"
@@ -52,14 +51,6 @@ extern uint16_t        rf_linking_time;
 extern DEV_INFO_STRUCT dev_info;
 extern uint8_t         rf_blink_cnt;
 
-extern void light_speed_control(uint8_t fast);
-extern void light_level_control(uint8_t brighten);
-extern void side_color_control(uint8_t dir);
-extern void side_mode_control(uint8_t dir);
-extern void logo_light_speed_control(uint8_t fast);
-extern void logo_light_level_control(uint8_t brighten);
-extern void logo_side_color_control(uint8_t dir);
-extern void logo_side_mode_control(uint8_t dir);
 extern void exit_light_sleep(void);
 
 bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) {

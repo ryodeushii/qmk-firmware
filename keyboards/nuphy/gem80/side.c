@@ -8,7 +8,6 @@
 #include "side_table.h"
 #include "side_table.h"
 #include "common/rf_driver.h"
-#include "common/links.h"
 #include "common/config.h"
 #include "user_kb.h"
 
@@ -80,7 +79,7 @@ void side_rgb_refresh(void) {
 
  * @note  save to eeprom.
  */
-void light_level_control(uint8_t brighten) {
+void side_brightness_control(uint8_t brighten) {
     if (brighten) {
         if (keyboard_config.lights.side_brightness == 5) {
             return;

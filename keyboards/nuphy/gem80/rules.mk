@@ -6,6 +6,8 @@ SRC += common/features/socd_cleaner.c \
 	   common/config.c  \
 	   common/via.c  \
 	   common/debounce.c  \
+	   common/links.c  \
+	   common/timer.c  \
 	   common/keycodes.c
 
 SRC += user_kb.c

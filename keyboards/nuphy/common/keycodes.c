@@ -7,6 +7,7 @@
 #include "quantum.h"
 #include "wait.h"
 #include "features/socd_cleaner.h"
+#include "side.h"
 
 extern uint8_t         f_dev_reset_press;
 extern uint8_t         f_sleep_show;
@@ -71,13 +72,13 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
 
         case SIDE_VAI:
             if (record->event.pressed) {
-                light_level_control(1);
+                side_brightness_control(1);
             }
             return false;
 
         case SIDE_VAD:
             if (record->event.pressed) {
-                light_level_control(0);
+                side_brightness_control(0);
             }
             return false;
 
@@ -278,4 +279,32 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
     }
 
     return true;
+}
+
+/**
+ * @brief  Release all keys, clear keyboard report.
+ */
+void break_all_key(void) {
+    bool nkro_temp = keymap_config.nkro;
+
+    clear_weak_mods();
+    clear_mods();
+    clear_keyboard();
+
+    // break nkro key
+    keymap_config.nkro = 1;
+    memset(nkro_report, 0, sizeof(report_nkro_t));
+    host_nkro_send(nkro_report);
+    wait_ms(10);
+
+    // break byte key
+    keymap_config.nkro = 0;
+    memset(keyboard_report, 0, sizeof(report_keyboard_t));
+    host_keyboard_send(keyboard_report);
+    wait_ms(10);
+
+    keymap_config.nkro = nkro_temp;
+
+    void clear_report_buffer(void);
+    clear_report_buffer();
 }

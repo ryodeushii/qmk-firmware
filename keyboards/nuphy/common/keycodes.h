@@ -1,3 +1,4 @@
+#include "action.h"
 #include "quantum_keycodes.h"
 
 enum custom_keycodes {
@@ -60,3 +61,19 @@ enum custom_keycodes {
 
 
 
+extern void light_level_control(uint8_t);
+extern void side_mode_control(uint8_t);
+extern void side_color_control(uint8_t);
+extern void side_speed_control(uint8_t);
+extern void logo_light_level_control(uint8_t);
+extern void logo_side_mode_control(uint8_t);
+extern void logo_side_color_control(uint8_t);
+extern void logo_light_speed_control(uint8_t);
+extern void light_speed_control(uint8_t);
+extern void break_all_key(void);
+extern void toggle_usb_sleep(void);
+extern void toggle_deep_sleep(void);
+extern void toggle_caps_indication(void);
+extern void adjust_sleep_timeout(uint8_t);
+
+bool process_record_nuphy(uint16_t keycode, keyrecord_t *record);

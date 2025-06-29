@@ -5,7 +5,7 @@ releasing a key, that state is pushed after no changes occur for DEBOUNCE millis
 */
 
 #include "debounce.h"
-#include "gem80-common.h"
+#include "config.h"
 #include "timer.h"
 #include <stdlib.h>
 
@@ -145,4 +145,23 @@ static void transfer_matrix_values(matrix_row_t raw[], matrix_row_t cooked[], ui
             debounce_pointer++;
         }
     }
+}
+
+void adjust_debounce(uint8_t dir, DEBOUNCE_EVENT debounce_event) {
+#if DEBOUNCE > 0
+    if (dir) {
+        if (debounce_event == DEBOUNCE_PRESS && keyboard_config.common.debounce_press_ms < 99) {
+            keyboard_config.common.debounce_press_ms += DEBOUNCE_STEP;
+        } else if (debounce_event == DEBOUNCE_RELEASE && keyboard_config.common.debounce_release_ms < 99) {
+            keyboard_config.common.debounce_release_ms += DEBOUNCE_STEP;
+        }
+    } else if (!dir) {
+        if (debounce_event == DEBOUNCE_PRESS && keyboard_config.common.debounce_press_ms > 0) {
+            keyboard_config.common.debounce_press_ms -= DEBOUNCE_STEP;
+        } else if (debounce_event == DEBOUNCE_RELEASE && keyboard_config.common.debounce_release_ms > 0) {
+            keyboard_config.common.debounce_release_ms -= DEBOUNCE_STEP;
+        }
+    }
+    save_config_to_eeprom();
+#endif
 }

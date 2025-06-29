@@ -19,8 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "quantum/quantum.h"
 
-typedef enum { DEBOUNCE_PRESS = 0, DEBOUNCE_RELEASE } DEBOUNCE_EVENT;
-
 extern bool f_wakeup_prepare;
 extern bool f_sleep_show;
 extern bool f_usb_sleep_show;
@@ -54,7 +52,6 @@ void toggle_usb_sleep(void);
 
 uint8_t  two_digit_decimals_led(uint8_t value);
 uint8_t  two_digit_ones_led(uint8_t value);
-void     adjust_debounce(uint8_t dir, DEBOUNCE_EVENT debounce_event);
 uint32_t get_sleep_timeout(void);
 void     adjust_sleep_timeout(uint8_t dir);
 

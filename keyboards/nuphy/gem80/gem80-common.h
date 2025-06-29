@@ -17,18 +17,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 #include "color.h"
-#include "common/config.h"
 #include "quantum_keycodes.h"
-
-#ifdef VIA_ENABLE
-enum via_indicator_value {
-    // logo light controls
-    id_logo_light_mode              = 20,
-    id_logo_light_speed             = 21,
-    id_logo_light_color             = 22,
-    id_logo_light_brightness        = 23,
-};
-// function declaration
-#endif
-
-extern keyboard_config_t keyboard_config;

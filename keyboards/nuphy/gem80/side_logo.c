@@ -1,7 +1,7 @@
 // Copyright 2023 Persama (@Persama)
 // SPDX-License-Identifier: GPL-2.0-or-later
-#include "gem80-common.h"
 #include "rgb_matrix.h"
+#include "common/config.h"
 #include "side.h"
 #include "timer.h"
 

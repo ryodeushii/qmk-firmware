@@ -18,13 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "user_kb.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include "gem80-common.h"
 #include "config.h"
 #include "eeconfig.h"
 #include "color.h"
 #include "host.h"
 #include "common/rf_driver.h"
 #include "common/links.h"
+#include "common/config.h"
 
 DEV_INFO_STRUCT dev_info = {
     .rf_battery = 100,
@@ -571,25 +571,6 @@ uint8_t two_digit_ones_led(uint8_t value) {
     uint8_t ones_led_idx = get_led_index(1, ones);
 
     return ones_led_idx;
-}
-
-void adjust_debounce(uint8_t dir, DEBOUNCE_EVENT debounce_event) {
-#if DEBOUNCE > 0
-    if (dir) {
-        if (debounce_event == DEBOUNCE_PRESS && keyboard_config.common.debounce_press_ms < 99) {
-            keyboard_config.common.debounce_press_ms += DEBOUNCE_STEP;
-        } else if (debounce_event == DEBOUNCE_RELEASE && keyboard_config.common.debounce_release_ms < 99) {
-            keyboard_config.common.debounce_release_ms += DEBOUNCE_STEP;
-        }
-    } else if (!dir) {
-        if (debounce_event == DEBOUNCE_PRESS && keyboard_config.common.debounce_press_ms > 0) {
-            keyboard_config.common.debounce_press_ms -= DEBOUNCE_STEP;
-        } else if (debounce_event == DEBOUNCE_RELEASE && keyboard_config.common.debounce_release_ms > 0) {
-            keyboard_config.common.debounce_release_ms -= DEBOUNCE_STEP;
-        }
-    }
-    save_config_to_eeprom();
-#endif
 }
 
 void adjust_sleep_timeout(uint8_t dir) {

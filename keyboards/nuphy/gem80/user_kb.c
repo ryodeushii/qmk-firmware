@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "color.h"
 #include "host.h"
 #include "common/rf_driver.h"
+#include "mcu_pwr.h"
 
 extern DEV_INFO_STRUCT dev_info;
 
@@ -335,6 +336,7 @@ void kb_config_reset(void) {
     rgb_matrix_sethsv(RGB_DEFAULT_COLOR, 255, RGB_MATRIX_MAXIMUM_BRIGHTNESS - RGB_MATRIX_VAL_STEP * 2);
 
     init_keyboard_config();
+    keyboard_config.been_initiated = 0x45;
 
     save_config_to_eeprom();
 }

@@ -46,16 +46,7 @@ void led_power_handle(void);
 void toggle_caps_indication(void);
 void toggle_usb_sleep(void);
 
-uint8_t  two_digit_decimals_led(uint8_t value);
-uint8_t  two_digit_ones_led(uint8_t value);
-uint32_t get_sleep_timeout(void);
-void     adjust_sleep_timeout(uint8_t dir);
-
 // led power control for sleep
-void pwr_rgb_led_off(void);
-void pwr_rgb_led_on(void);
-void pwr_side_led_off(void);
-void pwr_side_led_on(void);
 void led_pwr_sleep_handle(void);
 void led_pwr_wake_handle(void);
 void toggle_deep_sleep(void);

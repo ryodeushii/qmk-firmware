@@ -172,6 +172,9 @@ void custom_eeprom_init(void);
 void init_keyboard_config(void);
 void save_config_to_eeprom(void);
 void load_config_from_eeprom(void);
+uint32_t get_sleep_timeout(void);
+uint8_t two_digit_decimals_led(uint8_t value);
+uint8_t two_digit_ones_led(uint8_t value);
 
 #define SYS_SW_WIN 0xa1
 #define SYS_SW_MAC 0xa2

@@ -59,10 +59,6 @@ enum custom_keycodes {
 #define MAC_PRTA G(S(KC_4))
 #define WIN_PRTA G(S(KC_S))
 
-extern void logo_light_level_control(uint8_t);
-extern void logo_side_mode_control(uint8_t);
-extern void logo_side_color_control(uint8_t);
-extern void logo_light_speed_control(uint8_t);
 extern void light_speed_control(uint8_t);
 extern void break_all_key(void);
 extern void toggle_usb_sleep(void);

@@ -36,17 +36,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    include "eeconfig.h"
 #endif
 
-extern bool            f_rf_sw_press;
-extern bool            f_sleep_show;
-extern bool            f_dev_reset_press;
-extern bool            f_rgb_test_press;
 extern bool            f_bat_hold;
 extern bool            f_debounce_press_show;
 extern bool            f_debounce_release_show;
 extern bool            f_sleep_timeout_show;
 extern uint32_t        no_act_time;
-extern uint8_t         rf_sw_temp;
-extern uint16_t        rf_sw_press_delay;
 extern uint16_t        rf_linking_time;
 extern DEV_INFO_STRUCT dev_info;
 extern uint8_t         rf_blink_cnt;
@@ -85,109 +79,7 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
         return false;
     }
 
-    if (!process_record_nuphy(keycode, record)) {
-        return false;
-    }
-
-    switch (keycode) {
-#if (WORK_MODE == THREE_MODE)
-        case RF_DFU:
-            if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) return false;
-                uart_send_cmd(CMD_RF_DFU, 10, 20);
-            }
-            return false;
-#endif
-        case LNK_USB:
-            if (record->event.pressed) {
-                break_all_key();
-            } else {
-                dev_info.link_mode = LINK_USB;
-                uart_send_cmd(CMD_SET_LINK, 10, 10);
-            }
-            return false;
-
-#if (WORK_MODE == THREE_MODE)
-        case LNK_RF:
-            if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) {
-                    rf_sw_temp    = LINK_RF_24;
-                    f_rf_sw_press = 1;
-                    break_all_key();
-                }
-            } else if (f_rf_sw_press) {
-                f_rf_sw_press = 0;
-
-                if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
-                    dev_info.link_mode   = rf_sw_temp;
-                    dev_info.rf_channel  = rf_sw_temp;
-                    dev_info.ble_channel = rf_sw_temp;
-                    uart_send_cmd(CMD_SET_LINK, 10, 20);
-                }
-            }
-            return false;
-
-        case LNK_BLE1:
-            if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) {
-                    rf_sw_temp    = LINK_BT_1;
-                    f_rf_sw_press = 1;
-                    break_all_key();
-                }
-            } else if (f_rf_sw_press) {
-                f_rf_sw_press = 0;
-
-                if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
-                    dev_info.link_mode   = rf_sw_temp;
-                    dev_info.rf_channel  = rf_sw_temp;
-                    dev_info.ble_channel = rf_sw_temp;
-                    uart_send_cmd(CMD_SET_LINK, 10, 20);
-                }
-            }
-            return false;
-
-        case LNK_BLE2:
-            if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) {
-                    rf_sw_temp    = LINK_BT_2;
-                    f_rf_sw_press = 1;
-                    break_all_key();
-                }
-            } else if (f_rf_sw_press) {
-                f_rf_sw_press = 0;
-
-                if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
-                    dev_info.link_mode   = rf_sw_temp;
-                    dev_info.rf_channel  = rf_sw_temp;
-                    dev_info.ble_channel = rf_sw_temp;
-                    uart_send_cmd(CMD_SET_LINK, 10, 20);
-                }
-            }
-            return false;
-
-        case LNK_BLE3:
-            if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) {
-                    rf_sw_temp    = LINK_BT_3;
-                    f_rf_sw_press = 1;
-                    break_all_key();
-                }
-            } else if (f_rf_sw_press) {
-                f_rf_sw_press = 0;
-
-                if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
-                    dev_info.link_mode   = rf_sw_temp;
-                    dev_info.rf_channel  = rf_sw_temp;
-                    dev_info.ble_channel = rf_sw_temp;
-                    uart_send_cmd(CMD_SET_LINK, 10, 20);
-                }
-            }
-            return false;
-#endif
-        default:
-            return true;
-    }
-    return true;
+    return process_record_nuphy(keycode, record);
 }
 
 /* qmk keyboard post init */

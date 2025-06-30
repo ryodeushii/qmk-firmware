@@ -8,6 +8,8 @@
 #include "wait.h"
 #include "features/socd_cleaner.h"
 #include "side.h"
+#include "ambient.h"
+#include "rf_driver.h"
 
 extern uint8_t         f_dev_reset_press;
 extern uint8_t         f_sleep_show;
@@ -17,9 +19,107 @@ extern uint8_t         f_debounce_press_show;
 extern uint8_t         f_debounce_release_show;
 extern uint8_t         f_sleep_timeout_show;
 extern keymap_config_t keymap_config;
+extern DEV_INFO_STRUCT dev_info;
+extern bool            f_rf_sw_press;
+extern uint8_t         rf_sw_temp;
+extern uint16_t        rf_sw_press_delay;
 
 bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+#if (WORK_MODE == THREE_MODE)
+        case RF_DFU:
+            if (record->event.pressed) {
+                if (dev_info.link_mode != LINK_USB) return false;
+                uart_send_cmd(CMD_RF_DFU, 10, 20);
+            }
+            return false;
+#endif
+        case LNK_USB:
+            if (record->event.pressed) {
+                break_all_key();
+            } else {
+                dev_info.link_mode = LINK_USB;
+                uart_send_cmd(CMD_SET_LINK, 10, 10);
+            }
+            return false;
+
+#if (WORK_MODE == THREE_MODE)
+        case LNK_RF:
+            if (record->event.pressed) {
+                if (dev_info.link_mode != LINK_USB) {
+                    rf_sw_temp    = LINK_RF_24;
+                    f_rf_sw_press = 1;
+                    break_all_key();
+                }
+            } else if (f_rf_sw_press) {
+                f_rf_sw_press = 0;
+
+                if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
+                    dev_info.link_mode   = rf_sw_temp;
+                    dev_info.rf_channel  = rf_sw_temp;
+                    dev_info.ble_channel = rf_sw_temp;
+                    uart_send_cmd(CMD_SET_LINK, 10, 20);
+                }
+            }
+            return false;
+
+        case LNK_BLE1:
+            if (record->event.pressed) {
+                if (dev_info.link_mode != LINK_USB) {
+                    rf_sw_temp    = LINK_BT_1;
+                    f_rf_sw_press = 1;
+                    break_all_key();
+                }
+            } else if (f_rf_sw_press) {
+                f_rf_sw_press = 0;
+
+                if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
+                    dev_info.link_mode   = rf_sw_temp;
+                    dev_info.rf_channel  = rf_sw_temp;
+                    dev_info.ble_channel = rf_sw_temp;
+                    uart_send_cmd(CMD_SET_LINK, 10, 20);
+                }
+            }
+            return false;
+
+        case LNK_BLE2:
+            if (record->event.pressed) {
+                if (dev_info.link_mode != LINK_USB) {
+                    rf_sw_temp    = LINK_BT_2;
+                    f_rf_sw_press = 1;
+                    break_all_key();
+                }
+            } else if (f_rf_sw_press) {
+                f_rf_sw_press = 0;
+
+                if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
+                    dev_info.link_mode   = rf_sw_temp;
+                    dev_info.rf_channel  = rf_sw_temp;
+                    dev_info.ble_channel = rf_sw_temp;
+                    uart_send_cmd(CMD_SET_LINK, 10, 20);
+                }
+            }
+            return false;
+
+        case LNK_BLE3:
+            if (record->event.pressed) {
+                if (dev_info.link_mode != LINK_USB) {
+                    rf_sw_temp    = LINK_BT_3;
+                    f_rf_sw_press = 1;
+                    break_all_key();
+                }
+            } else if (f_rf_sw_press) {
+                f_rf_sw_press = 0;
+
+                if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
+                    dev_info.link_mode   = rf_sw_temp;
+                    dev_info.rf_channel  = rf_sw_temp;
+                    dev_info.ble_channel = rf_sw_temp;
+                    uart_send_cmd(CMD_SET_LINK, 10, 20);
+                }
+            }
+            return false;
+#endif
         case MAC_TASK:
             if (record->event.pressed) {
                 host_consumer_send(0x029F);

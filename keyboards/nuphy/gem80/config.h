@@ -17,8 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#define USB_MODE 0
-#define THREE_MODE 1
+#ifdef WORK_MODE
+#    undef WORK_MODE
+#endif
 #define WORK_MODE THREE_MODE
 
 #define DYNAMIC_KEYMAP_MACRO_DELAY 8

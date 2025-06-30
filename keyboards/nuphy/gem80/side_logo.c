@@ -23,7 +23,7 @@ uint8_t  logo_play_point = 0;
 uint8_t  logo_play_cnt   = 0;
 uint32_t logo_play_timer = 0;
 
-void logo_light_level_control(uint8_t brighten) {
+void ambient_brightness_control(uint8_t brighten) {
     if (brighten) {
         if (keyboard_config.lights.ambient_brightness == 5) {
             return;
@@ -38,7 +38,7 @@ void logo_light_level_control(uint8_t brighten) {
     save_config_to_eeprom();
 }
 
-void logo_light_speed_control(uint8_t fast) {
+void ambient_speed_control(uint8_t fast) {
     if ((keyboard_config.lights.ambient_speed) > LIGHT_SPEED_MAX) (keyboard_config.lights.ambient_speed) = LIGHT_SPEED_MAX / 2;
 
     if (fast) {
@@ -49,7 +49,7 @@ void logo_light_speed_control(uint8_t fast) {
     save_config_to_eeprom();
 }
 
-void logo_side_color_control(uint8_t dir) {
+void ambient_color_control(uint8_t dir) {
     if (keyboard_config.lights.ambient_mode != SIDE_WAVE) {
         if (keyboard_config.lights.ambient_rgb) {
             keyboard_config.lights.ambient_rgb   = 0;
@@ -83,7 +83,7 @@ void logo_side_color_control(uint8_t dir) {
     save_config_to_eeprom();
 }
 
-void logo_side_mode_control(uint8_t dir) {
+void ambient_mode_control(uint8_t dir) {
     if (dir) {
         keyboard_config.lights.ambient_mode++;
         if (keyboard_config.lights.ambient_mode > SIDE_OFF) {

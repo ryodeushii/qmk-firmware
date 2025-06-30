@@ -196,44 +196,44 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
 
         case SIDE_SPI:
             if (record->event.pressed) {
-                light_speed_control(1);
+                side_speed_control(1);
             }
             return false;
 
         case SIDE_SPD:
             if (record->event.pressed) {
-                light_speed_control(0);
+                side_speed_control(0);
             }
             return false;
 
         case AMBIENT_VAI:
             if (record->event.pressed) {
-                logo_light_level_control(1);
+                ambient_brightness_control(1);
             }
             return false;
         case AMBIENT_VAD:
             if (record->event.pressed) {
-                logo_light_level_control(0);
+                ambient_brightness_control(0);
             }
             return false;
         case AMBIENT_MOD:
             if (record->event.pressed) {
-                logo_side_mode_control(1);
+                ambient_mode_control(1);
             }
             return false;
         case AMBIENT_HUI:
             if (record->event.pressed) {
-                logo_side_color_control(1);
+                ambient_color_control(1);
             }
             return false;
         case AMBIENT_SPI:
             if (record->event.pressed) {
-                logo_light_speed_control(1);
+                ambient_speed_control(1);
             }
             return false;
         case AMBIENT_SPD:
             if (record->event.pressed) {
-                logo_light_speed_control(0);
+                ambient_speed_control(0);
             }
             return false;
 

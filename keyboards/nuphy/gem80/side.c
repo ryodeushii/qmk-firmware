@@ -101,7 +101,7 @@ void side_brightness_control(uint8_t brighten) {
  * @param  dir: 0 - decrease, 1 - increase.
  * @note  save to eeprom.
  */
-void light_speed_control(uint8_t fast) {
+void side_speed_control(uint8_t fast) {
     if ((keyboard_config.lights.side_speed) > LIGHT_SPEED_MAX) (keyboard_config.lights.side_speed) = LIGHT_SPEED_MAX / 2;
 
     if (fast) {

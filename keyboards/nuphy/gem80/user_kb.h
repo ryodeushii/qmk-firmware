@@ -25,10 +25,6 @@ extern bool f_usb_sleep_show;
 extern bool f_deep_sleep_show;
 extern bool f_dial_sw_init_ok;
 
-void    side_speed_control(uint8_t dir);
-void    side_light_control(uint8_t dir);
-void    side_color_control(uint8_t dir);
-void    side_mode_control(uint8_t dir);
 void    side_led_show(void);
 void    sleep_handle(void);
 void    update_bat_pct_rgb(void);

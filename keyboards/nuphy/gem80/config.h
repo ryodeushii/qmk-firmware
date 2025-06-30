@@ -17,8 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#define USB_MODE 0
-#define THREE_MODE 1
+#ifdef WORK_MODE
+#    undef WORK_MODE
+#endif
 #define WORK_MODE THREE_MODE
 
 #define DYNAMIC_KEYMAP_MACRO_DELAY 8
@@ -104,11 +105,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEFAULT_SIDE_SPEED 2
 #define DEFAULT_SIDE_RGB 1
 #define DEFAULT_SIDE_COLOR 0
-#define DEFAULT_LOGO_MODE 0
-#define DEFAULT_LOGO_BRIGHTNESS 3
-#define DEFAULT_LOGO_SPEED 2
-#define DEFAULT_LOGO_RGB 1
-#define DEFAULT_LOGO_COLOR 0
+#define DEFAULT_AMBIENT_MODE 0
+#define DEFAULT_AMBIENT_BRIGHTNESS 3
+#define DEFAULT_AMBIENT_SPEED 2
+#define DEFAULT_AMBIENT_RGB 1
+#define DEFAULT_AMBIENT_COLOR 0
 #define DEFAULT_BATTERY_INDICATOR_NUMERIC 0
 #define DEFAULT_DETECT_NUMLOCK 0
 #define DEFAULT_SHOW_SOCD_INDICATOR 0

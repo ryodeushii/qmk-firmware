@@ -16,11 +16,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "host_driver.h"
-#include "user_kb.h"
+#include "rf_driver.h"
 #include "rf_queue.h"
+#include "config.h"
+
+DEV_INFO_STRUCT dev_info = {
+    .rf_battery = 100,
+    .link_mode  = LINK_USB,
+    .rf_state   = RF_IDLE,
+};
 
 /* Variable declaration */
-extern DEV_INFO_STRUCT dev_info;
 extern report_buffer_t report_buff_a;
 extern report_buffer_t report_buff_b;
 extern rf_queue_t      rf_queue;

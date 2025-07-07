@@ -144,11 +144,11 @@ void enter_deep_sleep(void) {
 
     led_pwr_sleep_handle();
 
-    gpio_set_pin_output(DEV_MODE_PIN);
-    gpio_write_pin_low(DEV_MODE_PIN);
+    gpio_set_pin_output(DEVICE_MODE_PIN);
+    gpio_write_pin_low(DEVICE_MODE_PIN);
 
-    gpio_set_pin_output(SYS_MODE_PIN);
-    gpio_write_pin_low(SYS_MODE_PIN);
+    gpio_set_pin_output(OS_MODE_PIN);
+    gpio_write_pin_low(OS_MODE_PIN);
 
     gpio_set_pin_input(RGB_DRIVER_SDB1);
     gpio_set_pin_input(RGB_DRIVER_SDB2);
@@ -179,9 +179,9 @@ void exit_deep_sleep(void) {
     matrix_init();
 
     // connection mode switch pin
-    gpio_set_pin_input_high(DEV_MODE_PIN);
+    gpio_set_pin_input_high(DEVICE_MODE_PIN);
     // keyboard OS switch pin
-    gpio_set_pin_input_high(SYS_MODE_PIN);
+    gpio_set_pin_input_high(OS_MODE_PIN);
 
     // RF module wakeup
     gpio_set_pin_output(NRF_WAKEUP_PIN);

@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TAPPING_TERM 200
 #define TAP_CODE_DELAY 8
 
-#define DEV_MODE_PIN C0
-#define SYS_MODE_PIN C1
+#define DEVICE_MODE_PIN C0
+#define OS_MODE_PIN C1
 #define DC_BOOST_PIN C2
 #define NRF_RESET_PIN B4
 #define NRF_TEST_PIN B5
@@ -40,9 +40,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define WS2812_DMA_CHANNEL 3
 #define WS2812_PWM_TARGET_PERIOD 800000
 
-#define DRIVER_RGB_DI_PIN A7
-#define DRIVER_LED_CS_PIN C6
-#define DRIVER_SIDE_PIN C8
+#define DRIVER_MATRIX_DI_PIN A7
+#define DRIVER_MATRIX_CS_PIN C6
+#define DRIVER_SIDE_DI_PIN C8
 #define DRIVER_SIDE_CS_PIN C9
 
 #define SERIAL_DRIVER SD1

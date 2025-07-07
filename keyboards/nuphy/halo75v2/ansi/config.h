@@ -17,6 +17,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#ifdef WORK_MODE
+#    undef WORK_MODE
+#endif
+#define WORK_MODE THREE_MODE
+
 #define DYNAMIC_KEYMAP_MACRO_DELAY 8
 #define TAPPING_TERM 200
 #define TAP_CODE_DELAY 8

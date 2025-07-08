@@ -42,17 +42,11 @@ extern bool            f_bat_hold;
 extern bool            f_debounce_press_show;
 extern bool            f_debounce_release_show;
 extern bool            f_sleep_timeout_show;
-extern uint32_t        no_act_time;
-extern uint16_t        rf_linking_time;
 extern DEV_INFO_STRUCT dev_info;
-extern uint8_t         rf_blink_cnt;
 
 extern void exit_light_sleep(void);
 
 bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) {
-    no_act_time     = 0;
-    rf_linking_time = 0;
-
     // wakeup check for light sleep/no sleep - fire this immediately to not lose wake keys.
     if (f_wakeup_prepare) {
         f_wakeup_prepare = 0;
@@ -62,22 +56,9 @@ bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) {
     return pre_process_record_user(keycode, record);
 }
 
-socd_cleaner_t socd_v = {{KC_W, KC_S}, SOCD_CLEANER_LAST};
-socd_cleaner_t socd_h = {{KC_A, KC_D}, SOCD_CLEANER_LAST};
-
 /* qmk process record */
 bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
-    no_act_time     = 0;
-    rf_linking_time = 0;
-
     if (!process_record_user(keycode, record)) {
-        return false;
-    }
-    // socd handling
-    if (!process_socd_cleaner(keycode, record, &socd_v)) {
-        return false;
-    }
-    if (!process_socd_cleaner(keycode, record, &socd_h)) {
         return false;
     }
 
@@ -101,45 +82,6 @@ bool rgb_matrix_indicators_kb(void) {
 }
 
 bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
-    if (keymap_config.no_gui) {
-        // fixed position in top right corner, key position in matrix is (0,16), led index is (16)
-        rgb_matrix_set_color(get_led_index(WIN_LOCK_ROW, WIN_LOCK_COL), 0x00, 0x80, 0x00);
-    }
-
-    if (f_debounce_press_show) { // green numbers - press debounce
-        rgb_matrix_set_color(two_digit_decimals_led(keyboard_config.common.debounce_press_ms), 0x00, 0x80, 0x00);
-        rgb_matrix_set_color(two_digit_ones_led(keyboard_config.common.debounce_press_ms), 0x00, 0x80, 0x00);
-    }
-    if (f_debounce_release_show) { // red numbers - release deboucne
-        rgb_matrix_set_color(two_digit_decimals_led(keyboard_config.common.debounce_release_ms), 0x80, 0x00, 0x00);
-        rgb_matrix_set_color(two_digit_ones_led(keyboard_config.common.debounce_release_ms), 0x80, 0x00, 0x00);
-    }
-
-    if (f_sleep_timeout_show) { // cyan numbers - sleep timeout
-        rgb_matrix_set_color(two_digit_decimals_led(keyboard_config.common.sleep_timeout), 0x00, 0x80, 0x80);
-        rgb_matrix_set_color(two_digit_ones_led(keyboard_config.common.sleep_timeout), 0x00, 0x80, 0x80);
-    }
-
-    if (keyboard_config.custom.show_socd_indicator && socd_cleaner_enabled) {
-        rgb_matrix_set_color(get_led_index(2, 2), RGB_BLUE);
-        rgb_matrix_set_color(get_led_index(3, 2), RGB_BLUE);
-        rgb_matrix_set_color(get_led_index(3, 1), RGB_BLUE);
-        rgb_matrix_set_color(get_led_index(3, 3), RGB_BLUE);
-    }
-
-    if (keyboard_config.custom.detect_numlock_state) {
-        uint8_t showNumLock = 0;
-        if (dev_info.link_mode != LINK_USB) {
-            showNumLock = dev_info.rf_led & 0x01;
-        } else {
-            showNumLock = host_keyboard_led_state().num_lock;
-        }
-
-        if (showNumLock) {
-            rgb_matrix_set_color(get_led_index(NUM_LOCK_ROW, NUM_LOCK_COL), 0x00, 0x80, 0x00);
-        }
-    }
-
     rgb_matrix_set_color(RGB_MATRIX_LED_COUNT - 1, 0, 0, 0);
 
     if (keyboard_config.custom.toggle_custom_keys_highlight) {
@@ -182,11 +124,6 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
                 }
             }
         }
-    }
-
-    if (f_bat_hold && keyboard_config.custom.battery_indicator_numeric) {
-        rgb_matrix_set_color(two_digit_decimals_led(dev_info.rf_battery), 0x00, 0x80, 0x80);
-        rgb_matrix_set_color(two_digit_ones_led(dev_info.rf_battery), 0x00, 0x80, 0x80);
     }
 
     return rgb_matrix_indicators_advanced_user(led_min, led_max);

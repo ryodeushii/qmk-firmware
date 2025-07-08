@@ -23,8 +23,26 @@ extern DEV_INFO_STRUCT dev_info;
 extern bool            f_rf_sw_press;
 extern uint8_t         rf_sw_temp;
 extern uint16_t        rf_sw_press_delay;
+extern uint16_t        rf_linking_time;
+extern uint32_t        no_act_time;
+
+socd_cleaner_t socd_v = {{KC_W, KC_S}, SOCD_CLEANER_LAST};
+socd_cleaner_t socd_h = {{KC_A, KC_D}, SOCD_CLEANER_LAST};
+
 
 bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
+    no_act_time     = 0;
+    rf_linking_time = 0;
+
+        // socd handling
+    if (!process_socd_cleaner(keycode, record, &socd_v)) {
+        return false;
+    }
+    if (!process_socd_cleaner(keycode, record, &socd_h)) {
+        return false;
+    }
+
+
     switch (keycode) {
 #if (WORK_MODE == THREE_MODE)
         case RF_DFU:

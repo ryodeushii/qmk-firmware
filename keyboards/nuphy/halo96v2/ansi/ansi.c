@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "action.h"
 #include "common/features/socd_cleaner.h"
 #include "common/rf_driver.h"
-#include "common/links.h"
 #include "config.h"
 #include "host.h"
 #include "keycodes.h"
@@ -484,7 +483,7 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
         }
 
         if (showNumLock) {
-            rgb_matrix_set_color(get_led_index(1, 15), 0x00, 0x80, 0x00);
+            rgb_matrix_set_color(get_led_index(NUM_LOCK_ROW, NUM_LOCK_COL), 0x00, 0x80, 0x00);
         }
     }
 

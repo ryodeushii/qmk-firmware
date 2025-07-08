@@ -20,10 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "common/features/socd_cleaner.h"
 #include "common/rf_driver.h"
 #include "common/config.h"
-#include "common/keycodes.h"
+#include "common/keyboard.h"
+#include "common/keys.h"
 #include "common/via.h"
 #include "config.h"
 #include "host.h"
+#include "keyboard.h"
 #include "nvm_eeprom_eeconfig_internal.h"
 #include "quantum.h"
 #include "rgb_matrix.h"
@@ -84,17 +86,13 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
 
 /* qmk keyboard post init */
 void keyboard_post_init_kb(void) {
-    gpio_init();
-
-#if (WORK_MODE == THREE_MODE)
-    rf_uart_init();
-    wait_ms(500);
-    rf_device_init();
-#endif
-    break_all_key();
-    dial_sw_fast_scan();
-    load_eeprom_data();
+    keyboard_post_init_nuphy();
     keyboard_post_init_user();
+}
+
+void housekeeping_task_kb(void) {
+    housekeeping_task_nuphy();
+    housekeeping_task_user();
 }
 
 bool rgb_matrix_indicators_kb(void) {
@@ -201,25 +199,4 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
     }
 
     return rgb_matrix_indicators_advanced_user(led_min, led_max);
-}
-
-/* qmk housekeeping task */
-void housekeeping_task_kb(void) {
-    timer_pro();
-
-#if (WORK_MODE == THREE_MODE)
-    uart_receive_pro();
-
-    uart_send_report_repeat();
-
-    dev_sts_sync();
-#endif
-
-    long_press_key();
-
-    dial_sw_scan();
-
-    side_led_show();
-
-    sleep_handle();
 }

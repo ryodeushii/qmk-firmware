@@ -9,6 +9,7 @@ SRC += common/features/socd_cleaner.c \
 	   common/links.c  \
 	   common/timer.c  \
 	   common/sleep.c  \
-	   common/keycodes.c
+	   common/keyboard.c  \
+	   common/keys.c
 
 

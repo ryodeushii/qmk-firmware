@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdint.h>
 #include "rf_driver.h"
 #include "uart.h" // qmk uart.h
-#include "keycodes.h"
+#include "keys.h"
 #include "rf_queue.h"
 #include "config.h"
 

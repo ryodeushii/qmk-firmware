@@ -1,5 +1,5 @@
 #include "quantum.h"
-#include "keycodes.h"
+#include "keys.h"
 #include "config.h"
 #include "rf_driver.h"
 

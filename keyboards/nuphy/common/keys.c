@@ -2,7 +2,7 @@
 #include "config.h"
 #include "eeconfig.h"
 #include "host.h"
-#include "keycodes.h"
+#include "keys.h"
 #include "debounce.h"
 #include "quantum.h"
 #include "wait.h"

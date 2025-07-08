@@ -59,12 +59,11 @@ enum custom_keycodes {
 #define MAC_PRTA G(S(KC_4))
 #define WIN_PRTA G(S(KC_S))
 
-extern void break_all_key(void);
 extern void toggle_usb_sleep(void);
 extern void toggle_deep_sleep(void);
 extern void toggle_caps_indication(void);
 extern void adjust_sleep_timeout(uint8_t);
-
-extern void break_all_key(void);
+void timer_pro(void);
+void break_all_key(void);
 
 bool process_record_nuphy(uint16_t keycode, keyrecord_t *record);

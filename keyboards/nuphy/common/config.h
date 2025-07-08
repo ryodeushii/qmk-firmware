@@ -73,6 +73,10 @@
 #    define DEFAULT_AMBIENT_COLOR 6 //  FIXME: what? is this value?
 #endif
 
+#ifndef RGB_MATRIX_DEFAULT_BRIGHTNESS
+#    define RGB_MATRIX_DEFAULT_BRIGHTNESS (RGB_MATRIX_MAXIMUM_BRIGHTNESS - RGB_MATRIX_VAL_STEP * 2)
+#endif
+
 typedef struct {
     uint8_t sleep_toggle : 1;
     uint8_t usb_sleep_toggle : 1;
@@ -168,15 +172,15 @@ enum NonMatrixEffects {
     EFFECT_OFF,
 } non_matrix_effects;
 
-void custom_eeprom_init(void);
-void init_keyboard_config(void);
-void save_config_to_eeprom(void);
-void load_config_from_eeprom(void);
+void     custom_eeprom_init(void);
+void     init_keyboard_config(void);
+void     save_config_to_eeprom(void);
+void     load_config_from_eeprom(void);
 uint32_t get_sleep_timeout(void);
-void user_set_rgb_color(int index, uint8_t red, uint8_t green, uint8_t blue);
-uint8_t get_led_index(uint8_t row, uint8_t col);
-uint8_t two_digit_decimals_led(uint8_t value);
-uint8_t two_digit_ones_led(uint8_t value);
+void     user_set_rgb_color(int index, uint8_t red, uint8_t green, uint8_t blue);
+uint8_t  get_led_index(uint8_t row, uint8_t col);
+uint8_t  two_digit_decimals_led(uint8_t value);
+uint8_t  two_digit_ones_led(uint8_t value);
 
 #define SYS_SW_WIN 0xa1
 #define SYS_SW_MAC 0xa2

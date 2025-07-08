@@ -430,7 +430,7 @@ void kb_config_reset(void) {
     rgb_matrix_enable();
     rgb_matrix_mode(RGB_MATRIX_DEFAULT_MODE);
     rgb_matrix_set_speed(255 - RGB_MATRIX_SPD_STEP * 2);
-    rgb_matrix_sethsv(RGB_DEFAULT_COLOR, 255, RGB_MATRIX_MAXIMUM_BRIGHTNESS - RGB_MATRIX_VAL_STEP * 2);
+    rgb_matrix_sethsv(RGB_DEFAULT_COLOR, 255, DEFAULT_RGB_MATRIX_BRIGHTNESS);
 
     init_g_config();
     // mark config as initiated

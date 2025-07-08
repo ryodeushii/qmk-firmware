@@ -250,6 +250,10 @@ void set_left_rgb(uint8_t r, uint8_t g, uint8_t b) {
         user_set_side_rgb_color(SIDE_INDEX + i, r, g, b);
 }
 
+void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
+    set_left_rgb(r, g, b);
+}
+
 void set_all_side_off(void) {
     if (is_off) return;
     for (int i = 0; i < 45; i++)

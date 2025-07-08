@@ -188,6 +188,10 @@ void set_side_rgb(uint8_t r, uint8_t g, uint8_t b) {
         side_rgb_set_color(i, r >> 2, g >> 2, b >> 2);
 }
 
+void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
+    set_side_rgb(r, g, b);
+}
+
 /**
  * @brief  set left side leds.
  */
@@ -327,7 +331,6 @@ void sleep_sw_led_show(void)
  * @brief  sys_led_show.
  */
 void sys_led_show(void) {
-    // TODO: debug rf_led to know how to detect num_lock
     uint8_t caps_key_led_idx = get_led_index(3, 0);
     bool    showCapsLock     = false;
     if (dev_info.link_mode == LINK_USB) {

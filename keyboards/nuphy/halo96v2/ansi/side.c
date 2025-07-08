@@ -226,6 +226,10 @@ void set_left_rgb(uint8_t r, uint8_t g, uint8_t b) {
         rgb_matrix_set_color(SIDE_INDEX + i, r, g, b);
 }
 
+void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
+    set_left_rgb(r, g, b);
+}
+
 void set_all_side_off(void) {
     for (int i = 0; i < 45; i++) {
         rgb_matrix_set_color(SIDE_INDEX + i, 0, 0, 0);

@@ -190,6 +190,10 @@ void set_side_rgb(uint8_t r, uint8_t g, uint8_t b) {
         side_rgb_set_color(i, r >> 2, g >> 2, b >> 2);
 }
 
+void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
+    set_side_rgb(r, g, b);
+}
+
 /**
  * @brief  set left side leds.
  */

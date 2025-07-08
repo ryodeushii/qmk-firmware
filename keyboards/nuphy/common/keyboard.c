@@ -306,7 +306,7 @@ void housekeeping_task_nuphy(void) {
     long_press_key();
 
     dial_sw_scan();
-
+    // external from each keyboard
     side_led_show();
 
     sleep_handle();
@@ -328,15 +328,53 @@ void keyboard_post_init_nuphy(void) {
     keyboard_post_init_user();
 }
 
+__attribute((weak)) void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {}
+
 bool rgb_matrix_indicators_nuphy(void) {
+    uint8_t caps_key_led_idx = get_led_index(3, 0);
+    bool    showCapsLock     = false;
+
+    if (dev_info.link_mode == LINK_USB) {
+        showCapsLock = host_keyboard_led_state().caps_lock;
+    } else {
+        showCapsLock = dev_info.rf_led & 0x02;
+    }
+
     if (rf_blink_cnt) {
+        uint8_t r = 0, g = 0x80, b = 0;
+
         uint8_t col = 4;
         if (dev_info.link_mode >= LINK_BT_1 && dev_info.link_mode <= LINK_BT_3) {
             col = dev_info.link_mode;
+            g   = 0;
+            b   = 0x80; // blue for BT
         } else if (dev_info.link_mode == LINK_RF_24) {
             col = 4;
+            g   = 0x80;
+            b   = 0; // green for RF
         }
-        user_set_rgb_color(get_led_index(1, col), 0, 0x80, 0);
+        user_set_rgb_color(get_led_index(1, col), r, g, b);
+    }
+
+    if (showCapsLock) {
+        switch (keyboard_config.common.caps_indicator_type) {
+            case CAPS_INDICATOR_SIDE:
+                set_indicator_on_side(0X00, 0x80, 0x80); // highlight top-left side led to indicate caps lock enabled state
+
+                break;
+            case CAPS_INDICATOR_UNDER_KEY:
+                user_set_rgb_color(caps_key_led_idx, 0, 0x80, 0x80); // 63 is CAPS_LOCK position
+
+                break;
+            case CAPS_INDICATOR_BOTH:
+                set_indicator_on_side(0X00, 0x80, 0x80);             // highlight top-left side led to indicate caps lock enabled state
+                user_set_rgb_color(caps_key_led_idx, 0, 0x80, 0x80); // 63 is CAPS_LOCK position
+
+                break;
+            case CAPS_INDICATOR_OFF:
+            default:
+                break;
+        }
     }
 
     return true;

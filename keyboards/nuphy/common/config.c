@@ -9,13 +9,12 @@
 #endif
 
 // STATE vars
-RGB  bat_pct_rgb       = {.r = 0x80, .g = 0x80, .b = 0x00};
-bool f_usb_sleep_show  = 0;
-bool f_deep_sleep_show = 0;
-
-uint16_t rgb_led_last_act  = 0;
-uint16_t side_led_last_act = 0;
+extern bool            f_deep_sleep_show;
+extern bool            f_usb_sleep_show;
 extern DEV_INFO_STRUCT dev_info;
+RGB                    bat_pct_rgb       = {.r = 0x80, .g = 0x80, .b = 0x00};
+uint16_t               rgb_led_last_act  = 0;
+uint16_t               side_led_last_act = 0;
 
 __attribute((weak)) void pwr_rgb_led_on(void) {}
 __attribute((weak)) void pwr_rgb_led_off(void) {}
@@ -232,4 +231,3 @@ void adjust_sleep_timeout(uint8_t dir) {
         save_config_to_eeprom();
     }
 }
-

@@ -17,6 +17,8 @@ bool f_bat_hold              = 0;
 bool f_sys_show              = 0;
 bool f_sleep_show            = 0;
 bool f_dial_sw_init_ok       = 0;
+bool f_usb_sleep_show        = 0;
+bool f_deep_sleep_show       = 0;
 bool f_rf_sw_press           = 0;
 bool f_dev_reset_press       = 0;
 bool f_rgb_test_press        = 0;
@@ -330,6 +332,96 @@ void keyboard_post_init_nuphy(void) {
     keyboard_post_init_user();
 }
 
+/**
+
+ * @brief  show sleep indicator
+ */
+void sleep_indicator_show(void) {
+    static uint32_t sleep_show_timer     = 0;
+    static bool     sleep_show_flag      = false;
+    static bool     usb_sleep_show_flag  = false;
+    static bool     deep_sleep_show_flag = false;
+
+    uint8_t                r_temp, g_temp, b_temp;
+
+    if (f_sleep_show) {
+        f_sleep_show = false;
+
+        sleep_show_timer     = timer_read32();
+        sleep_show_flag      = true;
+        usb_sleep_show_flag  = false;
+        deep_sleep_show_flag = false;
+    } else if (f_usb_sleep_show) {
+        f_usb_sleep_show     = false;
+        sleep_show_timer     = timer_read32();
+        usb_sleep_show_flag  = true;
+        sleep_show_flag      = false;
+        deep_sleep_show_flag = false;
+    } else if (f_deep_sleep_show) {
+        f_deep_sleep_show    = false;
+        sleep_show_timer     = timer_read32();
+        usb_sleep_show_flag  = false;
+        sleep_show_flag      = false;
+        deep_sleep_show_flag = true;
+    }
+
+    if (sleep_show_flag) {
+        if (keyboard_config.common.sleep_toggle) {
+            r_temp = 0x00;
+            g_temp = 0x80;
+            b_temp = 0x00;
+        } else {
+            r_temp = 0x80;
+            g_temp = 0x00;
+            b_temp = 0x00;
+        }
+        if ((timer_elapsed32(sleep_show_timer) / 500) % 2 == 0) {
+            set_indicator_on_side(r_temp, g_temp, b_temp);
+        } else {
+            set_indicator_on_side(0x00, 0x00, 0x00);
+        }
+        if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
+            sleep_show_flag = false;
+        }
+    } else if (usb_sleep_show_flag) {
+        if (keyboard_config.common.usb_sleep_toggle) {
+            r_temp = 0x00;
+            g_temp = 0x80;
+            b_temp = 0x00;
+        } else {
+            r_temp = 0x80;
+            g_temp = 0x00;
+            b_temp = 0x00;
+        }
+        if ((timer_elapsed32(sleep_show_timer) / 500) % 2 == 0) {
+            set_indicator_on_side(r_temp, g_temp, b_temp);
+        } else {
+            set_indicator_on_side(0x00, 0x00, 0x00);
+        }
+        if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
+            usb_sleep_show_flag = false;
+        }
+    } else if (deep_sleep_show_flag) {
+        if (keyboard_config.common.deep_sleep_toggle) {
+            r_temp = 0x00;
+            g_temp = 0x80;
+            b_temp = 0x00;
+        } else {
+            r_temp = 0x80;
+            g_temp = 0x00;
+            b_temp = 0x00;
+        }
+        if ((timer_elapsed32(sleep_show_timer) / 500) % 2 == 0) {
+            set_indicator_on_side(r_temp, g_temp, b_temp);
+        } else {
+            set_indicator_on_side(0x00, 0x00, 0x00);
+        }
+        if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
+            deep_sleep_show_flag = false;
+        }
+    }
+}
+
 bool rgb_matrix_indicators_nuphy(void) {
 #ifdef WS2812_SIDE_REFRESH
     static uint32_t side_refresh_time = 0;
@@ -423,6 +515,8 @@ bool rgb_matrix_indicators_nuphy(void) {
         rgb_matrix_set_color(two_digit_decimals_led(dev_info.rf_battery), 0x00, 0x80, 0x80);
         rgb_matrix_set_color(two_digit_ones_led(dev_info.rf_battery), 0x00, 0x80, 0x80);
     }
+
+    sleep_indicator_show();
 
 #ifdef WS2812_SIDE_REFRESH
     if (timer_elapsed32(side_refresh_time) > 50) {

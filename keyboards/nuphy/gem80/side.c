@@ -9,7 +9,6 @@
 #include "side_table.h"
 #include "common/rf_driver.h"
 #include "common/config.h"
-#include "user_kb.h"
 
 // clang-format off
 const uint8_t side_speed_table[5][5] = {
@@ -43,6 +42,9 @@ uint8_t                r_temp, g_temp, b_temp;
 extern DEV_INFO_STRUCT dev_info;
 extern bool            f_bat_hold;
 
+extern void kb_config_reset(void);
+
+extern bool f_dial_sw_init_ok;
 extern uint8_t  logo_play_point;
 extern uint8_t  rf_blink_cnt;
 extern uint16_t rf_link_show_time;
@@ -233,96 +235,6 @@ void sys_sw_led_show(void) {
 #else
             sys_show_flag = false;
 #endif
-        }
-    }
-}
-
-/**
-
- * @brief  sleep_sw_led_show.
- */
-void sleep_sw_led_show(void)
-
-{
-    static uint32_t sleep_show_timer     = 0;
-    static bool     sleep_show_flag      = false;
-    static bool     usb_sleep_show_flag  = false;
-    static bool     deep_sleep_show_flag = false;
-
-    if (f_sleep_show) {
-        f_sleep_show = false;
-
-        sleep_show_timer     = timer_read32();
-        sleep_show_flag      = true;
-        usb_sleep_show_flag  = false;
-        deep_sleep_show_flag = false;
-    } else if (f_usb_sleep_show) {
-        f_usb_sleep_show     = false;
-        sleep_show_timer     = timer_read32();
-        usb_sleep_show_flag  = true;
-        sleep_show_flag      = false;
-        deep_sleep_show_flag = false;
-    } else if (f_deep_sleep_show) {
-        f_deep_sleep_show    = false;
-        sleep_show_timer     = timer_read32();
-        usb_sleep_show_flag  = false;
-        sleep_show_flag      = false;
-        deep_sleep_show_flag = true;
-    }
-
-    if (sleep_show_flag) {
-        if (keyboard_config.common.sleep_toggle) {
-            r_temp = 0x00;
-            g_temp = 0x80;
-            b_temp = 0x00;
-        } else {
-            r_temp = 0x80;
-            g_temp = 0x00;
-            b_temp = 0x00;
-        }
-        if ((timer_elapsed32(sleep_show_timer) / 500) % 2 == 0) {
-            set_side_rgb(r_temp, g_temp, b_temp);
-        } else {
-            set_side_rgb(0x00, 0x00, 0x00);
-        }
-        if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
-            sleep_show_flag = false;
-        }
-    } else if (usb_sleep_show_flag) {
-        if (keyboard_config.common.usb_sleep_toggle) {
-            r_temp = 0x00;
-            g_temp = 0x80;
-            b_temp = 0x00;
-        } else {
-            r_temp = 0x80;
-            g_temp = 0x00;
-            b_temp = 0x00;
-        }
-        if ((timer_elapsed32(sleep_show_timer) / 500) % 2 == 0) {
-            set_side_rgb(r_temp, g_temp, b_temp);
-        } else {
-            set_side_rgb(0x00, 0x00, 0x00);
-        }
-        if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
-            usb_sleep_show_flag = false;
-        }
-    } else if (deep_sleep_show_flag) {
-        if (keyboard_config.common.deep_sleep_toggle) {
-            r_temp = 0x00;
-            g_temp = 0x80;
-            b_temp = 0x00;
-        } else {
-            r_temp = 0x80;
-            g_temp = 0x00;
-            b_temp = 0x00;
-        }
-        if ((timer_elapsed32(sleep_show_timer) / 500) % 2 == 0) {
-            set_side_rgb(r_temp, g_temp, b_temp);
-        } else {
-            set_side_rgb(0x00, 0x00, 0x00);
-        }
-        if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
-            deep_sleep_show_flag = false;
         }
     }
 }
@@ -914,7 +826,6 @@ void side_led_show(void) {
     rf_led_show();
 #endif
     sys_sw_led_show();
-    sleep_sw_led_show();
 
     logo_led_loop();
 }

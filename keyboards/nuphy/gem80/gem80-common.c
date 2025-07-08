@@ -26,10 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "config.h"
 #include "host.h"
 #include "keyboard.h"
+#include "mcu_pwr.h"
 #include "nvm_eeprom_eeconfig_internal.h"
 #include "quantum.h"
 #include "rgb_matrix.h"
-#include "user_kb.h"
 
 #ifdef VIA_ENABLE
 #    include "eeprom.h"
@@ -38,6 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    include "eeconfig.h"
 #endif
 
+extern bool            f_wakeup_prepare;
 extern bool            f_bat_hold;
 extern bool            f_debounce_press_show;
 extern bool            f_debounce_release_show;
@@ -127,4 +128,45 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
     }
 
     return rgb_matrix_indicators_advanced_user(led_min, led_max);
+}
+/**
+ * @brief  gpio initial.
+ */
+void gpio_init(void) {
+    /* power on all LEDs */
+    pwr_rgb_led_on();
+    pwr_side_led_on();
+
+    /* set side led pin output low */
+    setPinOutput(DRIVER_SIDE_DI_PIN);
+    writePinLow(DRIVER_SIDE_DI_PIN);
+
+#if (WORK_MODE == THREE_MODE)
+    /* config RF module pin */
+    setPinOutput(NRF_WAKEUP_PIN);
+    writePinHigh(NRF_WAKEUP_PIN);
+
+    setPinInputHigh(NRF_TEST_PIN);
+
+    /* reset RF module */
+    setPinOutput(NRF_RESET_PIN);
+    writePinLow(NRF_RESET_PIN);
+    wait_ms(50);
+    writePinHigh(NRF_RESET_PIN);
+
+    /* connection mode switch pin */
+    setPinInputHigh(DEVICE_MODE_PIN);
+#endif
+    /* config keyboard OS switch pin */
+    setPinInputHigh(OS_MODE_PIN);
+
+    // open power
+    setPinOutput(DC_BOOST_PIN);
+    writePinHigh(DC_BOOST_PIN);
+
+    setPinOutput(DRIVER_MATRIX_CS_PIN);
+    writePinLow(DRIVER_MATRIX_CS_PIN);
+
+    setPinOutput(DRIVER_SIDE_CS_PIN);
+    writePinLow(DRIVER_SIDE_CS_PIN);
 }

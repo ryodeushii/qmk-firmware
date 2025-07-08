@@ -1,4 +1,3 @@
-SRC += user_kb.c
 SRC += common/ws2812-side-driver.c
 SRC += side.c side_logo.c
 

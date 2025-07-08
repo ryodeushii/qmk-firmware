@@ -15,12 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "user_kb.h"
+#include "quantum.h"
 #include "hal_usb.h"
 #include "usb_main.h"
 #include "mcu_pwr.h"
-#include "common/rf_driver.h"
-#include "common/config.h"
+#include "rf_driver.h"
+#include "debounce.h"
+#include "config.h"
 
 extern DEV_INFO_STRUCT dev_info;
 extern uint16_t        rf_linking_time;

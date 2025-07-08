@@ -10,7 +10,6 @@
 #include "side_table.h"
 #include "side_table.h"
 #include "common/rf_driver.h"
-#include "common/links.h"
 
 // clang-format off
 const uint8_t side_speed_table[5][5] = {

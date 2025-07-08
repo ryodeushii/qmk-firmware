@@ -96,17 +96,8 @@ void housekeeping_task_kb(void) {
 }
 
 bool rgb_matrix_indicators_kb(void) {
-    if (rf_blink_cnt) {
-        uint8_t col = 4;
-        if (dev_info.link_mode >= LINK_BT_1 && dev_info.link_mode <= LINK_BT_3) {
-            col = dev_info.link_mode;
-        } else if (dev_info.link_mode == LINK_RF_24) {
-            col = 4;
-        }
-        user_set_rgb_color(get_led_index(1, col), 0, 0, 0x80);
-    }
-
-    return true;
+    rgb_matrix_indicators_nuphy();
+    return rgb_matrix_indicators_user();;
 }
 
 bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {

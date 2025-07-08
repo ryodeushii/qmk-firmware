@@ -173,6 +173,8 @@ void init_keyboard_config(void);
 void save_config_to_eeprom(void);
 void load_config_from_eeprom(void);
 uint32_t get_sleep_timeout(void);
+void user_set_rgb_color(int index, uint8_t red, uint8_t green, uint8_t blue);
+uint8_t get_led_index(uint8_t row, uint8_t col);
 uint8_t two_digit_decimals_led(uint8_t value);
 uint8_t two_digit_ones_led(uint8_t value);
 

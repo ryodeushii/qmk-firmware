@@ -12,4 +12,3 @@ SRC += common/features/socd_cleaner.c \
 	   common/keyboard.c  \
 	   common/keys.c
 
-

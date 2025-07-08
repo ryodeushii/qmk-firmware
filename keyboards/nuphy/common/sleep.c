@@ -79,13 +79,13 @@ void sleep_handle(void) {
                 enter_light_sleep();
                 // otherwise -> deep sleep
             } else {
-            break_all_key(); // reset keys before sleeping for new QMK lifecycle to handle on wake.
-            if (keyboard_config.common.deep_sleep_toggle) {
-                deep_sleep_handle();
-                return; // don't need to do anything else
-            } else {
-                enter_light_sleep();
-            }
+                break_all_key(); // reset keys before sleeping for new QMK lifecycle to handle on wake.
+                if (keyboard_config.common.deep_sleep_toggle) {
+                    deep_sleep_handle();
+                    return; // don't need to do anything else
+                } else {
+                    enter_light_sleep();
+                }
             }
         }
 

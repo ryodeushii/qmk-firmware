@@ -327,3 +327,17 @@ void keyboard_post_init_nuphy(void) {
     load_eeprom_data();
     keyboard_post_init_user();
 }
+
+bool rgb_matrix_indicators_nuphy(void) {
+    if (rf_blink_cnt) {
+        uint8_t col = 4;
+        if (dev_info.link_mode >= LINK_BT_1 && dev_info.link_mode <= LINK_BT_3) {
+            col = dev_info.link_mode;
+        } else if (dev_info.link_mode == LINK_RF_24) {
+            col = 4;
+        }
+        user_set_rgb_color(get_led_index(1, col), 0, 0x80, 0);
+    }
+
+    return true;
+}

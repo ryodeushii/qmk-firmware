@@ -63,6 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define RGB_MATRIX_SLEEP
 
+#define WS2812_SIDE_REFRESH
 // #define DEBUG_MATRIX_SCAN_RATE
 
 // NOTE: uncomment if you want to have random colors in Reactive RGB effects

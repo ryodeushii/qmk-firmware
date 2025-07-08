@@ -3,6 +3,7 @@
 #include "rf_driver.h"
 #include "config.h"
 #include "keys.h"
+#include "keyboard.h"
 
 __attribute((weak)) extern void side_led_show(void) {}
 __attribute((weak)) extern void rgb_test_show(void) {}
@@ -329,9 +330,10 @@ void keyboard_post_init_nuphy(void) {
     keyboard_post_init_user();
 }
 
-__attribute((weak)) void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {}
-
 bool rgb_matrix_indicators_nuphy(void) {
+#ifdef WS2812_SIDE_REFRESH
+    static uint32_t side_refresh_time = 0;
+#endif
     uint8_t caps_key_led_idx = get_led_index(3, 0);
     bool    showCapsLock     = false;
 
@@ -360,16 +362,16 @@ bool rgb_matrix_indicators_nuphy(void) {
     if (showCapsLock) {
         switch (keyboard_config.common.caps_indicator_type) {
             case CAPS_INDICATOR_SIDE:
-                set_indicator_on_side(0X00, 0x80, 0x80); // highlight top-left side led to indicate caps lock enabled state
+                set_indicator_on_side(0X00, 0x80, 0x80);
 
                 break;
             case CAPS_INDICATOR_UNDER_KEY:
-                user_set_rgb_color(caps_key_led_idx, 0, 0x80, 0x80); // 63 is CAPS_LOCK position
+                user_set_rgb_color(caps_key_led_idx, 0, 0x80, 0x80);
 
                 break;
             case CAPS_INDICATOR_BOTH:
-                set_indicator_on_side(0X00, 0x80, 0x80);             // highlight top-left side led to indicate caps lock enabled state
-                user_set_rgb_color(caps_key_led_idx, 0, 0x80, 0x80); // 63 is CAPS_LOCK position
+                set_indicator_on_side(0X00, 0x80, 0x80);
+                user_set_rgb_color(caps_key_led_idx, 0, 0x80, 0x80);
 
                 break;
             case CAPS_INDICATOR_OFF:
@@ -422,7 +424,12 @@ bool rgb_matrix_indicators_nuphy(void) {
         rgb_matrix_set_color(two_digit_ones_led(dev_info.rf_battery), 0x00, 0x80, 0x80);
     }
 
-
+#ifdef WS2812_SIDE_REFRESH
+    if (timer_elapsed32(side_refresh_time) > 50) {
+        side_refresh_time = timer_read32();
+        side_rgb_refresh();
+    }
+#endif
 
     return true;
 }

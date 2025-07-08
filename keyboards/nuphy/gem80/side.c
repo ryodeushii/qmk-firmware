@@ -328,40 +328,6 @@ void sleep_sw_led_show(void)
 }
 
 /**
- * @brief  sys_led_show.
- */
-void sys_led_show(void) {
-    uint8_t caps_key_led_idx = get_led_index(3, 0);
-    bool    showCapsLock     = false;
-    if (dev_info.link_mode == LINK_USB) {
-        showCapsLock = host_keyboard_led_state().caps_lock;
-    } else {
-        showCapsLock = dev_info.rf_led & 0x02;
-    }
-
-    if (showCapsLock) {
-        switch (keyboard_config.common.caps_indicator_type) {
-            case CAPS_INDICATOR_SIDE:
-                set_side_rgb(0X00, 0x80, 0x80); // highlight top-left side led to indicate caps lock enabled state
-
-                break;
-            case CAPS_INDICATOR_UNDER_KEY:
-                user_set_rgb_color(caps_key_led_idx, 0, 0x80, 0x80); // 63 is CAPS_LOCK position
-
-                break;
-            case CAPS_INDICATOR_BOTH:
-                set_side_rgb(0X00, 0x80, 0x80);                      // highlight top-left side led to indicate caps lock enabled state
-                user_set_rgb_color(caps_key_led_idx, 0, 0x80, 0x80); // 63 is CAPS_LOCK position
-
-                break;
-            case CAPS_INDICATOR_OFF:
-            default:
-                break;
-        }
-    }
-}
-
-/**
  * @brief  light_point_playing.
  * @param trend:
  * @param step:
@@ -915,7 +881,6 @@ void rgb_test_show(void) {
  * @brief  side_led_show.
  */
 void side_led_show(void) {
-    static uint32_t side_refresh_time = 0;
     static bool     flag_power_on     = 1;
 
     if (flag_power_on) {
@@ -948,14 +913,8 @@ void side_led_show(void) {
     bat_led_show();
     rf_led_show();
 #endif
-    sys_led_show();
     sys_sw_led_show();
     sleep_sw_led_show();
 
     logo_led_loop();
-
-    if (timer_elapsed32(side_refresh_time) > 50) {
-        side_refresh_time = timer_read32();
-        side_rgb_refresh();
-    }
 }

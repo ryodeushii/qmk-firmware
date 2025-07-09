@@ -195,51 +195,6 @@ void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 /**
- * @brief  set left side leds.
- */
-void sys_sw_led_show(void) {
-    static uint32_t sys_show_timer = 0;
-    static bool     sys_show_flag  = false;
-    extern bool     f_sys_show;
-
-    if (f_sys_show) {
-        f_sys_show     = false;
-        sys_show_timer = timer_read32();
-
-        sys_show_flag = true;
-    }
-
-    if (sys_show_flag) {
-        if (dev_info.sys_sw_state == SYS_SW_MAC) {
-            r_temp = 0x80;
-            g_temp = 0x80;
-
-            b_temp = 0x80;
-        } else {
-            r_temp = 0x00;
-            g_temp = 0x00;
-            b_temp = 0x80;
-        }
-        if ((timer_elapsed32(sys_show_timer) / 500) % 2 == 0) {
-            set_side_rgb(r_temp, g_temp, b_temp);
-        } else {
-            set_side_rgb(0x00, 0x00, 0x00);
-        }
-        if (timer_elapsed32(sys_show_timer) >= (3000 - 50)) {
-#if (WORK_MODE == USB_MODE)
-            if (timer_elapsed32(sys_show_timer) <= 4000)
-                set_side_rgb(r_temp, g_temp, b_temp);
-            else
-                sys_show_flag = false;
-
-#else
-            sys_show_flag = false;
-#endif
-        }
-    }
-}
-
-/**
  * @brief  light_point_playing.
  * @param trend:
  * @param step:
@@ -825,7 +780,6 @@ void side_led_show(void) {
     bat_led_show();
     rf_led_show();
 #endif
-    sys_sw_led_show();
 
     logo_led_loop();
 }

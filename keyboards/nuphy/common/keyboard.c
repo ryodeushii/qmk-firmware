@@ -342,7 +342,7 @@ void sleep_indicator_show(void) {
     static bool     usb_sleep_show_flag  = false;
     static bool     deep_sleep_show_flag = false;
 
-    uint8_t                r_temp, g_temp, b_temp;
+    uint8_t r_temp, g_temp, b_temp;
 
     if (f_sleep_show) {
         f_sleep_show = false;
@@ -418,6 +418,49 @@ void sleep_indicator_show(void) {
         }
         if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
             deep_sleep_show_flag = false;
+        }
+    }
+}
+
+void os_mode_led_show(void) {
+    static uint32_t sys_show_timer = 0;
+    static bool     sys_show_flag  = false;
+    extern bool     f_sys_show;
+    uint8_t         r_temp, g_temp, b_temp;
+
+    if (f_sys_show) {
+        f_sys_show     = false;
+        sys_show_timer = timer_read32();
+
+        sys_show_flag = true;
+    }
+
+    if (sys_show_flag) {
+        if (dev_info.sys_sw_state == SYS_SW_MAC) {
+            r_temp = 0x80;
+            g_temp = 0x80;
+
+            b_temp = 0x80;
+        } else {
+            r_temp = 0x00;
+            g_temp = 0x00;
+            b_temp = 0x80;
+        }
+        if ((timer_elapsed32(sys_show_timer) / 500) % 2 == 0) {
+            set_indicator_on_side(r_temp, g_temp, b_temp);
+        } else {
+            set_indicator_on_side(0x00, 0x00, 0x00);
+        }
+        if (timer_elapsed32(sys_show_timer) >= (3000 - 50)) {
+#if (WORK_MODE == USB_MODE)
+            if (timer_elapsed32(sys_show_timer) <= 4000)
+                set_side_rgb(r_temp, g_temp, b_temp);
+            else
+                sys_show_flag = false;
+
+#else
+            sys_show_flag = false;
+#endif
         }
     }
 }
@@ -510,6 +553,8 @@ bool rgb_matrix_indicators_nuphy(void) {
             rgb_matrix_set_color(get_led_index(NUM_LOCK_ROW, NUM_LOCK_COL), 0x00, 0x80, 0x00);
         }
     }
+
+    os_mode_led_show();
 
     if (f_bat_hold && keyboard_config.custom.battery_indicator_numeric) {
         rgb_matrix_set_color(two_digit_decimals_led(dev_info.rf_battery), 0x00, 0x80, 0x80);

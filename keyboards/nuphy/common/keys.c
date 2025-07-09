@@ -374,6 +374,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
                 keyboard_config.custom.battery_indicator_numeric = !keyboard_config.custom.battery_indicator_numeric;
                 save_config_to_eeprom();
             }
+            return false;
         case SOCDON: // Turn SOCD Cleaner on.
             if (record->event.pressed) {
                 socd_cleaner_enabled = true;

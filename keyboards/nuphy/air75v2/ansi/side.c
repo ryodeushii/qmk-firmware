@@ -9,6 +9,7 @@
 #include "user_kb.h"
 #include "side_table.h"
 #include "side_table.h"
+#include "common/rf_driver.h"
 
 // clang-format off
 const uint8_t side_speed_table[5][5] = {
@@ -188,10 +189,14 @@ void set_side_rgb(uint8_t r, uint8_t g, uint8_t b) {
         side_rgb_set_color(i, r >> 2, g >> 2, b >> 2);
 }
 
+void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
+    set_side_rgb(r, g, b);
+}
+
 /**
  * @brief  set left side leds.
  */
-void sys_sw_led_show(void) {
+void os_mode_led_show(void) {
     static uint32_t sys_show_timer = 0;
     static bool     sys_show_flag  = false;
     extern bool     f_sys_show;
@@ -648,7 +653,7 @@ void rf_show_design(uint8_t r, uint8_t g, uint8_t b) {
 /**
  * @brief  rf_led_show.
  */
-void rf_led_show(void) {
+void wireless_mode_show(void) {
 #if (WORK_MODE == THREE_MODE)
     static bool flag_power_on = 1;
 #endif
@@ -850,10 +855,10 @@ void bat_led_show(void) {
 void device_reset_show(void) {
     writePinHigh(DC_BOOST_PIN);
     setPinOutput(DRIVER_SIDE_CS_PIN);
-    setPinOutput(DRIVER_LED_CS_PIN);
+    setPinOutput(DRIVER_MATRIX_CS_PIN);
 
     writePinLow(DRIVER_SIDE_CS_PIN);
-    writePinLow(DRIVER_LED_CS_PIN);
+    writePinLow(DRIVER_MATRIX_CS_PIN);
 
     for (int blink_cnt = 0; blink_cnt < 3; blink_cnt++) {
         rgb_matrix_set_color_all(0x10, 0x10, 0x10);
@@ -894,8 +899,8 @@ void device_reset_init(void) {
 
 void rgb_test_show(void) {
     writePinHigh(DC_BOOST_PIN);
-    setPinOutput(DRIVER_LED_CS_PIN);
-    writePinLow(DRIVER_LED_CS_PIN);
+    setPinOutput(DRIVER_MATRIX_CS_PIN);
+    writePinLow(DRIVER_MATRIX_CS_PIN);
 
     rgb_matrix_set_color_all(0xFF, 0x00, 0x00);
     for (int i = 0; i < SIDE_LED_NUM; i++)
@@ -953,10 +958,10 @@ void side_led_show(void) {
 
 #if (WORK_MODE == THREE_MODE)
     bat_led_show();
-    rf_led_show();
+    wireless_mode_show();
 #endif
     sys_led_show();
-    sys_sw_led_show();
+    os_mode_led_show();
     sleep_sw_led_show();
 
     right_side_led_loop();

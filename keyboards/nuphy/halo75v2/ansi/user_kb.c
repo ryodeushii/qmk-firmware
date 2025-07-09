@@ -23,6 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "eeconfig.h"
 #include "color.h"
 #include "host.h"
+#include "common/rf_driver.h"
+#include "common/links.h"
+
 
 DEV_INFO_STRUCT dev_info = {
     .rf_battery = 100,
@@ -87,9 +90,9 @@ void gpio_init(void) {
     writePinHigh(NRF_RESET_PIN);
 
     /* connection mode switch pin */
-    setPinInputHigh(DEV_MODE_PIN);
+    setPinInputHigh(DEVICE_MODE_PIN);
     /* config keyboard OS switch pin */
-    setPinInputHigh(SYS_MODE_PIN);
+    setPinInputHigh(OS_MODE_PIN);
 
     // open power
     setPinOutput(DC_BOOST_PIN);
@@ -246,10 +249,10 @@ void dial_sw_scan(void) {
     }
     dial_scan_timer = timer_read32();
 
-    setPinInputHigh(DEV_MODE_PIN);
-    setPinInputHigh(SYS_MODE_PIN);
-    if (readPin(DEV_MODE_PIN)) dial_scan |= 0X01;
-    if (readPin(SYS_MODE_PIN)) dial_scan |= 0X02;
+    setPinInputHigh(DEVICE_MODE_PIN);
+    setPinInputHigh(OS_MODE_PIN);
+    if (readPin(DEVICE_MODE_PIN)) dial_scan |= 0X01;
+    if (readPin(OS_MODE_PIN)) dial_scan |= 0X02;
 
     if (dial_save != dial_scan) {
         break_all_key();
@@ -312,18 +315,18 @@ void dial_sw_fast_scan(void) {
     uint8_t dial_check_dev = 0;
     uint8_t dial_check_sys = 0;
     uint8_t debounce       = 0;
-    setPinInputHigh(DEV_MODE_PIN);
-    setPinInputHigh(SYS_MODE_PIN);
+    setPinInputHigh(DEVICE_MODE_PIN);
+    setPinInputHigh(OS_MODE_PIN);
 
     // Debounce to get a stable state
     for (debounce = 0; debounce < 10; debounce++) {
         dial_scan_dev = 0;
         dial_scan_sys = 0;
-        if (readPin(DEV_MODE_PIN))
+        if (readPin(DEVICE_MODE_PIN))
             dial_scan_dev = 0x01;
         else
             dial_scan_dev = 0;
-        if (readPin(SYS_MODE_PIN))
+        if (readPin(OS_MODE_PIN))
             dial_scan_sys = 0x01;
         else
             dial_scan_sys = 0;
@@ -397,7 +400,7 @@ void kb_config_reset(void) {
     rgb_matrix_enable();
     rgb_matrix_mode(RGB_MATRIX_DEFAULT_MODE);
     rgb_matrix_set_speed(255 - RGB_MATRIX_SPD_STEP * 2);
-    rgb_matrix_sethsv(RGB_DEFAULT_COLOR, 255, RGB_MATRIX_MAXIMUM_BRIGHTNESS - RGB_MATRIX_VAL_STEP * 2);
+    rgb_matrix_sethsv(RGB_DEFAULT_COLOR, 255, DEFAULT_RGB_MATRIX_BRIGHTNESS);
 
     init_g_config();
     // mark config as initiated

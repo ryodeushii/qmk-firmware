@@ -17,16 +17,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#define USB_MODE 0
-#define THREE_MODE 1
+#ifdef WORK_MODE
+#    undef WORK_MODE
+#endif
 #define WORK_MODE THREE_MODE
 
 #define DYNAMIC_KEYMAP_MACRO_DELAY 8
 #define TAPPING_TERM 200
 #define TAP_CODE_DELAY 8
 
-#define DEV_MODE_PIN C0
-#define SYS_MODE_PIN C1
+#define DEVICE_MODE_PIN C0
+#define OS_MODE_PIN C1
 #define DC_BOOST_PIN C2
 #define NRF_RESET_PIN B4
 #define NRF_TEST_PIN B5
@@ -39,9 +40,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define WS2812_DMA_CHANNEL 3
 #define WS2812_PWM_TARGET_PERIOD 800000
 
-#define DRIVER_RGB_DI_PIN A7
-#define DRIVER_LED_CS_PIN C6
-#define DRIVER_SIDE_PIN C8
+#define DRIVER_MATRIX_DI_PIN A7
+#define DRIVER_MATRIX_CS_PIN C6
+#define DRIVER_SIDE_DI_PIN C8
 #define DRIVER_SIDE_CS_PIN C9
 
 #define SERIAL_DRIVER SD1
@@ -62,6 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define RGB_MATRIX_SLEEP
 
+#define WS2812_SIDE_REFRESH
 // #define DEBUG_MATRIX_SCAN_RATE
 
 // NOTE: uncomment if you want to have random colors in Reactive RGB effects
@@ -112,6 +114,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEFAULT_DETECT_NUMLOCK 0
 #define DEFAULT_BATTERY_INDICATOR_NUMERIC 0
 #define DEFAULT_SHOW_SOCD_INDICATOR 0
+#define WIN_LOCK_ROW 0
+#define WIN_LOCK_COL 15
+#define NUM_LOCK_ROW 0
+#define NUM_LOCK_COL 14
 /*
  * END OF DEFAULT VALUES
  */

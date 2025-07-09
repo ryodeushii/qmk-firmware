@@ -408,111 +408,6 @@ void bat_charging_design(uint8_t init, uint8_t r, uint8_t g, uint8_t b) {
     }
 }
 
-void rf_show_blink(void) {
-    extern uint8_t  rf_blink_cnt;
-    static uint32_t interval_timer = 0;
-    uint16_t        show_period;
-
-    if (rf_blink_cnt) {
-        if (dev_info.rf_state == RF_PAIRING)
-            show_period = 250;
-
-        else
-            show_period = 500;
-
-        if (timer_elapsed32(interval_timer) > (show_period >> 1)) {
-            r_temp = 0x00;
-            g_temp = 0x00;
-            b_temp = 0x00;
-        }
-
-        if (timer_elapsed32(interval_timer) >= show_period) {
-            rf_blink_cnt--;
-            interval_timer = timer_read32();
-        }
-    } else {
-        interval_timer = timer_read32();
-    }
-
-    set_side_rgb(r_temp, g_temp, b_temp);
-}
-
-void rf_show_design(uint8_t r, uint8_t g, uint8_t b) {
-    static uint32_t interval_timer = 0;
-    static uint16_t show_mask      = 0x04;
-    uint16_t        show_mask_temp = 0;
-    uint16_t        show_priod;
-
-    uint16_t bit_mask = 1;
-    uint8_t  i;
-
-    if (dev_info.rf_state == RF_PAIRING)
-        show_priod = 100;
-    else
-        show_priod = 200;
-
-    if (timer_elapsed32(interval_timer) > show_priod) {
-        interval_timer = timer_read32();
-
-        show_mask_temp = (show_mask << 1) | (show_mask >> 1);
-        show_mask_temp |= 0x04;
-        show_mask |= show_mask_temp;
-
-        if (show_mask == 0x7f) show_mask = 0x0;
-    }
-
-    for (i = 0; i < SIDE_LINE; i++) {
-        if (show_mask & bit_mask) {
-            side_rgb_set_color(i, r >> 2, g >> 2, b >> 2);
-        } else {
-            side_rgb_set_color(i, 0x00, 0x00, 0x00);
-        }
-        bit_mask <<= 1;
-    }
-}
-
-/**
- * @brief  rf_led_show.
- */
-void rf_led_show(void) {
-#if (WORK_MODE == THREE_MODE)
-    static bool flag_power_on = 1;
-#endif
-
-    if (dev_info.link_mode == LINK_RF_24) {
-        r_temp = 0x00;
-        g_temp = 0x80;
-        b_temp = 0x00;
-
-    } else if (dev_info.link_mode == LINK_USB) {
-        r_temp = 0x80;
-        g_temp = 0x80;
-        b_temp = 0x00;
-#if (WORK_MODE == THREE_MODE)
-        if (flag_power_on && (rf_link_show_time < RF_LINK_SHOW_TIME)) return;
-#endif
-    } else {
-        r_temp = 0x00;
-        g_temp = 0x00;
-        b_temp = 0x80;
-    }
-
-#if (WORK_MODE == THREE_MODE)
-    flag_power_on = 0;
-#endif
-    if (rf_blink_cnt) {
-#if (RFLINK_SHIFT)
-        rf_show_design(r_temp, g_temp, b_temp);
-
-#else
-        rf_show_blink();
-
-#endif
-    } else if (rf_link_show_time < RF_LINK_SHOW_TIME) {
-        set_side_rgb(r_temp, g_temp, b_temp);
-    }
-}
-
 void low_bat_show(void) {
     static uint32_t interval_timer = 0;
 
@@ -778,7 +673,6 @@ void side_led_show(void) {
 
 #if (WORK_MODE == THREE_MODE)
     bat_led_show();
-    rf_led_show();
 #endif
 
     logo_led_loop();

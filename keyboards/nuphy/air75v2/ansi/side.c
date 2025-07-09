@@ -196,7 +196,7 @@ void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
 /**
  * @brief  set left side leds.
  */
-void sys_sw_led_show(void) {
+void os_mode_led_show(void) {
     static uint32_t sys_show_timer = 0;
     static bool     sys_show_flag  = false;
     extern bool     f_sys_show;
@@ -653,7 +653,7 @@ void rf_show_design(uint8_t r, uint8_t g, uint8_t b) {
 /**
  * @brief  rf_led_show.
  */
-void rf_led_show(void) {
+void wireless_mode_show(void) {
 #if (WORK_MODE == THREE_MODE)
     static bool flag_power_on = 1;
 #endif
@@ -958,10 +958,10 @@ void side_led_show(void) {
 
 #if (WORK_MODE == THREE_MODE)
     bat_led_show();
-    rf_led_show();
+    wireless_mode_show();
 #endif
     sys_led_show();
-    sys_sw_led_show();
+    os_mode_led_show();
     sleep_sw_led_show();
 
     right_side_led_loop();

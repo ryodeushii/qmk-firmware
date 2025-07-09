@@ -32,6 +32,7 @@ uint16_t dev_reset_press_delay = 0;
 uint16_t rf_sw_press_delay     = 0;
 uint16_t rgb_test_press_delay  = 0;
 
+extern uint16_t           rf_link_show_time;
 extern uint16_t           rf_linking_time;
 extern uint32_t           no_act_time;
 extern bool               f_rf_new_adv_ok;
@@ -465,6 +466,73 @@ void os_mode_led_show(void) {
     }
 }
 
+uint8_t r_temp = 0x00, g_temp = 0x00, b_temp = 0x00;
+
+void rf_show_blink(void) {
+    extern uint8_t  rf_blink_cnt;
+    static uint32_t interval_timer = 0;
+    uint16_t        show_period;
+
+    if (rf_blink_cnt) {
+        if (dev_info.rf_state == RF_PAIRING)
+            show_period = 250;
+
+        else
+            show_period = 500;
+
+        if (timer_elapsed32(interval_timer) > (show_period >> 1)) {
+            r_temp = 0x00;
+            g_temp = 0x00;
+            b_temp = 0x00;
+        }
+
+        if (timer_elapsed32(interval_timer) >= show_period) {
+            rf_blink_cnt--;
+            interval_timer = timer_read32();
+        }
+    } else {
+        interval_timer = timer_read32();
+    }
+
+    set_indicator_on_side(r_temp, g_temp, b_temp);
+}
+
+/**
+ * @brief  rf_led_show.
+ */
+void wireless_mode_show(void) {
+#if (WORK_MODE == THREE_MODE)
+    static bool flag_power_on = 1;
+#endif
+
+    if (dev_info.link_mode == LINK_RF_24) {
+        r_temp = 0x00;
+        g_temp = 0x80;
+        b_temp = 0x00;
+
+    } else if (dev_info.link_mode == LINK_USB) {
+        r_temp = 0x80;
+        g_temp = 0x80;
+        b_temp = 0x00;
+#if (WORK_MODE == THREE_MODE)
+        if (flag_power_on && (rf_link_show_time < RF_LINK_SHOW_TIME)) return;
+#endif
+    } else {
+        r_temp = 0x00;
+        g_temp = 0x00;
+        b_temp = 0x80;
+    }
+
+#if (WORK_MODE == THREE_MODE)
+    flag_power_on = 0;
+#endif
+    if (rf_blink_cnt) {
+        rf_show_blink();
+    } else if (rf_link_show_time < RF_LINK_SHOW_TIME) {
+        set_indicator_on_side(r_temp, g_temp, b_temp);
+    }
+}
+
 bool rgb_matrix_indicators_nuphy(void) {
 #ifdef WS2812_SIDE_REFRESH
     static uint32_t side_refresh_time = 0;
@@ -562,6 +630,10 @@ bool rgb_matrix_indicators_nuphy(void) {
     }
 
     sleep_indicator_show();
+
+#if (WORK_MODE == THREE_MODE)
+    wireless_mode_show();
+#endif
 
 #ifdef WS2812_SIDE_REFRESH
     if (timer_elapsed32(side_refresh_time) > 50) {

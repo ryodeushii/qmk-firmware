@@ -16,8 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "config.h"
 #include "gpio.h"
-#include "user_kb.h"
-#include "mcu_stm32f0xx.h"
+#include "common/rf_driver.h"
+#include "common/config.h"
+#include "common/mcu_stm32f0xx.h"
 #include "mcu_pwr.h"
 #include "rgb_matrix.h"
 
@@ -144,15 +145,15 @@ void enter_deep_sleep(void) {
 
     led_pwr_sleep_handle();
 
-    gpio_set_pin_output(DEV_MODE_PIN);
-    gpio_write_pin_low(DEV_MODE_PIN);
+    gpio_set_pin_output(DEVICE_MODE_PIN);
+    gpio_write_pin_low(DEVICE_MODE_PIN);
 
-    gpio_set_pin_output(SYS_MODE_PIN);
-    gpio_write_pin_low(SYS_MODE_PIN);
+    gpio_set_pin_output(OS_MODE_PIN);
+    gpio_write_pin_low(OS_MODE_PIN);
 
     // These should be LED pins as well, turning them off.
-    gpio_set_pin_output(DRIVER_SIDE_PIN);
-    gpio_write_pin_low(DRIVER_SIDE_PIN);
+    gpio_set_pin_output(DRIVER_SIDE_DI_PIN);
+    gpio_write_pin_low(DRIVER_SIDE_DI_PIN);
 
     gpio_set_pin_output(NRF_TEST_PIN);
     gpio_write_pin_high(NRF_TEST_PIN);
@@ -177,10 +178,10 @@ void exit_deep_sleep(void) {
 
     // connection mode switch pin
 #if (WORK_MODE == THREE_MODE)
-    gpio_set_pin_input_high(DEV_MODE_PIN);
+    gpio_set_pin_input_high(DEVICE_MODE_PIN);
 #endif
     // keyboard OS switch pin
-    gpio_set_pin_input_high(SYS_MODE_PIN);
+    gpio_set_pin_input_high(OS_MODE_PIN);
 
 #if (WORK_MODE == THREE_MODE)
     gpio_set_pin_output(NRF_WAKEUP_PIN);
@@ -279,7 +280,7 @@ void pwr_rgb_led_off(void) {
     // LED power supply off
     gpio_set_pin_output(DC_BOOST_PIN);
     gpio_write_pin_low(DC_BOOST_PIN);
-    gpio_set_pin_input(DRIVER_LED_CS_PIN);
+    gpio_set_pin_input(DRIVER_MATRIX_CS_PIN);
     rgb_led_on = 0;
 }
 
@@ -289,8 +290,8 @@ void pwr_rgb_led_on(void) {
     // LED power supply on
     gpio_set_pin_output(DC_BOOST_PIN);
     gpio_write_pin_high(DC_BOOST_PIN);
-    gpio_set_pin_output(DRIVER_LED_CS_PIN);
-    gpio_write_pin_low(DRIVER_LED_CS_PIN);
+    gpio_set_pin_output(DRIVER_MATRIX_CS_PIN);
+    gpio_write_pin_low(DRIVER_MATRIX_CS_PIN);
     rgb_led_on = 1;
 }
 

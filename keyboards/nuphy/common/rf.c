@@ -16,9 +16,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
-#include "user_kb.h"
+#include "rf_driver.h"
 #include "uart.h" // qmk uart.h
+#include "keys.h"
 #include "rf_queue.h"
+#include "config.h"
 
 USART_MGR_STRUCT Usart_Mgr;
 // clang-format off
@@ -29,14 +31,16 @@ USART_MGR_STRUCT Usart_Mgr;
 #define RX_DAT   Usart_Mgr.RXDBuf[4]
 // clang-format on
 
-bool f_uart_ack        = 0;
-bool f_rf_read_data_ok = 0;
-bool f_rf_sts_sysc_ok  = 0;
-bool f_rf_new_adv_ok   = 0;
-bool f_rf_reset        = 0;
-bool f_rf_hand_ok      = 0;
-bool f_goto_sleep      = 0;
-bool f_wakeup_prepare  = 0;
+bool     f_uart_ack        = 0;
+bool     f_rf_read_data_ok = 0;
+bool     f_rf_sts_sysc_ok  = 0;
+bool     f_rf_new_adv_ok   = 0;
+bool     f_rf_reset        = 0;
+bool     f_rf_hand_ok      = 0;
+bool     f_goto_sleep      = 0;
+bool     f_wakeup_prepare  = 0;
+uint16_t rf_link_show_time = 0;
+uint16_t rf_linking_time       = 0;
 
 uint8_t  func_tab[32]     = {0};
 uint8_t  sync_lost        = 0;
@@ -52,7 +56,6 @@ extern host_driver_t   rf_host_driver;
 extern rf_queue_t      rf_queue;
 extern uint8_t         host_mode;
 extern uint8_t         rf_blink_cnt;
-extern uint16_t        rf_link_show_time;
 extern uint16_t        rf_linking_time;
 extern uint32_t        no_act_time;
 extern bool            f_send_channel;
@@ -63,7 +66,6 @@ void    uart_send_report(uint8_t report_type, uint8_t *report_buf, uint8_t repor
 void    uart_send_bytes(uint8_t *Buffer, uint32_t Length);
 uint8_t get_checksum(uint8_t *buf, uint8_t len);
 void    uart_receive_pro(void);
-void    break_all_key(void);
 
 /**
  * @brief Get variable uart key send repeat interval.
@@ -226,6 +228,7 @@ void rf_protocol_receive(void) {
                     if (Usart_Mgr.RXDBuf[8] <= 100) dev_info.rf_battery = Usart_Mgr.RXDBuf[8];
                     // dev_info.rf_charge = Usart_Mgr.RXDBuf[7];
                     if (dev_info.rf_battery > 0 && dev_info.rf_battery <= 100) {
+                        extern void update_bat_pct_rgb(void);
                         update_bat_pct_rgb();
                     }
 

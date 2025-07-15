@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "user_kb.h"
 #include "side.h"
 #include "is31fl3733.h"
+#include "common/rf_driver.h"
+#include "common/links.h"
 //------------------------------------------------
 #define SIDE_WAVE 0
 #define SIDE_MIX 1
@@ -246,6 +248,10 @@ void side_mode_b_control(uint8_t dir) {
 void set_left_rgb(uint8_t r, uint8_t g, uint8_t b) {
     for (int i = 0; i < 5; i++)
         user_set_side_rgb_color(SIDE_INDEX + i, r, g, b);
+}
+
+void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
+    set_left_rgb(r, g, b);
 }
 
 void set_all_side_off(void) {

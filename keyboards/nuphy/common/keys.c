@@ -395,6 +395,12 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
                 SEND_STRING(CFW_VERSION);
             }
             return false;
+        case TOG_POWER_ON_ANIMATION:
+            if (record->event.pressed) {
+                keyboard_config.common.power_on_animation = !keyboard_config.common.power_on_animation;
+                save_config_to_eeprom();
+            }
+            return false;
     }
 
     return true;

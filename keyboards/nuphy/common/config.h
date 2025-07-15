@@ -85,6 +85,7 @@ typedef struct {
     uint8_t debounce_release_ms;
     uint8_t sleep_timeout;
     uint8_t caps_indicator_type;
+    uint8_t power_on_animation : 1;
 } common_config_t;
 
 typedef struct {
@@ -128,10 +129,10 @@ enum via_common_ids {
     id_caps_indicator_type = 4,
     id_sleep_toggle        = 5,
     id_deep_sleep_toggle   = 6,
+    id_power_on_animation = 7,
 };
 
 enum via_custom_ids {
-    // side brightness controls
     id_battery_indicator_brightness = 31,
     id_toggle_custom_keys_highlight = 32,
     id_toggle_detect_numlock_state  = 33,

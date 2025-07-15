@@ -52,9 +52,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define UART_RX_PAL_MODE 0
 
 #ifdef VIA_ENABLE
-#    define VIA_EEPROM_CUSTOM_CONFIG_SIZE 22 // sizeof via_config
+#    define VIA_EEPROM_CUSTOM_CONFIG_SIZE 23 // sizeof via_config
 #else
-#    define EECONFIG_KB_DATA_SIZE 20
+#    define EECONFIG_KB_DATA_SIZE 21
 #endif
 #ifdef RGB_MATRIX_LED_COUNT
 #    undef RGB_MATRIX_LED_COUNT

@@ -183,8 +183,18 @@ void side_mode_control(uint8_t dir) {
  * @param  ...
 
  */
-void set_side_rgb(uint8_t r, uint8_t g, uint8_t b) {
+void set_left_rgb(uint8_t r, uint8_t g, uint8_t b) {
     for (int i = 0; i < SIDE_LINE; i++)
+        side_rgb_set_color(i, r >> 2, g >> 2, b >> 2);
+}
+
+/**
+ * @brief  set right side leds.
+ * @param  ...
+
+ */
+void set_right_rgb(uint8_t r, uint8_t g, uint8_t b) {
+    for (int i = SIDE_LINE; i < SIDE_LED_NUM; i++)
         side_rgb_set_color(i, r >> 2, g >> 2, b >> 2);
 }
 
@@ -215,14 +225,14 @@ void sys_sw_led_show(void) {
             b_temp = 0x80;
         }
         if ((timer_elapsed32(sys_show_timer) / 500) % 2 == 0) {
-            set_side_rgb(r_temp, g_temp, b_temp);
+            set_right_rgb(r_temp, g_temp, b_temp);
         } else {
-            set_side_rgb(0x00, 0x00, 0x00);
+            set_right_rgb(0x00, 0x00, 0x00);
         }
         if (timer_elapsed32(sys_show_timer) >= (3000 - 50)) {
 #if (WORK_MODE == USB_MODE)
             if (timer_elapsed32(sys_show_timer) <= 4000)
-                set_side_rgb(r_temp, g_temp, b_temp);
+                set_right_rgb(r_temp, g_temp, b_temp);
             else
                 sys_show_flag = false;
 
@@ -277,9 +287,9 @@ void sleep_sw_led_show(void)
             b_temp = 0x00;
         }
         if ((timer_elapsed32(sleep_show_timer) / 500) % 2 == 0) {
-            set_side_rgb(r_temp, g_temp, b_temp);
+            set_right_rgb(r_temp, g_temp, b_temp);
         } else {
-            set_side_rgb(0x00, 0x00, 0x00);
+            set_right_rgb(0x00, 0x00, 0x00);
         }
         if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
             sleep_show_flag = false;
@@ -295,9 +305,9 @@ void sleep_sw_led_show(void)
             b_temp = 0x00;
         }
         if ((timer_elapsed32(sleep_show_timer) / 500) % 2 == 0) {
-            set_side_rgb(r_temp, g_temp, b_temp);
+            set_right_rgb(r_temp, g_temp, b_temp);
         } else {
-            set_side_rgb(0x00, 0x00, 0x00);
+            set_right_rgb(0x00, 0x00, 0x00);
         }
         if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
             usb_sleep_show_flag = false;
@@ -313,9 +323,9 @@ void sleep_sw_led_show(void)
             b_temp = 0x00;
         }
         if ((timer_elapsed32(sleep_show_timer) / 500) % 2 == 0) {
-            set_side_rgb(r_temp, g_temp, b_temp);
+            set_right_rgb(r_temp, g_temp, b_temp);
         } else {
-            set_side_rgb(0x00, 0x00, 0x00);
+            set_right_rgb(0x00, 0x00, 0x00);
         }
         if (timer_elapsed32(sleep_show_timer) >= (3000 - 50)) {
             deep_sleep_show_flag = false;
@@ -339,7 +349,7 @@ void sys_led_show(void) {
     if (showCapsLock) {
         switch (g_config.caps_indicator_type) {
             case CAPS_INDICATOR_SIDE:
-                set_side_rgb(0X00, 0x80, 0x80); // highlight top-left side led to indicate caps lock enabled state
+                set_left_rgb(0X00, 0x80, 0x80); // highlight top-left side led to indicate caps lock enabled state
 
                 break;
             case CAPS_INDICATOR_UNDER_KEY:
@@ -347,7 +357,7 @@ void sys_led_show(void) {
 
                 break;
             case CAPS_INDICATOR_BOTH:
-                set_side_rgb(0X00, 0x80, 0x80);                      // highlight top-left side led to indicate caps lock enabled state
+                set_left_rgb(0X00, 0x80, 0x80);                      // highlight top-left side led to indicate caps lock enabled state
                 user_set_rgb_color(caps_key_led_idx, 0, 0x80, 0x80); // 63 is CAPS_LOCK position
 
                 break;
@@ -497,7 +507,7 @@ static void side_breathe_mode_show(void) {
     count_rgb_light(breathe_data_tab[play_point]);
     count_rgb_light(side_light_table[g_config.side_brightness]);
 
-    set_side_rgb(r_temp, g_temp, b_temp);
+    set_left_rgb(r_temp, g_temp, b_temp);
 }
 
 /**
@@ -513,7 +523,7 @@ static void side_static_mode_show(void) {
 
     count_rgb_light(side_light_table[g_config.side_brightness]);
 
-    set_side_rgb(r_temp, g_temp, b_temp);
+    set_left_rgb(r_temp, g_temp, b_temp);
 }
 
 /**
@@ -533,7 +543,7 @@ static void side_off_mode_show(void)
 
     b_temp = 0x00;
 
-    set_side_rgb(r_temp, g_temp, b_temp);
+    set_left_rgb(r_temp, g_temp, b_temp);
 }
 
 void bat_charging_breathe(void) {
@@ -549,7 +559,7 @@ void bat_charging_breathe(void) {
     g_temp = 0x40;
     b_temp = 0x00;
     count_rgb_light(breathe_data_tab[play_point]);
-    set_side_rgb(r_temp, g_temp, b_temp);
+    set_right_rgb(r_temp, g_temp, b_temp);
 }
 
 void bat_charging_design(uint8_t init, uint8_t r, uint8_t g, uint8_t b) {
@@ -608,7 +618,7 @@ void rf_show_blink(void) {
         interval_timer = timer_read32();
     }
 
-    set_side_rgb(r_temp, g_temp, b_temp);
+    set_left_rgb(r_temp, g_temp, b_temp);
 }
 
 void rf_show_design(uint8_t r, uint8_t g, uint8_t b) {
@@ -683,7 +693,7 @@ void rf_led_show(void) {
 
 #endif
     } else if (rf_link_show_time < RF_LINK_SHOW_TIME) {
-        set_side_rgb(r_temp, g_temp, b_temp);
+        set_left_rgb(r_temp, g_temp, b_temp);
     }
 }
 
@@ -705,7 +715,7 @@ void low_bat_show(void) {
         }
     }
 
-    set_side_rgb(r_temp, g_temp, b_temp);
+    set_right_rgb(r_temp, g_temp, b_temp);
 }
 
 /**
@@ -752,11 +762,12 @@ void bat_percent_led(uint8_t bat_percent) {
     } else {
         bat_end_led       = 4;
         low_bat_blink_cnt = 6;
+        // stock fw uses 11 - i
         for (i = 0; i <= bat_end_led; i++)
-            side_rgb_set_color(i, bat_r >> 2, bat_g >> 2, bat_b >> 2);
+            side_rgb_set_color(SIDE_LED_NUM - 1 - i, bat_r >> 2, bat_g >> 2, bat_b >> 2);
 
         for (; i < SIDE_LINE; i++)
-            side_rgb_set_color(i, 0, 0, 0);
+            side_rgb_set_color(SIDE_LED_NUM - 1 - i, 0, 0, 0);
     }
 }
 

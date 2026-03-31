@@ -16,66 +16,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
+
 #include "color.h"
-#include "quantum_keycodes.h"
-
-enum custom_keycodes {
-    RF_DFU = QK_KB_0,
-    LNK_USB,
-    LNK_RF,
-    LNK_BLE1,
-    LNK_BLE2,
-    LNK_BLE3,
-
-    MAC_TASK,
-    MAC_SEARCH,
-    MAC_VOICE,
-    MAC_CONSOLE,
-    MAC_DND,
-
-    WIN_LOCK,
-    DEV_RESET,
-    SLEEP_MODE,
-    BAT_SHOW,
-    RGB_TEST,
-    SHIFT_GRV,
-
-    SIDE_VAI,
-    SIDE_VAD,
-    SIDE_MOD,
-    SIDE_HUI,
-    SIDE_SPI,
-    SIDE_SPD,
-
-    RIGHT_SIDE_VAI,
-    RIGHT_SIDE_VAD,
-    RIGHT_SIDE_MOD,
-    RIGHT_SIDE_HUI,
-    RIGHT_SIDE_SPI,
-    RIGHT_SIDE_SPD,
-    TOG_USB_SLP,
-    TOG_CAPS_IND,
-    DEBOUNCE_PRESS_INC,
-    DEBOUNCE_PRESS_DEC,
-    DEBOUNCE_PRESS_SHOW,
-    SLEEP_TIMEOUT_INC,
-    SLEEP_TIMEOUT_DEC,
-    SLEEP_TIMEOUT_SHOW,
-    MAC_GLOBE,
-    DEBOUNCE_RELEASE_INC,
-    DEBOUNCE_RELEASE_DEC,
-    DEBOUNCE_RELEASE_SHOW,
-    TOG_DEEP_SLEEP,
-    TOG_BAT_IND_NUM,
-    SOCDON,
-    SOCDOFF,
-    SOCDTOG,
-    FW_VERSION,
-};
-
-#define MAC_PRT G(S(KC_3))
-#define MAC_PRTA G(S(KC_4))
-#define WIN_PRTA G(S(KC_S))
+#include "common/keys.h"
 
 // struct to save configs
 typedef struct {
@@ -94,12 +37,12 @@ typedef struct {
     uint8_t side_rgb;
     uint8_t side_color;
 
-    // right side light config
-    uint8_t right_side_mode;
-    uint8_t right_side_brightness;
-    uint8_t right_side_speed;
-    uint8_t right_side_rgb;
-    uint8_t right_side_color;
+    // ambient light config
+    uint8_t ambient_mode;
+    uint8_t ambient_brightness;
+    uint8_t ambient_speed;
+    uint8_t ambient_rgb;
+    uint8_t ambient_color;
     uint8_t battery_indicator_brightness;
     // custom keys highlight
     uint8_t toggle_custom_keys_highlight : 1;
@@ -122,11 +65,11 @@ enum via_indicator_value {
     id_side_light_speed      = 11,
     id_side_light_color      = 12,
     id_side_light_brightness = 13,
-    // right side light controls
-    id_right_side_light_mode        = 20,
-    id_right_side_light_speed       = 21,
-    id_right_side_light_color       = 22,
-    id_right_side_light_brightness  = 23,
+    // ambient light controls
+    id_ambient_light_mode           = 20,
+    id_ambient_light_speed          = 21,
+    id_ambient_light_color          = 22,
+    id_ambient_light_brightness     = 23,
     id_battery_indicator_brightness = 31,
     id_toggle_custom_keys_highlight = 32,
     id_toggle_detect_numlock_state  = 33,

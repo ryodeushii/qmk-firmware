@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "mcu_pwr.h"
 #include "rgb_matrix.h"
 #include "common/rf_driver.h"
-#include "common/links.h"
+#include "common/config.h"
 
 // from @adi4086
 static const pin_t row_pins[MATRIX_ROWS] = MATRIX_ROW_PINS;

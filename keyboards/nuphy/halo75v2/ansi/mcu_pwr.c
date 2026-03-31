@@ -232,7 +232,6 @@ void exit_light_sleep(void) {
     uart_send_cmd(CMD_HAND, 0, 1);
     if (dev_info.link_mode == LINK_USB) {
         usb_lld_wakeup_host(&USB_DRIVER);
-        restart_usb_driver(&USB_DRIVER);
     }
 
     // flag for RF wakeup workload.

@@ -22,7 +22,6 @@ enum {
 #define FIREWORK_INDEX_LEN (158)
 #define STARRY_DATA_LEN 96
 #define TIDE_DATA_LEN 120
-#define LIGHT_SPEED_MAX 4
 
 // from side.c
 #define LIGHT_SPEED_MAX 4
@@ -40,5 +39,3 @@ enum {
 #define LIGHT_TAB_LEN 101
 #define BREATHE_TAB_LEN 128
 #define FLOW_COLOR_TAB_LEN 224
-
-bool breath_tab_trend(bool trend, uint8_t playpoint);

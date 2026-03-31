@@ -27,7 +27,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "host.h"
 #include "keyboard.h"
 #include "mcu_pwr.h"
-#include "nvm_eeprom_eeconfig_internal.h"
 #include "quantum.h"
 #include "rgb_matrix.h"
 

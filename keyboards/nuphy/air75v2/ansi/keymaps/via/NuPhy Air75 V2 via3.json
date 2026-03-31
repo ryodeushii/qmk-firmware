@@ -310,13 +310,13 @@
                     ]
                 },
                 {
-                    "label": "Right Side Light",
+                    "label": "Ambient Light",
                     "content": [
                         {
                             "label": "Mode",
                             "type": "dropdown",
                             "content": [
-                                "id_right_side_light_mode",
+                                "id_ambient_light_mode",
                                 0,
                                 20
                             ],
@@ -330,10 +330,10 @@
                         },
                         {
                             "label": "Speed (higher is slower)",
-                            "showIf": "{id_right_side_light_mode} != 4 && {id_right_side_light_mode} != 2",
+                            "showIf": "{id_ambient_light_mode} != 4 && {id_ambient_light_mode} != 2",
                             "type": "dropdown",
                             "content": [
-                                "id_right_side_light_speed",
+                                "id_ambient_light_speed",
                                 0,
                                 21
                             ],
@@ -347,10 +347,10 @@
                         },
                         {
                             "label": "Color",
-                            "showIf": "{id_right_side_light_mode} != 4",
+                            "showIf": "{id_ambient_light_mode} != 4",
                             "type": "dropdown",
                             "content": [
-                                "id_right_side_light_color",
+                                "id_ambient_light_color",
                                 0,
                                 22
                             ],
@@ -367,10 +367,10 @@
                         },
                         {
                             "label": "Brightness",
-                            "showIf": "{id_right_side_light_mode} != 4",
+                            "showIf": "{id_ambient_light_mode} != 4",
                             "type": "range",
                             "content": [
-                                "id_right_side_light_brightness",
+                                "id_ambient_light_brightness",
                                 0,
                                 23
                             ],

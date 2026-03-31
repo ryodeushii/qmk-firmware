@@ -1,12 +1,7 @@
-# common rules for nuphy keyboards
-SRC += debounce.c
-
-SRC += user_kb.c
 SRC += common/ws2812-side-driver.c
-SRC += side.c side_right.c
+SRC += side.c side_logo.c
 
-# can be separated with needed fields implemented in ansi.h
-SRC += mcu_pwr.c sleep.c
+SRC += mcu_pwr.c
 
 UART_DRIVER_REQUIRED = yes
 

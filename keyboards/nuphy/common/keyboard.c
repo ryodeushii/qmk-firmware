@@ -423,7 +423,7 @@ void sleep_indicator_show(void) {
     }
 }
 
-void os_mode_led_show(void) {
+__attribute__((weak)) void os_mode_led_show(void) {
     static uint32_t sys_show_timer = 0;
     static bool     sys_show_flag  = false;
     extern bool     f_sys_show;

@@ -8,11 +8,11 @@ the Free Software Foundation, either version 2 of the License, or
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -52,45 +52,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define UART_RX_PAL_MODE 0
 
 #ifdef VIA_ENABLE
-#    define VIA_EEPROM_CUSTOM_CONFIG_SIZE 22 // sizeof via_config
+#    define VIA_EEPROM_CUSTOM_CONFIG_SIZE 23
 #else
-#    define EECONFIG_KB_DATA_SIZE 20
+#    define EECONFIG_KB_DATA_SIZE 21
 #endif
 #ifdef RGB_MATRIX_LED_COUNT
 #    undef RGB_MATRIX_LED_COUNT
 #endif
-#define RGB_MATRIX_LED_COUNT 84 // sides 6 + 6, not included here
+#define RGB_MATRIX_LED_COUNT 84
 
 #define RGB_MATRIX_SLEEP
 
 #define WS2812_SIDE_REFRESH
-// #define DEBUG_MATRIX_SCAN_RATE
-
-// NOTE: uncomment if you want to have random colors in Reactive RGB effects
-// #define RGB_MATRIX_SOLID_REACTIVE_GRADIENT_MODE
 
 #define DEBOUNCE_STEP 1
 
-// USB sleep workaround :D
 #ifdef USB_SUSPEND_WAKEUP_DELAY
 #    undef USB_SUSPEND_WAKEUP_DELAY
 #endif
 #define USB_SUSPEND_WAKEUP_DELAY 50
 
-// sleep timeout change step (minutes)
 #define SLEEP_TIMEOUT_STEP 1
-// #define LED_HITS_TO_REMEMBER 16
 #define WS2812_SPI_USE_CIRCULAR_BUFFER
 
-// debounce override - for clangd compliance - info_json.h - doesn't work most of the times
 #define DEBOUNCE 5
 #define RELEASE_DEBOUNCE (DEBOUNCE)
-// use dedicated timer for wait_us interrupts instead on ChibiOS defaulting to minimum 100us even if you sleep for 10us
 #define WAIT_US_TIMER GPTD14
 
-/*
- * DEFAULT VALUES FOR INITIAL CONFIG to allow override in user keymap
- */
 #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CYCLE_LEFT_RIGHT
 #define RGB_DEFAULT_COLOR 168
 
@@ -106,11 +94,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEFAULT_SIDE_SPEED 2
 #define DEFAULT_SIDE_RGB 1
 #define DEFAULT_SIDE_COLOR 0
-#define DEFAULT_RIGHT_SIDE_MODE 0
-#define DEFAULT_RIGHT_SIDE_BRIGHTNESS 3
-#define DEFAULT_RIGHT_SIDE_SPEED 2
-#define DEFAULT_RIGHT_SIDE_RGB 1
-#define DEFAULT_RIGHT_SIDE_COLOR 0
+#define DEFAULT_AMBIENT_MODE 0
+#define DEFAULT_AMBIENT_BRIGHTNESS 3
+#define DEFAULT_AMBIENT_SPEED 2
+#define DEFAULT_AMBIENT_RGB 1
+#define DEFAULT_AMBIENT_COLOR 0
 #define DEFAULT_DETECT_NUMLOCK 0
 #define DEFAULT_BATTERY_INDICATOR_NUMERIC 0
 #define DEFAULT_SHOW_SOCD_INDICATOR 0
@@ -118,7 +106,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define WIN_LOCK_COL 15
 #define NUM_LOCK_ROW 0
 #define NUM_LOCK_COL 14
-/*
- * END OF DEFAULT VALUES
- */
+
 #define CFW_VERSION "put_version_here"

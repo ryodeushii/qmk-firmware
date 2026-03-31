@@ -44,7 +44,7 @@ extern bool            f_bat_hold;
 
 extern void kb_config_reset(void);
 
-extern bool f_dial_sw_init_ok;
+extern bool     f_dial_sw_init_ok;
 extern uint8_t  logo_play_point;
 extern uint8_t  rf_blink_cnt;
 extern uint16_t rf_link_show_time;
@@ -454,7 +454,7 @@ void bat_percent_led(uint8_t bat_percent) {
         bat_r = 0, bat_g = 0x80, bat_b = 0; // green
     }
 
-    // NOTE: dim using g_config.battery_indicator_brightness as percentage value
+    // NOTE: dim using keyboard_config.custom.battery_indicator_brightness as percentage value
     bat_r = bat_r * keyboard_config.custom.battery_indicator_brightness / 100;
     bat_g = bat_g * keyboard_config.custom.battery_indicator_brightness / 100;
     bat_b = bat_b * keyboard_config.custom.battery_indicator_brightness / 100;
@@ -643,7 +643,7 @@ void rgb_test_show(void) {
  * @brief  side_led_show.
  */
 void side_led_show(void) {
-    static bool     flag_power_on     = 1;
+    static bool flag_power_on = 1;
 
     if (flag_power_on) {
         if (!f_dial_sw_init_ok) return;

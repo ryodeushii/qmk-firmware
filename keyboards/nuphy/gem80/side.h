@@ -20,7 +20,6 @@ enum {
 #define FIREWORK_INDEX_LEN (158)
 #define STARRY_DATA_LEN 96
 #define TIDE_DATA_LEN 120
-#define LIGHT_SPEED_MAX 4
 
 // from side.c
 #define LIGHT_SPEED_MAX 4

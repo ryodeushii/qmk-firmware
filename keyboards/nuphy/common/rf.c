@@ -24,11 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "config.h"
 
 #ifndef NUPHY_BLE_NAME
-#    define NUPHY_BLE_NAME "NuPhy Gem80"
+#    define NUPHY_BLE_NAME "NuPhy Keyboard"
 #endif
 
 #ifndef NUPHY_24G_NAME
-#    define NUPHY_24G_NAME "NuPhy Gem80 Dongle"
+#    define NUPHY_24G_NAME "NuPhy Keyboard Dongle"
 #endif
 
 USART_MGR_STRUCT Usart_Mgr;
@@ -77,7 +77,7 @@ uint8_t get_checksum(uint8_t *buf, uint8_t len);
 void    uart_receive_pro(void);
 
 static void set_ble_name_command(const char *name) {
-    static const char profile_separator[] = " - ";
+    static const char profile_separator[] = "#";
     const uint8_t     name_len            = (uint8_t)strlen(name);
     const uint8_t     suffix_len          = sizeof(profile_separator) - 1;
 
@@ -159,7 +159,7 @@ void uart_send_repeat_from_queue(void) {
 
     if (report_buff.repeat == 0 || (do_repeat && timer_elapsed32(repeat_timer) > 3)) {
         uart_send_report(report_buff.cmd, report_buff.buffer, report_buff.length);
-        // report_buff.repeat++; // FIXME: probably cause of non sleeping on conn timeout
+        // report_buff.repeat++; // NOTE: probably cause of non sleeping on conn timeout
         repeat_timer = timer_read32();
     }
 }

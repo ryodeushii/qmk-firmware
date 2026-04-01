@@ -75,8 +75,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define SLEEP_TIMEOUT_STEP 1
 #define WS2812_SPI_USE_CIRCULAR_BUFFER
 
-#define DEBOUNCE 5
-#define RELEASE_DEBOUNCE (DEBOUNCE)
 #define WAIT_US_TIMER GPTD14
 
 #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CYCLE_LEFT_RIGHT

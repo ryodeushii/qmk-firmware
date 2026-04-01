@@ -108,6 +108,7 @@ static bool sleeping     = false;
 static bool rgb_led_on  = 0;
 static bool side_led_on = 0;
 
+#if (WORK_MODE == THREE_MODE)
 static void prepare_wireless_wakeup(void) {
     if (dev_info.link_mode == LINK_USB) {
         return;
@@ -118,6 +119,7 @@ static void prepare_wireless_wakeup(void) {
     dev_info.rf_state = RF_IDLE;
     uart_send_cmd(CMD_HAND, 0, 1);
 }
+#endif
 
 void rgb_matrix_update_pwm_buffers(void);
 void clear_report_buffer_and_queue(void);

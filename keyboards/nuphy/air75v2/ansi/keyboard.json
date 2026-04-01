@@ -878,7 +878,7 @@
     "LAYOUT_ansi_84": "LAYOUT_75_ansi"
   },
   "layouts": {
-    "LAYOUT_ansi_84": {
+    "LAYOUT_75_ansi": {
       "layout": [
         {
           "label": "Esc",

@@ -284,28 +284,8 @@
                             ]
                         },
                         {
-                            "label": "Palette Color",
-                            "showIf": "{id_side_light_mode} == 0 || {id_side_light_mode} == 3",
-                            "type": "dropdown",
-                            "content": [
-                                "id_side_light_color",
-                                0,
-                                12
-                            ],
-                            "options": [
-                                "Red",
-                                "Orange",
-                                "Yellow",
-                                "Green",
-                                "Cyan",
-                                "Blue",
-                                "Purple",
-                                "Light-Purple"
-                            ]
-                        },
-                        {
                             "label": "Static Color",
-                            "showIf": "{id_side_light_mode} == 2",
+                            "showIf": "{id_side_light_mode} == 0 || {id_side_light_mode} == 2 || {id_side_light_mode} == 3",
                             "type": "color",
                             "content": [
                                 "id_side_light_static_color",
@@ -538,7 +518,7 @@
                             "content": [
                                 "id_battery_indicator_brightness",
                                 0,
-                                21
+                                31
                             ],
                             "options": [
                                 0,
@@ -551,7 +531,7 @@
                             "content": [
                                 "id_battery_indicator_numeric",
                                 0,
-                                24
+                                34
                             ]
                         },
                         {
@@ -560,7 +540,7 @@
                             "content": [
                                 "id_toggle_socd_indicator",
                                 0,
-                                25
+                                35
                             ]
                         },
                         {
@@ -569,7 +549,7 @@
                             "content": [
                                 "id_power_on_animation",
                                 0,
-                                20
+                                7
                             ]
                         },
                         {
@@ -593,7 +573,7 @@
                             "content": [
                                 "id_toggle_custom_keys_highlight",
                                 0,
-                                22
+                                32
                             ]
                         },
                         {
@@ -602,7 +582,7 @@
                             "content": [
                                 "id_toggle_detect_numlock_state",
                                 0,
-                                23
+                                33
                             ]
                         }
                     ]

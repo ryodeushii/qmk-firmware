@@ -258,7 +258,7 @@
                         },
                         {
                             "label": "Speed (higher is slower)",
-                            "showIf": "{id_side_light_mode} != 4 && {id_side_light_mode} != 2",
+                            "showIf": "{id_side_light_mode} != 4",
                             "type": "dropdown",
                             "content": [
                                 "id_side_light_speed",
@@ -274,28 +274,8 @@
                             ]
                         },
                         {
-                            "label": "Palette Color",
-                            "showIf": "{id_side_light_mode} != 4 && {id_side_light_mode} != 2",
-                            "type": "dropdown",
-                            "content": [
-                                "id_side_light_color",
-                                0,
-                                12
-                            ],
-                            "options": [
-                                "Red",
-                                "Orange",
-                                "Yellow",
-                                "Green",
-                                "Cyan",
-                                "Blue",
-                                "Purple",
-                                "Light-Purple"
-                            ]
-                        },
-                        {
                             "label": "Static Color",
-                            "showIf": "{id_side_light_mode} == 2",
+                            "showIf": "{id_side_light_mode} == 0 || {id_side_light_mode} == 2 || {id_side_light_mode} == 3",
                             "type": "color",
                             "content": [
                                 "id_side_light_static_color",
@@ -340,7 +320,7 @@
                         },
                         {
                             "label": "Speed (higher is slower)",
-                            "showIf": "{id_ambient_light_mode} != 4 && {id_ambient_light_mode} != 2",
+                            "showIf": "{id_ambient_light_mode} != 4",
                             "type": "dropdown",
                             "content": [
                                 "id_ambient_light_speed",
@@ -356,28 +336,8 @@
                             ]
                         },
                         {
-                            "label": "Palette Color",
-                            "showIf": "{id_ambient_light_mode} != 4 && {id_ambient_light_mode} != 2",
-                            "type": "dropdown",
-                            "content": [
-                                "id_ambient_light_color",
-                                0,
-                                22
-                            ],
-                            "options": [
-                                "Red",
-                                "Orange",
-                                "Yellow",
-                                "Green",
-                                "Cyan",
-                                "Blue",
-                                "Purple",
-                                "Light-Purple"
-                            ]
-                        },
-                        {
                             "label": "Static Color",
-                            "showIf": "{id_ambient_light_mode} == 2",
+                            "showIf": "{id_ambient_light_mode} == 0 || {id_ambient_light_mode} == 2 || {id_ambient_light_mode} == 3",
                             "type": "color",
                             "content": [
                                 "id_ambient_light_static_color",

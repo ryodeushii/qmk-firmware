@@ -276,6 +276,12 @@ uint8_t two_digit_ones_led(uint8_t value) {
     return ones_led_idx;
 }
 
+rgb_t nuphy_picker_hsv_rgb(uint8_t hue, uint8_t sat, uint8_t value) {
+    hsv_t hsv = {.h = hue, .s = sat, .v = value};
+
+    return hsv_to_rgb_nocie(hsv);
+}
+
 rgb_t nuphy_static_picker_rgb(uint8_t hue, uint8_t sat, uint8_t brightness) {
     hsv_t hsv = {.h = hue, .s = sat, .v = 0};
 
@@ -284,7 +290,7 @@ rgb_t nuphy_static_picker_rgb(uint8_t hue, uint8_t sat, uint8_t brightness) {
     }
 
     hsv.v = (brightness * UINT8_MAX) / 5;
-    return hsv_to_rgb_nocie(hsv);
+    return nuphy_picker_hsv_rgb(hsv.h, hsv.s, hsv.v);
 }
 
 void adjust_sleep_timeout(uint8_t dir) {

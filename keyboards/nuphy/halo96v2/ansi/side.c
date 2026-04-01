@@ -44,8 +44,8 @@ const uint8_t side_speed_table[5][5] = {
 };
 
 #define SIDE_BLINK_LIGHT 128
-const uint8_t side_light_table[5] = {
-    0, 64, 128, 192, 255,
+const uint8_t side_light_table[6] = {
+    0, 16, 32, 64, 128, 255,
 };
 
 #define SIDE_INDEX 99
@@ -86,7 +86,6 @@ static uint8_t left_overlay_b      = 0;
 #define halo_mode_b keyboard_config.lights.ambient_mode
 #define halo_brightness keyboard_config.lights.side_brightness
 #define halo_speed keyboard_config.lights.side_speed
-#define halo_rgb keyboard_config.lights.side_rgb
 #define halo_color keyboard_config.lights.side_color
 #define halo_power_show keyboard_config.common.power_on_animation
 #define halo_caps_indicator keyboard_config.common.caps_indicator_type
@@ -116,7 +115,7 @@ void suspend_wakeup_init_kb(void) {
  */
 void light_level_control(uint8_t brighten) {
     if (brighten) {
-        if (halo_brightness == 4) {
+        if (halo_brightness == 5) {
             return;
         } else
             halo_brightness++;
@@ -160,38 +159,26 @@ void side_speed_control(uint8_t dir) {
  */
 uint8_t light_color_max = 8;
 void    side_color_control(uint8_t dir) {
+    if (halo_mode_a == SIDE_WAVE || halo_mode_a == SIDE_BREATH || halo_mode_a == SIDE_STATIC) {
+        keyboard_config.lights.side_static_color.hue += dir ? RGB_MATRIX_HUE_STEP : (uint8_t)(-RGB_MATRIX_HUE_STEP);
+        save_config_to_eeprom();
+        return;
+    }
+
     if (halo_mode_a == SIDE_NEW) {
         light_color_max = 3;
     } else
         light_color_max = 8;
-    if ((halo_mode_a != SIDE_WAVE) && (halo_mode_a != SIDE_BREATH)) {
-        if (halo_rgb) {
-            halo_rgb   = 0;
-            halo_color = 0;
-        }
-    }
 
     if (dir) {
-        if (halo_rgb) {
-            halo_rgb   = 0;
+        halo_color++;
+        if (halo_color >= light_color_max) {
             halo_color = 0;
-        } else {
-            halo_color++;
-            if (halo_color >= light_color_max) {
-                halo_rgb   = 1;
-                halo_color = 0;
-            }
         }
     } else {
-        if (halo_rgb) {
-            halo_rgb   = 0;
+        halo_color--;
+        if (halo_color >= light_color_max) {
             halo_color = light_color_max - 1;
-        } else {
-            halo_color--;
-            if (halo_color >= light_color_max) {
-                halo_rgb   = 1;
-                halo_color = 0;
-            }
         }
     }
     save_config_to_eeprom();
@@ -514,29 +501,18 @@ static void side_wave_mode_show(void) {
         side_play_cnt -= side_speed_table[halo_mode_a][halo_speed];
     if (side_play_cnt > 20) side_play_cnt = 0;
 
-    if (halo_rgb)
-        light_point_playing(0, 1, FLOW_COLOR_TAB_LEN, &side_play_point);
-    else
-        light_point_playing(0, 1, WAVE_TAB_LEN, &side_play_point);
+    light_point_playing(0, 1, WAVE_TAB_LEN, &side_play_point);
 
     play_index = side_play_point;
     if (side_line == 0) set_all_side_off();
     for (int i = 0; i <= side_line - 5; i++) {
-        if (halo_rgb) {
-            r_temp = flow_rainbow_color_tab[play_index][0];
-            g_temp = flow_rainbow_color_tab[play_index][1] * 0.3;
-            b_temp = flow_rainbow_color_tab[play_index][2] * 0.4;
+        rgb_t rgb = nuphy_picker_hsv_rgb(keyboard_config.lights.side_static_color.hue, keyboard_config.lights.side_static_color.sat, 255);
+        r_temp    = rgb.r;
+        g_temp    = rgb.g;
+        b_temp    = rgb.b;
 
-            light_point_playing(1, 5, FLOW_COLOR_TAB_LEN, &play_index);
-
-        } else {
-            r_temp = side_color_lib[halo_color][0];
-            g_temp = side_color_lib[halo_color][1];
-            b_temp = side_color_lib[halo_color][2];
-
-            light_point_playing(1, 5, WAVE_TAB_LEN, &play_index);
-            count_rgb_light(wave_data_tab[play_index]);
-        }
+        light_point_playing(1, 5, WAVE_TAB_LEN, &play_index);
+        count_rgb_light(wave_data_tab[play_index]);
 
         count_rgb_light(side_light_table[halo_brightness]);
 
@@ -545,18 +521,12 @@ static void side_wave_mode_show(void) {
         if (i == 40) {
             if (f_side_flag == 0x1f) {
                 for (; i < 45; i++) {
-                    if (halo_rgb) {
-                        r_temp = flow_rainbow_color_tab[play_index_1][0];
-                        g_temp = flow_rainbow_color_tab[play_index_1][1] * 0.3;
-                        b_temp = flow_rainbow_color_tab[play_index_1][2] * 0.4;
-                        light_point_playing(1, 5, FLOW_COLOR_TAB_LEN, &play_index_1);
-                    } else {
-                        r_temp = side_color_lib[halo_color][0];
-                        g_temp = side_color_lib[halo_color][1];
-                        b_temp = side_color_lib[halo_color][2];
-                        light_point_playing(1, 5, WAVE_TAB_LEN, &play_index_1);
-                        count_rgb_light(wave_data_tab[play_index_1]);
-                    }
+                    rgb_t rgb = nuphy_picker_hsv_rgb(keyboard_config.lights.side_static_color.hue, keyboard_config.lights.side_static_color.sat, 255);
+                    r_temp    = rgb.r;
+                    g_temp    = rgb.g;
+                    b_temp    = rgb.b;
+                    light_point_playing(1, 5, WAVE_TAB_LEN, &play_index_1);
+                    count_rgb_light(wave_data_tab[play_index_1]);
                     count_rgb_light(side_light_table[halo_brightness]);
                     rgb_matrix_set_color(side_led_index_tab[i], r_temp, g_temp, b_temp);
                 }
@@ -649,7 +619,6 @@ static void side_spectrum_mode_show(void) {
 
 static void side_breathe_mode_show(void) {
     static uint8_t play_point = 0;
-    static uint8_t color      = 0;
 
     if (side_play_cnt <= side_speed_table[halo_mode_a][halo_speed])
         return;
@@ -661,19 +630,10 @@ static void side_breathe_mode_show(void) {
 
     light_point_playing(0, 1, BREATHE_TAB_LEN, &play_point);
 
-    if (halo_rgb) {
-        if (play_point == 0) {
-            if (++color >= LIGHT_COLOR_MAX) color = 0;
-        }
-        r_temp = side_color_lib[color][0];
-        g_temp = side_color_lib[color][1];
-        b_temp = side_color_lib[color][2];
-
-    } else {
-        r_temp = side_color_lib[halo_color][0];
-        g_temp = side_color_lib[halo_color][1];
-        b_temp = side_color_lib[halo_color][2];
-    }
+    rgb_t rgb = nuphy_picker_hsv_rgb(keyboard_config.lights.side_static_color.hue, keyboard_config.lights.side_static_color.sat, 255);
+    r_temp    = rgb.r;
+    g_temp    = rgb.g;
+    b_temp    = rgb.b;
     count_rgb_light(breathe_data_tab[play_point]);
     count_rgb_light(side_light_table[halo_brightness]);
 

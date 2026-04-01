@@ -50,37 +50,11 @@ void ambient_speed_control(uint8_t fast) {
 }
 
 void ambient_color_control(uint8_t dir) {
-    if (keyboard_config.lights.ambient_mode != SIDE_WAVE) {
-        if (keyboard_config.lights.ambient_rgb) {
-            keyboard_config.lights.ambient_rgb   = 0;
-            keyboard_config.lights.ambient_color = 0;
-        }
+    if (keyboard_config.lights.ambient_mode == SIDE_WAVE || keyboard_config.lights.ambient_mode == SIDE_BREATH || keyboard_config.lights.ambient_mode == SIDE_STATIC) {
+        keyboard_config.lights.ambient_static_color.hue += dir ? RGB_MATRIX_HUE_STEP : (uint8_t)(-RGB_MATRIX_HUE_STEP);
+        save_config_to_eeprom();
+        return;
     }
-
-    if (dir) {
-        if (keyboard_config.lights.ambient_rgb) {
-            keyboard_config.lights.ambient_rgb   = 0;
-            keyboard_config.lights.ambient_color = 0;
-        } else {
-            keyboard_config.lights.ambient_color++;
-            if (keyboard_config.lights.ambient_color >= LIGHT_COLOR_MAX) {
-                keyboard_config.lights.ambient_rgb   = 1;
-                keyboard_config.lights.ambient_color = 0;
-            }
-        }
-    } else {
-        if (keyboard_config.lights.ambient_rgb) {
-            keyboard_config.lights.ambient_rgb   = 0;
-            keyboard_config.lights.ambient_color = LIGHT_COLOR_MAX - 1;
-        } else {
-            keyboard_config.lights.ambient_color--;
-            if (keyboard_config.lights.ambient_color >= LIGHT_COLOR_MAX) {
-                keyboard_config.lights.ambient_rgb   = 1;
-                keyboard_config.lights.ambient_color = 0;
-            }
-        }
-    }
-    save_config_to_eeprom();
 }
 
 void ambient_mode_control(uint8_t dir) {
@@ -139,30 +113,20 @@ static void logo_wave_mode_show(void) {
     if (logo_play_cnt > 20) logo_play_cnt = 0;
 
     //------------------------------
-    if (keyboard_config.lights.ambient_rgb)
-        logo_light_point_playing(0, 1, FLOW_COLOR_TAB_LEN, &logo_play_point);
-    else
-        logo_light_point_playing(0, 1, WAVE_TAB_LEN, &logo_play_point);
+    logo_light_point_playing(0, 1, WAVE_TAB_LEN, &logo_play_point);
 
     play_index = logo_play_point;
 
     logo_count_rgb_light(side_light_table[keyboard_config.lights.ambient_brightness]);
 
     for (int i = 0; i < LOGO_LINE; i++) {
-        if (keyboard_config.lights.ambient_rgb) {
-            r_temp = flow_rainbow_color_tab[play_index][0];
-            g_temp = flow_rainbow_color_tab[play_index][1];
-            b_temp = flow_rainbow_color_tab[play_index][2];
+        rgb_t rgb = nuphy_picker_hsv_rgb(keyboard_config.lights.ambient_static_color.hue, keyboard_config.lights.ambient_static_color.sat, 255);
+        r_temp    = rgb.r;
+        g_temp    = rgb.g;
+        b_temp    = rgb.b;
 
-            logo_light_point_playing(1, 5, FLOW_COLOR_TAB_LEN, &play_index);
-        } else {
-            r_temp = side_color_lib[keyboard_config.lights.ambient_color][0];
-            g_temp = side_color_lib[keyboard_config.lights.ambient_color][1];
-            b_temp = side_color_lib[keyboard_config.lights.ambient_color][2];
-
-            logo_light_point_playing(1, 12, WAVE_TAB_LEN, &play_index);
-            logo_count_rgb_light(wave_data_tab[play_index]);
-        }
+        logo_light_point_playing(1, 12, WAVE_TAB_LEN, &play_index);
+        logo_count_rgb_light(wave_data_tab[play_index]);
 
         logo_count_rgb_light(side_light_table[keyboard_config.lights.ambient_brightness]);
 
@@ -201,9 +165,11 @@ static void logo_breathe_mode_show(void) {
 
     logo_light_point_playing(0, 1, BREATHE_TAB_LEN, &play_point);
 
-    r_temp = side_color_lib[keyboard_config.lights.ambient_color][0] >> 2;
-    g_temp = side_color_lib[keyboard_config.lights.ambient_color][1] >> 2;
-    b_temp = side_color_lib[keyboard_config.lights.ambient_color][2] >> 2;
+    rgb_t rgb = nuphy_picker_hsv_rgb(keyboard_config.lights.ambient_static_color.hue, keyboard_config.lights.ambient_static_color.sat, 255);
+
+    r_temp = rgb.r >> 2;
+    g_temp = rgb.g >> 2;
+    b_temp = rgb.b >> 2;
 
     logo_count_rgb_light(breathe_data_tab[play_point]);
     logo_count_rgb_light(side_light_table[keyboard_config.lights.ambient_brightness]);

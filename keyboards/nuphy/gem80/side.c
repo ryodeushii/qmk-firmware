@@ -121,40 +121,11 @@ void side_speed_control(uint8_t fast) {
  */
 
 void side_color_control(uint8_t dir) {
-    if (keyboard_config.lights.side_mode != SIDE_WAVE) {
-        if (keyboard_config.lights.side_rgb) {
-            keyboard_config.lights.side_rgb   = 0;
-            keyboard_config.lights.side_color = 0;
-        }
+    if (keyboard_config.lights.side_mode == SIDE_WAVE || keyboard_config.lights.side_mode == SIDE_BREATH || keyboard_config.lights.side_mode == SIDE_STATIC) {
+        keyboard_config.lights.side_static_color.hue += dir ? RGB_MATRIX_HUE_STEP : (uint8_t)(-RGB_MATRIX_HUE_STEP);
+        save_config_to_eeprom();
+        return;
     }
-
-    if (dir) {
-        if (keyboard_config.lights.side_rgb) {
-            keyboard_config.lights.side_rgb = 0;
-
-            keyboard_config.lights.side_color = 0;
-
-        } else {
-            keyboard_config.lights.side_color++;
-            if (keyboard_config.lights.side_color >= LIGHT_COLOR_MAX) {
-                keyboard_config.lights.side_rgb   = 1;
-                keyboard_config.lights.side_color = 0;
-            }
-        }
-    } else {
-        if (keyboard_config.lights.side_rgb) {
-            keyboard_config.lights.side_rgb   = 0;
-            keyboard_config.lights.side_color = LIGHT_COLOR_MAX - 1;
-
-        } else {
-            keyboard_config.lights.side_color--;
-            if (keyboard_config.lights.side_color >= LIGHT_COLOR_MAX) {
-                keyboard_config.lights.side_rgb   = 1;
-                keyboard_config.lights.side_color = 0;
-            }
-        }
-    }
-    save_config_to_eeprom();
 }
 
 /**
@@ -244,31 +215,20 @@ static void side_wave_mode_show(void) {
     if (side_play_cnt > 20) side_play_cnt = 0;
 
     //------------------------------
-    if (keyboard_config.lights.side_rgb)
-        light_point_playing(0, 1, FLOW_COLOR_TAB_LEN, &side_play_point);
-
-    else
-        light_point_playing(0, 2, WAVE_TAB_LEN, &side_play_point);
+    light_point_playing(0, 2, WAVE_TAB_LEN, &side_play_point);
 
     play_index = side_play_point;
 
     count_rgb_light(side_light_table[keyboard_config.lights.side_brightness]);
 
     for (int i = 0; i < SIDE_LINE; i++) {
-        if (keyboard_config.lights.side_rgb) {
-            r_temp = flow_rainbow_color_tab[play_index][0];
-            g_temp = flow_rainbow_color_tab[play_index][1];
-            b_temp = flow_rainbow_color_tab[play_index][2];
+        rgb_t rgb = nuphy_picker_hsv_rgb(keyboard_config.lights.side_static_color.hue, keyboard_config.lights.side_static_color.sat, 255);
+        r_temp    = rgb.r;
+        g_temp    = rgb.g;
+        b_temp    = rgb.b;
 
-            light_point_playing(1, 8, FLOW_COLOR_TAB_LEN, &play_index);
-        } else {
-            r_temp = side_color_lib[keyboard_config.lights.side_color][0];
-            g_temp = side_color_lib[keyboard_config.lights.side_color][1];
-            b_temp = side_color_lib[keyboard_config.lights.side_color][2];
-
-            light_point_playing(1, 12, WAVE_TAB_LEN, &play_index);
-            count_rgb_light(wave_data_tab[play_index]);
-        }
+        light_point_playing(1, 12, WAVE_TAB_LEN, &play_index);
+        count_rgb_light(wave_data_tab[play_index]);
         count_rgb_light(side_light_table[keyboard_config.lights.side_brightness]);
 
         side_rgb_set_color(side_led_index_tab[i], r_temp >> 2, g_temp >> 2, b_temp >> 2);
@@ -314,9 +274,11 @@ static void side_breathe_mode_show(void) {
 
     light_point_playing(0, 1, BREATHE_TAB_LEN, &play_point);
 
-    r_temp = side_color_lib[keyboard_config.lights.side_color][0] >> 2;
-    g_temp = side_color_lib[keyboard_config.lights.side_color][1] >> 2;
-    b_temp = side_color_lib[keyboard_config.lights.side_color][2] >> 2;
+    rgb_t rgb = nuphy_picker_hsv_rgb(keyboard_config.lights.side_static_color.hue, keyboard_config.lights.side_static_color.sat, 255);
+
+    r_temp = rgb.r >> 2;
+    g_temp = rgb.g >> 2;
+    b_temp = rgb.b >> 2;
 
     count_rgb_light(breathe_data_tab[play_point]);
     count_rgb_light(side_light_table[keyboard_config.lights.side_brightness]);

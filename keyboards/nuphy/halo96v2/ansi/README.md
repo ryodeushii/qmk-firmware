@@ -38,3 +38,19 @@ Enter the bootloader in one way:
 80-100 green
 ```
 
+## Shared Nuphy Common Path
+
+This keyboard uses the shared implementation in `keyboards/nuphy/common` for:
+
+- keyboard startup and housekeeping flow
+- shared key processing and custom key handling
+- config storage/defaults
+- VIA helper logic
+- debounce handling
+- RF helpers and report queueing
+- sleep/wake handling
+- MCU power-management through the board-local `mcu_pwr.c` wrapper
+
+Halo96v2 keeps board-local files for matrix scanning, Halo-specific RGB/LED driver layout, and keyboard metadata.
+
+This keyboard tree is aligned with upstream QMK `0.32.7`.

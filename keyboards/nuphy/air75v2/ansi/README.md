@@ -43,3 +43,19 @@ Enter the bootloader in one way:
 Main: STM32F072RBT6 [description](https://www.st.com/en/microcontrollers-microprocessors/stm32f072rb.html)
 Wireless: NRF52831 [description](https://www.nordicsemi.com/Products/nRF52832)
 
+## Shared Nuphy Common Path
+
+This keyboard now uses the shared implementation in `keyboards/nuphy/common` for:
+
+- keyboard startup and housekeeping flow
+- shared key processing and custom key handling
+- config storage/defaults
+- VIA helper logic
+- debounce handling
+- RF helpers and report queueing
+- sleep/wake handling
+- MCU power-management through the board-local `mcu_pwr.c` wrapper
+
+Air75v2 keeps board-local files for matrix scanning, board lighting layout, side/logo lighting behavior, and keyboard metadata.
+
+This keyboard was also updated against upstream QMK `0.32.7` together with the shared/common migration.

@@ -58,6 +58,25 @@ Wireless: NRF52832 [description](https://www.nordicsemi.com/Products/nRF52832)
 
 Fun fact: wireless MCU is almost 2x times better (more performant) than main MCU :smile:
 
+## Shared Nuphy Common Path
+
+Gem80 is the main reference keyboard for the shared implementation in `keyboards/nuphy/common`.
+
+The shared layer now covers:
+
+- keyboard startup and housekeeping flow
+- shared key processing and custom key handling
+- config storage/defaults
+- VIA helper logic
+- debounce handling
+- RF helpers and report queueing
+- sleep/wake handling
+- MCU power-management through board-local wrapper files
+
+Gem80 still keeps board-local files for matrix scanning, Gem80-specific lighting/layout behavior, and keyboard metadata.
+
+This keyboard tree is aligned with upstream QMK `0.32.7`.
+
 
 
 # Latency tests
@@ -95,5 +114,4 @@ Maybe at some point [this pr](https://github.com/joelspadin/keyboard-latency-tes
 
 1. Patch to use tap-dance (1 tap - caps lock, 2 taps - cmd + space - to change language in majority of OS - useful if you use caps lock in macOS to change language to keep similar behavior in Windows/Linux): [link](https://gist.github.com/ryodeushii/2587f877cbe81e9d9c666a2d8066e416)
 2. Patch to apply small perf tweak (to reduce latency by 0.1-0.18ms) can be found [here](https://gist.github.com/ryodeushii/4cffcb6a6f427c023a0d0007d173ff2b)
-
 

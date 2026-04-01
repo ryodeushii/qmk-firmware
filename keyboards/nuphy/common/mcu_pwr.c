@@ -108,6 +108,17 @@ static bool sleeping     = false;
 static bool rgb_led_on  = 0;
 static bool side_led_on = 0;
 
+static void prepare_wireless_wakeup(void) {
+    if (dev_info.link_mode == LINK_USB) {
+        return;
+    }
+
+    // Force the first wake key through the RF queue until the module reports
+    // that the wireless link is live again.
+    dev_info.rf_state = RF_IDLE;
+    uart_send_cmd(CMD_HAND, 0, 1);
+}
+
 void rgb_matrix_update_pwm_buffers(void);
 void clear_report_buffer_and_queue(void);
 void pwr_side_led_off(void);
@@ -229,7 +240,7 @@ void exit_deep_sleep(void) {
     if (tim6_enabled) TIM_Cmd(TIM6, ENABLE);
 
 #if (WORK_MODE == THREE_MODE)
-    uart_send_cmd(CMD_HAND, 0, 1);
+    prepare_wireless_wakeup();
 #endif
     if (dev_info.link_mode == LINK_USB) {
         if (USB_DRIVER.state == USB_SUSPENDED) {
@@ -261,7 +272,7 @@ void exit_light_sleep(void) {
 
     led_pwr_wake_handle();
 #if (WORK_MODE == THREE_MODE)
-    uart_send_cmd(CMD_HAND, 0, 1);
+    prepare_wireless_wakeup();
 #endif
     if (dev_info.link_mode == LINK_USB) {
         if (USB_DRIVER.state == USB_SUSPENDED) {

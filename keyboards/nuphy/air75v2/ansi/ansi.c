@@ -114,30 +114,30 @@ void gpio_init(void) {
     pwr_rgb_led_on();
     pwr_side_led_on();
 
-    setPinOutput(DRIVER_SIDE_DI_PIN);
-    writePinLow(DRIVER_SIDE_DI_PIN);
+    gpio_set_pin_output(DRIVER_SIDE_DI_PIN);
+    gpio_write_pin_low(DRIVER_SIDE_DI_PIN);
 
 #if (WORK_MODE == THREE_MODE)
-    setPinOutput(NRF_WAKEUP_PIN);
-    writePinHigh(NRF_WAKEUP_PIN);
+    gpio_set_pin_output(NRF_WAKEUP_PIN);
+    gpio_write_pin_high(NRF_WAKEUP_PIN);
 
-    setPinInputHigh(NRF_TEST_PIN);
+    gpio_set_pin_input_high(NRF_TEST_PIN);
 
-    setPinOutput(NRF_RESET_PIN);
-    writePinLow(NRF_RESET_PIN);
+    gpio_set_pin_output(NRF_RESET_PIN);
+    gpio_write_pin_low(NRF_RESET_PIN);
     wait_ms(50);
-    writePinHigh(NRF_RESET_PIN);
+    gpio_write_pin_high(NRF_RESET_PIN);
 
-    setPinInputHigh(DEVICE_MODE_PIN);
+    gpio_set_pin_input_high(DEVICE_MODE_PIN);
 #endif
-    setPinInputHigh(OS_MODE_PIN);
+    gpio_set_pin_input_high(OS_MODE_PIN);
 
-    setPinOutput(DC_BOOST_PIN);
-    writePinHigh(DC_BOOST_PIN);
+    gpio_set_pin_output(DC_BOOST_PIN);
+    gpio_write_pin_high(DC_BOOST_PIN);
 
-    setPinOutput(DRIVER_MATRIX_CS_PIN);
-    writePinLow(DRIVER_MATRIX_CS_PIN);
+    gpio_set_pin_output(DRIVER_MATRIX_CS_PIN);
+    gpio_write_pin_low(DRIVER_MATRIX_CS_PIN);
 
-    setPinOutput(DRIVER_SIDE_CS_PIN);
-    writePinLow(DRIVER_SIDE_CS_PIN);
+    gpio_set_pin_output(DRIVER_SIDE_CS_PIN);
+    gpio_write_pin_low(DRIVER_SIDE_CS_PIN);
 }

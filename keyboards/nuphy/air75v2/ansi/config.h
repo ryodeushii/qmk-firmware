@@ -82,6 +82,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CYCLE_LEFT_RIGHT
 #define RGB_DEFAULT_COLOR 168
 
+#define NUPHY_BLE_NAME "NuPhy Air75 V2"
+#define NUPHY_24G_NAME "NuPhy Air75 V2 Dongle"
+
 #define DEFAULT_SLEEP_TOGGLE true
 #define DEFAULT_USB_SLEEP_TOGGLE false
 #define DEFAULT_DEEP_SLEEP_TOGGLE true

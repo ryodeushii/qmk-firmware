@@ -16,11 +16,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <stdint.h>
+#include <string.h>
 #include "rf_driver.h"
 #include "uart.h" // qmk uart.h
 #include "keys.h"
 #include "rf_queue.h"
 #include "config.h"
+
+#ifndef NUPHY_BLE_NAME
+#    define NUPHY_BLE_NAME "NuPhy Gem80"
+#endif
+
+#ifndef NUPHY_24G_NAME
+#    define NUPHY_24G_NAME "NuPhy Gem80 Dongle"
+#endif
 
 USART_MGR_STRUCT Usart_Mgr;
 // clang-format off
@@ -67,6 +76,33 @@ void    uart_send_bytes(uint8_t *Buffer, uint32_t Length);
 uint8_t get_checksum(uint8_t *buf, uint8_t len);
 void    uart_receive_pro(void);
 
+static void set_ble_name_command(const char *name) {
+    static const char profile_separator[] = " - ";
+    const uint8_t     name_len            = (uint8_t)strlen(name);
+    const uint8_t     suffix_len          = sizeof(profile_separator) - 1;
+
+    Usart_Mgr.TXDBuf[3] = name_len + suffix_len + 2;
+    Usart_Mgr.TXDBuf[4] = 1;
+    Usart_Mgr.TXDBuf[5] = name_len + suffix_len;
+    memcpy(&Usart_Mgr.TXDBuf[6], name, name_len);
+    memcpy(&Usart_Mgr.TXDBuf[6 + name_len], profile_separator, suffix_len);
+    Usart_Mgr.TXDBuf[6 + name_len + suffix_len] = get_checksum(Usart_Mgr.TXDBuf + 4, Usart_Mgr.TXDBuf[3]);
+}
+
+static void set_utf16le_name_command(uint8_t cmd_type, const char *name) {
+    const uint8_t name_len = (uint8_t)strlen(name);
+
+    Usart_Mgr.TXDBuf[3] = name_len * 2 + 2;
+    Usart_Mgr.TXDBuf[4] = Usart_Mgr.TXDBuf[3];
+    Usart_Mgr.TXDBuf[5] = cmd_type;
+
+    for (uint8_t i = 0; i < name_len; i++) {
+        Usart_Mgr.TXDBuf[6 + i * 2] = name[i];
+    }
+
+    Usart_Mgr.TXDBuf[6 + name_len * 2] = get_checksum(Usart_Mgr.TXDBuf + 4, Usart_Mgr.TXDBuf[3]);
+}
+
 /**
  * @brief Get variable uart key send repeat interval.
  */
@@ -90,7 +126,6 @@ static uint8_t get_repeat_interval(void) {
 void clear_report_buffer(void) {
     if (report_buff_a.cmd) memset(&report_buff_a.cmd, 0, sizeof(report_buffer_t));
     if (report_buff_b.cmd) memset(&report_buff_b.cmd, 0, sizeof(report_buffer_t));
-    rf_queue.clear();
 }
 
 /**
@@ -365,48 +400,12 @@ uint8_t uart_send_cmd(uint8_t cmd, uint8_t wait_ack, uint8_t delayms) {
         }
 
         case CMD_SET_NAME: {
-            Usart_Mgr.TXDBuf[3]  = 14;                                                      // data len
-            Usart_Mgr.TXDBuf[4]  = 1;                                                       // type
-            Usart_Mgr.TXDBuf[5]  = 12;                                                      // data: ble name len
-            Usart_Mgr.TXDBuf[6]  = 'N';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[7]  = 'u';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[8]  = 'P';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[9]  = 'h';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[10] = 'y';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[11] = ' ';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[12] = 'G';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[13] = 'e';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[14] = 'm';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[15] = '8';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[16] = '0';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[17] = '-';                                                     // data: ble name
-            Usart_Mgr.TXDBuf[18] = get_checksum(Usart_Mgr.TXDBuf + 4, Usart_Mgr.TXDBuf[3]); // sum
+            set_ble_name_command(NUPHY_BLE_NAME);
             break;
         }
 
         case CMD_SET_24G_NAME: {
-            Usart_Mgr.TXDBuf[3]  = 38;
-            Usart_Mgr.TXDBuf[4]  = 38;
-            Usart_Mgr.TXDBuf[5]  = 3;
-            Usart_Mgr.TXDBuf[6]  = 'N';
-            Usart_Mgr.TXDBuf[8]  = 'u';
-            Usart_Mgr.TXDBuf[10] = 'P';
-            Usart_Mgr.TXDBuf[12] = 'h';
-            Usart_Mgr.TXDBuf[14] = 'y';
-            Usart_Mgr.TXDBuf[16] = ' ';
-            Usart_Mgr.TXDBuf[18] = 'G';
-            Usart_Mgr.TXDBuf[20] = 'e';
-            Usart_Mgr.TXDBuf[22] = 'm';
-            Usart_Mgr.TXDBuf[24] = '8';
-            Usart_Mgr.TXDBuf[26] = '0';
-            Usart_Mgr.TXDBuf[28] = ' ';
-            Usart_Mgr.TXDBuf[30] = 'D';
-            Usart_Mgr.TXDBuf[32] = 'o';
-            Usart_Mgr.TXDBuf[34] = 'n';
-            Usart_Mgr.TXDBuf[36] = 'g';
-            Usart_Mgr.TXDBuf[38] = 'l';
-            Usart_Mgr.TXDBuf[40] = 'e';
-            Usart_Mgr.TXDBuf[42] = get_checksum(Usart_Mgr.TXDBuf + 4, Usart_Mgr.TXDBuf[3]); // sum
+            set_utf16le_name_command(3, NUPHY_24G_NAME);
             break;
         }
 
@@ -476,9 +475,9 @@ void dev_sts_sync(void) {
     if (f_rf_reset) {
         f_rf_reset = 0;
         wait_ms(100);
-        writePinLow(NRF_RESET_PIN);
+        gpio_write_pin_low(NRF_RESET_PIN);
         wait_ms(50);
-        writePinHigh(NRF_RESET_PIN);
+        gpio_write_pin_high(NRF_RESET_PIN);
         wait_ms(50);
     } else if (f_send_channel) {
         f_send_channel = 0;
@@ -543,11 +542,11 @@ void uart_send_bytes(uint8_t *Buffer, uint32_t Length) {
     if (timer_elapsed32(Usart_Mgr.TXLastCmdTm) < 1) {
         wait_ms(1);
     }
-    writePinLow(NRF_WAKEUP_PIN);
+    gpio_write_pin_low(NRF_WAKEUP_PIN);
     wait_us(50);
     uart_transmit(Buffer, Length);
     wait_us(50 + Length * 30);
-    writePinHigh(NRF_WAKEUP_PIN);
+    gpio_write_pin_high(NRF_WAKEUP_PIN);
     wait_us(200);
     Usart_Mgr.TXLastCmdTm = timer_read32();
 }

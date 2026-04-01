@@ -161,13 +161,13 @@ void dial_sw_scan(void) {
     dial_scan_timer = timer_read32();
 
 #if (WORK_MODE == THREE_MODE)
-    setPinInputHigh(DEVICE_MODE_PIN);
+    gpio_set_pin_input_high(DEVICE_MODE_PIN);
 #endif
-    setPinInputHigh(OS_MODE_PIN);
+    gpio_set_pin_input_high(OS_MODE_PIN);
 #if (WORK_MODE == THREE_MODE)
-    if (readPin(DEVICE_MODE_PIN)) dial_scan |= 0X01;
+    if (gpio_read_pin(DEVICE_MODE_PIN)) dial_scan |= 0X01;
 #endif
-    if (readPin(OS_MODE_PIN)) dial_scan |= 0X02;
+    if (gpio_read_pin(OS_MODE_PIN)) dial_scan |= 0X02;
 
     if (dial_save != dial_scan) {
         break_all_key();
@@ -219,21 +219,21 @@ void dial_sw_fast_scan(void) {
     uint8_t dial_check_sys = 0;
     uint8_t debounce       = 0;
 #if (WORK_MODE == THREE_MODE)
-    setPinInputHigh(DEVICE_MODE_PIN);
+    gpio_set_pin_input_high(DEVICE_MODE_PIN);
 #endif
-    setPinInputHigh(OS_MODE_PIN);
+    gpio_set_pin_input_high(OS_MODE_PIN);
 
     // Debounce to get a stable state
     for (debounce = 0; debounce < 10; debounce++) {
         dial_scan_dev = 0;
         dial_scan_sys = 0;
 #if (WORK_MODE == THREE_MODE)
-        if (readPin(DEVICE_MODE_PIN))
+        if (gpio_read_pin(DEVICE_MODE_PIN))
             dial_scan_dev = 0x01;
         else
             dial_scan_dev = 0;
 #endif
-        if (readPin(OS_MODE_PIN))
+        if (gpio_read_pin(OS_MODE_PIN))
             dial_scan_sys = 0x01;
         else
             dial_scan_sys = 0;

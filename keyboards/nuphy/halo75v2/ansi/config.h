@@ -122,6 +122,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_position_mode
 #define RGB_DEFAULT_COLOR 168
 
+#define NUPHY_BLE_NAME "NuPhy Halo75 V2"
+#define NUPHY_24G_NAME "NuPhy Halo75 V2 Dongle"
+
 #define DEFAULT_SLEEP_TOGGLE true
 #define DEFAULT_USB_SLEEP_TOGGLE false
 #define DEFAULT_DEEP_SLEEP_TOGGLE true

@@ -542,12 +542,12 @@ void bat_led_show(void) {
  * @brief  device_reset_show.
  */
 void device_reset_show(void) {
-    writePinHigh(DC_BOOST_PIN);
-    setPinOutput(DRIVER_SIDE_CS_PIN);
-    setPinOutput(DRIVER_MATRIX_CS_PIN);
+    gpio_write_pin_high(DC_BOOST_PIN);
+    gpio_set_pin_output(DRIVER_SIDE_CS_PIN);
+    gpio_set_pin_output(DRIVER_MATRIX_CS_PIN);
 
-    writePinLow(DRIVER_SIDE_CS_PIN);
-    writePinLow(DRIVER_MATRIX_CS_PIN);
+    gpio_write_pin_low(DRIVER_SIDE_CS_PIN);
+    gpio_write_pin_low(DRIVER_MATRIX_CS_PIN);
 
     for (int blink_cnt = 0; blink_cnt < 3; blink_cnt++) {
         rgb_matrix_set_color_all(0x10, 0x10, 0x10);
@@ -587,9 +587,9 @@ void device_reset_init(void) {
 }
 
 void rgb_test_show(void) {
-    writePinHigh(DC_BOOST_PIN);
-    setPinOutput(DRIVER_MATRIX_CS_PIN);
-    writePinLow(DRIVER_MATRIX_CS_PIN);
+    gpio_write_pin_high(DC_BOOST_PIN);
+    gpio_set_pin_output(DRIVER_MATRIX_CS_PIN);
+    gpio_write_pin_low(DRIVER_MATRIX_CS_PIN);
 
     rgb_matrix_set_color_all(0xFF, 0x00, 0x00);
     for (int i = 0; i < SIDE_LED_NUM; i++)

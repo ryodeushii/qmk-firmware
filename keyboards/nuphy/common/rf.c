@@ -31,16 +31,17 @@ USART_MGR_STRUCT Usart_Mgr;
 #define RX_DAT   Usart_Mgr.RXDBuf[4]
 // clang-format on
 
-bool     f_uart_ack        = 0;
-bool     f_rf_read_data_ok = 0;
-bool     f_rf_sts_sysc_ok  = 0;
-bool     f_rf_new_adv_ok   = 0;
-bool     f_rf_reset        = 0;
-bool     f_rf_hand_ok      = 0;
-bool     f_goto_sleep      = 0;
-bool     f_wakeup_prepare  = 0;
-uint16_t rf_link_show_time = 0;
-uint16_t rf_linking_time   = 0;
+bool     f_uart_ack          = 0;
+bool     f_rf_read_data_ok   = 0;
+bool     f_rf_sts_sysc_ok    = 0;
+bool     f_rf_new_adv_ok     = 0;
+bool     f_rf_reset          = 0;
+bool     f_rf_hand_ok        = 0;
+bool     f_goto_sleep        = 0;
+bool     f_wakeup_prepare    = 0;
+bool     f_rf_wakeup_pending = 0;
+uint16_t rf_link_show_time   = 0;
+uint16_t rf_linking_time     = 0;
 
 uint8_t  func_tab[32]     = {0};
 uint8_t  sync_lost        = 0;
@@ -90,7 +91,6 @@ static uint8_t get_repeat_interval(void) {
 void clear_report_buffer(void) {
     if (report_buff_a.cmd) memset(&report_buff_a.cmd, 0, sizeof(report_buffer_t));
     if (report_buff_b.cmd) memset(&report_buff_b.cmd, 0, sizeof(report_buffer_t));
-    rf_queue.clear();
 }
 
 /**
@@ -218,6 +218,10 @@ void rf_protocol_receive(void) {
                     error_cnt = 0;
 
                     dev_info.rf_state = Usart_Mgr.RXDBuf[5];
+
+                    if (dev_info.rf_state == RF_CONNECT) {
+                        f_rf_wakeup_pending = 0;
+                    }
 
                     if ((dev_info.rf_state == RF_CONNECT) && ((Usart_Mgr.RXDBuf[6] & 0xf8) == 0)) {
                         dev_info.rf_led = Usart_Mgr.RXDBuf[6];

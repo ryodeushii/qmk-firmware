@@ -350,7 +350,7 @@
                     ]
                 },
                 {
-                    "label": "Logo Light",
+                    "label": "Ambient Light",
                     "content": [
                         {
                             "label": "Mode",
@@ -781,11 +781,11 @@
         },
         {
             "name": "Logo\nLight+",
-            "title": "Logo Light +"
+            "title": "Ambient Light +"
         },
         {
             "name": "Logo\nLight-",
-            "title": "Logo Light -"
+            "title": "Ambient Light -"
         },
         {
             "name": "Logo\nMode",

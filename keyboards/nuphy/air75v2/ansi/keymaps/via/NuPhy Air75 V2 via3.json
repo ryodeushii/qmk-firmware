@@ -730,28 +730,28 @@
             "title": "Side Speed -"
         },
         {
-            "name": "Right\nSide\nLight+",
-            "title": "Right Side Light +"
+            "name": "Ambient\nLight+",
+            "title": "Ambient Light +"
         },
         {
-            "name": "Right\nSide\nLight-",
-            "title": "Right Side Light -"
+            "name": "Ambient\nLight-",
+            "title": "Ambient Light -"
         },
         {
-            "name": "Right\nSide\nMode",
-            "title": "Right Side Next Mode"
+            "name": "Ambient\nMode",
+            "title": "Ambient Next Mode"
         },
         {
-            "name": "Right\nSide\nColor",
-            "title": "Right Side Next Color"
+            "name": "Ambient\nColor",
+            "title": "Ambient Next Color"
         },
         {
-            "name": "Right\nSide\nFast",
-            "title": "Right Side Speed +"
+            "name": "Ambient\nFast",
+            "title": "Ambient Speed +"
         },
         {
-            "name": "Right\nSide\nSlow",
-            "title": "Right Side Speed -"
+            "name": "Ambient\nSlow",
+            "title": "Ambient Speed -"
         },
         {
             "name": "TOG USB\nSleep",

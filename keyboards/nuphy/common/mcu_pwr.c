@@ -18,6 +18,85 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Shared implementation body. Include this from a board-local mcu_pwr.c that
 // already pulled in the board's config.h, mcu_pwr.h, and related dependencies.
 
+#if defined(DRIVER_SIDE_DI_PIN)
+#    define NUPHY_PREPARE_SIDE_DRIVER_FOR_SLEEP()    \
+        do {                                         \
+            gpio_set_pin_output(DRIVER_SIDE_DI_PIN); \
+            gpio_write_pin_low(DRIVER_SIDE_DI_PIN);  \
+        } while (0)
+#else
+#    define NUPHY_PREPARE_SIDE_DRIVER_FOR_SLEEP() \
+        do {                                      \
+        } while (0)
+#endif
+
+#if defined(RGB_DRIVER_SDB1) && defined(RGB_DRIVER_SDB2)
+#    define NUPHY_RGB_POWER_OFF()                \
+        do {                                     \
+            gpio_set_pin_output(DC_BOOST_PIN);   \
+            gpio_write_pin_low(DC_BOOST_PIN);    \
+            gpio_set_pin_input(RGB_DRIVER_SDB1); \
+            gpio_set_pin_input(RGB_DRIVER_SDB2); \
+        } while (0)
+#    define NUPHY_RGB_POWER_ON()                  \
+        do {                                      \
+            gpio_set_pin_output(DC_BOOST_PIN);    \
+            gpio_write_pin_high(DC_BOOST_PIN);    \
+            gpio_set_pin_output(RGB_DRIVER_SDB1); \
+            gpio_write_pin_high(RGB_DRIVER_SDB1); \
+            gpio_set_pin_output(RGB_DRIVER_SDB2); \
+            gpio_write_pin_high(RGB_DRIVER_SDB2); \
+        } while (0)
+#elif defined(DRIVER_MATRIX_CS_PIN)
+#    define NUPHY_RGB_POWER_OFF()                     \
+        do {                                          \
+            gpio_set_pin_output(DC_BOOST_PIN);        \
+            gpio_write_pin_low(DC_BOOST_PIN);         \
+            gpio_set_pin_input(DRIVER_MATRIX_CS_PIN); \
+        } while (0)
+#    define NUPHY_RGB_POWER_ON()                       \
+        do {                                           \
+            gpio_set_pin_output(DC_BOOST_PIN);         \
+            gpio_write_pin_high(DC_BOOST_PIN);         \
+            gpio_set_pin_output(DRIVER_MATRIX_CS_PIN); \
+            gpio_write_pin_low(DRIVER_MATRIX_CS_PIN);  \
+        } while (0)
+#else
+#    define NUPHY_RGB_POWER_OFF() \
+        do {                      \
+        } while (0)
+#    define NUPHY_RGB_POWER_ON() \
+        do {                     \
+        } while (0)
+#endif
+
+#if defined(DRIVER_SIDE_CS_PIN)
+#    define NUPHY_SIDE_POWER_OFF()                  \
+        do {                                        \
+            gpio_set_pin_input(DRIVER_SIDE_CS_PIN); \
+        } while (0)
+#    define NUPHY_SIDE_POWER_ON()                    \
+        do {                                         \
+            gpio_set_pin_output(DRIVER_SIDE_CS_PIN); \
+            gpio_write_pin_low(DRIVER_SIDE_CS_PIN);  \
+        } while (0)
+#else
+#    define NUPHY_SIDE_POWER_OFF() \
+        do {                       \
+        } while (0)
+#    define NUPHY_SIDE_POWER_ON() \
+        do {                      \
+        } while (0)
+#endif
+
+#ifndef NUPHY_MATRIX_WAKE_INIT
+#    define NUPHY_MATRIX_WAKE_INIT()              \
+        do {                                      \
+            extern void matrix_init_custom(void); \
+            matrix_init_custom();                 \
+        } while (0)
+#endif
+
 static const pin_t row_pins[MATRIX_ROWS] = MATRIX_ROW_PINS;
 static const pin_t col_pins[MATRIX_COLS] = MATRIX_COL_PINS;
 
@@ -31,6 +110,8 @@ static bool side_led_on = 0;
 
 void rgb_matrix_update_pwm_buffers(void);
 void clear_report_buffer_and_queue(void);
+void pwr_side_led_off(void);
+void pwr_side_led_on(void);
 
 void m_deinit_usb_072(void) {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -115,8 +196,7 @@ void enter_deep_sleep(void) {
     gpio_set_pin_output(OS_MODE_PIN);
     gpio_write_pin_low(OS_MODE_PIN);
 
-    gpio_set_pin_output(DRIVER_SIDE_DI_PIN);
-    gpio_write_pin_low(DRIVER_SIDE_DI_PIN);
+    NUPHY_PREPARE_SIDE_DRIVER_FOR_SLEEP();
 
     gpio_set_pin_output(NRF_TEST_PIN);
     gpio_write_pin_high(NRF_TEST_PIN);
@@ -130,8 +210,7 @@ void enter_deep_sleep(void) {
 }
 
 void exit_deep_sleep(void) {
-    extern void matrix_init_custom(void);
-    matrix_init_custom();
+    NUPHY_MATRIX_WAKE_INIT();
 
 #if (WORK_MODE == THREE_MODE)
     gpio_set_pin_input_high(DEVICE_MODE_PIN);
@@ -153,8 +232,9 @@ void exit_deep_sleep(void) {
     uart_send_cmd(CMD_HAND, 0, 1);
 #endif
     if (dev_info.link_mode == LINK_USB) {
-        usb_lld_wakeup_host(&USB_DRIVER);
-        restart_usb_driver(&USB_DRIVER);
+        if (USB_DRIVER.state == USB_SUSPENDED) {
+            usb_lld_wakeup_host(&USB_DRIVER);
+        }
     }
 
     dev_info.rf_state = RF_WAKE;
@@ -221,34 +301,28 @@ void led_pwr_wake_handle(void) {
 void pwr_rgb_led_off(void) {
     if (!rgb_led_on) return;
 
-    gpio_set_pin_output(DC_BOOST_PIN);
-    gpio_write_pin_low(DC_BOOST_PIN);
-    gpio_set_pin_input(DRIVER_MATRIX_CS_PIN);
+    NUPHY_RGB_POWER_OFF();
     rgb_led_on = 0;
 }
 
 void pwr_rgb_led_on(void) {
     if (sleeping || rgb_led_on) return;
 
-    gpio_set_pin_output(DC_BOOST_PIN);
-    gpio_write_pin_high(DC_BOOST_PIN);
-    gpio_set_pin_output(DRIVER_MATRIX_CS_PIN);
-    gpio_write_pin_low(DRIVER_MATRIX_CS_PIN);
+    NUPHY_RGB_POWER_ON();
     rgb_led_on = 1;
 }
 
 void pwr_side_led_off(void) {
     if (!side_led_on) return;
 
-    gpio_set_pin_input(DRIVER_SIDE_CS_PIN);
+    NUPHY_SIDE_POWER_OFF();
     side_led_on = 0;
 }
 
 void pwr_side_led_on(void) {
     if (sleeping || side_led_on) return;
 
-    gpio_set_pin_output(DRIVER_SIDE_CS_PIN);
-    gpio_write_pin_low(DRIVER_SIDE_CS_PIN);
+    NUPHY_SIDE_POWER_ON();
     side_led_on = 1;
 }
 

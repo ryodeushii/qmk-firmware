@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "color.h"
 
 #define USB_MODE 0
 #define THREE_MODE 1
@@ -17,6 +18,14 @@
 #    define DEFAULT_DEEP_SLEEP_TOGGLE true
 #endif
 
+#ifndef DEFAULT_POWER_ON_ANIMATION
+#    ifdef DEFAULT_TOGGLE_POWER_ON_ANIMATION
+#        define DEFAULT_POWER_ON_ANIMATION DEFAULT_TOGGLE_POWER_ON_ANIMATION
+#    else
+#        define DEFAULT_POWER_ON_ANIMATION true
+#    endif
+#endif
+
 #ifndef DEFAULT_SLEEP_TIMEOUT
 #    define DEFAULT_SLEEP_TIMEOUT 15
 #endif
@@ -33,24 +42,44 @@
 #    define DEFAULT_CAPS_INDICATOR_TYPE CAPS_INDICATOR_SIDE
 #endif
 
-#ifndef DEFAULT_EFFECT_MODE
-#    define DEFAULT_EFFECT_MODE SIDE_WAVE
+#ifndef DEFAULT_SIDE_MODE
+#    ifdef DEFAULT_EFFECT_MODE
+#        define DEFAULT_SIDE_MODE DEFAULT_EFFECT_MODE
+#    else
+#        define DEFAULT_SIDE_MODE EFFECT_WAVE
+#    endif
 #endif
 
-#ifndef DEFAULT_EFFECT_BRIGHTNESS
-#    define DEFAULT_EFFECT_BRIGHTNESS 4
+#ifndef DEFAULT_SIDE_BRIGHTNESS
+#    ifdef DEFAULT_EFFECT_BRIGHTNESS
+#        define DEFAULT_SIDE_BRIGHTNESS DEFAULT_EFFECT_BRIGHTNESS
+#    else
+#        define DEFAULT_SIDE_BRIGHTNESS 4
+#    endif
 #endif
 
-#ifndef DEFAULT_EFFECT_SPEED
-#    define DEFAULT_EFFECT_SPEED 2
+#ifndef DEFAULT_SIDE_SPEED
+#    ifdef DEFAULT_EFFECT_SPEED
+#        define DEFAULT_SIDE_SPEED DEFAULT_EFFECT_SPEED
+#    else
+#        define DEFAULT_SIDE_SPEED 2
+#    endif
 #endif
 
-#ifndef DEFAULT_EFFECT_RGB
-#    define DEFAULT_EFFECT_RGB 1
+#ifndef DEFAULT_SIDE_RGB
+#    ifdef DEFAULT_EFFECT_RGB
+#        define DEFAULT_SIDE_RGB DEFAULT_EFFECT_RGB
+#    else
+#        define DEFAULT_SIDE_RGB 1
+#    endif
 #endif
 
-#ifndef DEFAULT_EFFECT_COLOR
-#    define DEFAULT_EFFECT_COLOR 6 //  FIXME: what is this value?
+#ifndef DEFAULT_SIDE_COLOR
+#    ifdef DEFAULT_EFFECT_COLOR
+#        define DEFAULT_SIDE_COLOR DEFAULT_EFFECT_COLOR
+#    else
+#        define DEFAULT_SIDE_COLOR 6 // FIXME: what is this value?
+#    endif
 #endif
 
 #ifndef DEFAULT_AMBIENT_MODE
@@ -77,6 +106,38 @@
 #    define DEFAULT_RGB_MATRIX_BRIGHTNESS (RGB_MATRIX_MAXIMUM_BRIGHTNESS - RGB_MATRIX_VAL_STEP * 2)
 #endif
 
+#ifndef DEFAULT_STATIC_SATURATION
+#    define DEFAULT_STATIC_SATURATION UINT8_MAX
+#endif
+
+#ifndef DEFAULT_SIDE_STATIC_HUE
+#    ifdef RGB_DEFAULT_COLOR
+#        define DEFAULT_SIDE_STATIC_HUE RGB_DEFAULT_COLOR
+#    else
+#        define DEFAULT_SIDE_STATIC_HUE 0
+#    endif
+#endif
+
+#ifndef DEFAULT_SIDE_STATIC_SAT
+#    define DEFAULT_SIDE_STATIC_SAT DEFAULT_STATIC_SATURATION
+#endif
+
+#ifndef DEFAULT_AMBIENT_STATIC_HUE
+#    define DEFAULT_AMBIENT_STATIC_HUE DEFAULT_SIDE_STATIC_HUE
+#endif
+
+#ifndef DEFAULT_AMBIENT_STATIC_SAT
+#    define DEFAULT_AMBIENT_STATIC_SAT DEFAULT_STATIC_SATURATION
+#endif
+
+#ifndef NUPHY_CONFIG_INIT_MAGIC
+#    define NUPHY_CONFIG_INIT_MAGIC 0x46
+#endif
+
+#ifndef NUPHY_CONFIG_LEGACY_MAGIC
+#    define NUPHY_CONFIG_LEGACY_MAGIC 0x45
+#endif
+
 typedef struct {
     uint8_t sleep_toggle : 1;
     uint8_t usb_sleep_toggle : 1;
@@ -97,19 +158,26 @@ typedef struct {
 } custom_config_t;
 
 typedef struct {
+    uint8_t hue;
+    uint8_t sat;
+} static_color_config_t;
+
+typedef struct {
     // (top) side light config
-    uint8_t side_mode;
-    uint8_t side_brightness;
-    uint8_t side_speed;
-    uint8_t side_rgb;
-    uint8_t side_color;
+    uint8_t               side_mode;
+    uint8_t               side_brightness;
+    uint8_t               side_speed;
+    uint8_t               side_rgb;
+    uint8_t               side_color;
+    static_color_config_t side_static_color;
 
     // ambient light config
-    uint8_t ambient_mode;
-    uint8_t ambient_brightness;
-    uint8_t ambient_speed;
-    uint8_t ambient_rgb;
-    uint8_t ambient_color;
+    uint8_t               ambient_mode;
+    uint8_t               ambient_brightness;
+    uint8_t               ambient_speed;
+    uint8_t               ambient_rgb;
+    uint8_t               ambient_color;
+    static_color_config_t ambient_static_color;
 } lights_config_t;
 
 typedef struct {
@@ -129,28 +197,24 @@ enum via_common_ids {
     id_caps_indicator_type = 4,
     id_sleep_toggle        = 5,
     id_deep_sleep_toggle   = 6,
-    id_power_on_animation = 7,
+    id_power_on_animation  = 7,
 };
 
-enum via_custom_ids {
-    id_battery_indicator_brightness = 31,
-    id_toggle_custom_keys_highlight = 32,
-    id_toggle_detect_numlock_state  = 33,
-    id_battery_indicator_numeric    = 34,
-    id_toggle_socd_indicator        = 35
-};
+enum via_custom_ids { id_battery_indicator_brightness = 31, id_toggle_custom_keys_highlight = 32, id_toggle_detect_numlock_state = 33, id_battery_indicator_numeric = 34, id_toggle_socd_indicator = 35 };
 
 enum via_non_matrix_lights_ids {
     // side light controls
-    id_side_light_mode       = 10,
-    id_side_light_speed      = 11,
-    id_side_light_color      = 12,
-    id_side_light_brightness = 13,
+    id_side_light_mode         = 10,
+    id_side_light_speed        = 11,
+    id_side_light_color        = 12,
+    id_side_light_brightness   = 13,
+    id_side_light_static_color = 14,
     // ambient light controls
-    id_ambient_light_mode       = 20,
-    id_ambient_light_speed      = 21,
-    id_ambient_light_color      = 22,
-    id_ambient_light_brightness = 23,
+    id_ambient_light_mode         = 20,
+    id_ambient_light_speed        = 21,
+    id_ambient_light_color        = 22,
+    id_ambient_light_brightness   = 23,
+    id_ambient_light_static_color = 24,
 };
 
 enum work_mode {
@@ -182,6 +246,7 @@ void     user_set_rgb_color(int index, uint8_t red, uint8_t green, uint8_t blue)
 uint8_t  get_led_index(uint8_t row, uint8_t col);
 uint8_t  two_digit_decimals_led(uint8_t value);
 uint8_t  two_digit_ones_led(uint8_t value);
+rgb_t    nuphy_static_picker_rgb(uint8_t hue, uint8_t sat, uint8_t brightness);
 
 #define SYS_SW_WIN 0xa1
 #define SYS_SW_MAC 0xa2

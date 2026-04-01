@@ -251,47 +251,29 @@
                     "label": "Halo Light",
                     "content": [
                         {
-                            "label": "Mode A",
+                            "label": "Mode",
                             "type": "dropdown",
                             "content": [
-                                "id_side_light_mode_a",
+                                "id_side_light_mode",
                                 0,
                                 10
                             ],
                             "options": [
                                 "Wawe",
                                 "Mix",
-                                "New",
+                                "Static",
                                 "Breath",
-                                "Static"
-                            ]
-                        },
-                        {
-                            "label": "Mode B",
-                            "type": "dropdown",
-                            "content": [
-                                "id_side_light_mode_b",
-                                0,
-                                11
-                            ],
-                            "options": [
-                                "1",
-                                "2",
-                                "3",
-                                "4",
-                                "5",
-                                "6",
-                                "7"
+                                "Off"
                             ]
                         },
                         {
                             "label": "Speed (higher is slower)",
-                            "showIf": "{id_side_light_mode_a} != 4",
+                            "showIf": "{id_side_light_mode} != 4 && {id_side_light_mode} != 2",
                             "type": "dropdown",
                             "content": [
                                 "id_side_light_speed",
                                 0,
-                                12
+                                11
                             ],
                             "options": [
                                 "1",
@@ -302,13 +284,13 @@
                             ]
                         },
                         {
-                            "label": "Color",
-                            "showIf": "{id_side_light_mode_a} != 2",
+                            "label": "Palette Color",
+                            "showIf": "{id_side_light_mode} == 0 || {id_side_light_mode} == 3",
                             "type": "dropdown",
                             "content": [
                                 "id_side_light_color",
                                 0,
-                                13
+                                12
                             ],
                             "options": [
                                 "Red",
@@ -322,31 +304,27 @@
                             ]
                         },
                         {
-                            "label": "Color",
-                            "showIf": "{id_side_light_mode_a} == 2",
-                            "type": "dropdown",
+                            "label": "Static Color",
+                            "showIf": "{id_side_light_mode} == 2",
+                            "type": "color",
                             "content": [
-                                "id_side_light_color",
+                                "id_side_light_static_color",
                                 0,
-                                13
-                            ],
-                            "options": [
-                                "One",
-                                "Two",
-                                "Three"
+                                14
                             ]
                         },
                         {
                             "label": "Brightness",
+                            "showIf": "{id_side_light_mode} != 4",
                             "type": "range",
                             "content": [
                                 "id_side_light_brightness",
                                 0,
-                                14
+                                13
                             ],
                             "options": [
                                 0,
-                                4
+                                5
                             ]
                         }
                     ]
@@ -713,12 +691,8 @@
             "title": "Side Light -"
         },
         {
-            "name": "Side\nMode_A",
-            "title": "Side A Next Mode"
-        },
-        {
-            "name": "Side\nMode_B",
-            "title": "Side B Next Mode"
+            "name": "Side\nMode",
+            "title": "Side Next Mode"
         },
         {
             "name": "Side\nColor",
@@ -731,6 +705,30 @@
         {
             "name": "Side\nSlow",
             "title": "Side Speed -"
+        },
+        {
+            "name": "Ambient\nLight+",
+            "title": "Halo Light +"
+        },
+        {
+            "name": "Ambient\nLight-",
+            "title": "Halo Light -"
+        },
+        {
+            "name": "Ambient\nMode",
+            "title": "Halo Next Mode"
+        },
+        {
+            "name": "Ambient\nColor",
+            "title": "Halo Next Color"
+        },
+        {
+            "name": "Ambient\nFast",
+            "title": "Halo Speed +"
+        },
+        {
+            "name": "Ambient\nSlow",
+            "title": "Halo Speed -"
         },
         {
             "name": "TOG USB\nSleep",

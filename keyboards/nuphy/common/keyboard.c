@@ -8,6 +8,10 @@
 __attribute((weak)) extern void side_led_show(void) {}
 __attribute((weak)) extern void rgb_test_show(void) {}
 
+#ifndef NUPHY_OS_SWITCH_HIGH_IS_WIN
+#    define NUPHY_OS_SWITCH_HIGH_IS_WIN 0
+#endif
+
 void switch_dev_link(uint8_t mode);
 void sleep_handle(void);
 
@@ -39,6 +43,22 @@ extern bool               f_rf_new_adv_ok;
 extern report_keyboard_t *keyboard_report;
 extern report_nkro_t     *nkro_report;
 extern host_driver_t      rf_host_driver;
+
+static void apply_os_mode(bool switch_high, bool show_indicator) {
+    uint8_t target_sys   = switch_high ? (NUPHY_OS_SWITCH_HIGH_IS_WIN ? SYS_SW_WIN : SYS_SW_MAC) : (NUPHY_OS_SWITCH_HIGH_IS_WIN ? SYS_SW_MAC : SYS_SW_WIN);
+    uint8_t target_layer = (target_sys == SYS_SW_MAC) ? 0 : 2;
+    bool    target_nkro  = (target_sys != SYS_SW_MAC);
+
+    if (dev_info.sys_sw_state != target_sys) {
+        if (show_indicator) {
+            f_sys_show = 1;
+        }
+        default_layer_set(1 << target_layer);
+        dev_info.sys_sw_state = target_sys;
+        keymap_config.nkro    = target_nkro;
+        break_all_key();
+    }
+}
 
 /**
  * @brief  long press key process.
@@ -175,23 +195,7 @@ void dial_sw_scan(void) {
     }
 #endif
 
-    if (dial_scan & 0x02) {
-        if (dev_info.sys_sw_state != SYS_SW_MAC) {
-            f_sys_show = 1;
-            default_layer_set(1 << 0);
-            dev_info.sys_sw_state = SYS_SW_MAC;
-            keymap_config.nkro    = 0;
-            break_all_key();
-        }
-    } else {
-        if (dev_info.sys_sw_state != SYS_SW_WIN) {
-            f_sys_show = 1;
-            default_layer_set(1 << 2);
-            dev_info.sys_sw_state = SYS_SW_WIN;
-            keymap_config.nkro    = 1;
-            break_all_key();
-        }
-    }
+    apply_os_mode((dial_scan & 0x02) != 0, true);
 
     if (f_dial_sw_init_ok == 0) {
         f_dial_sw_init_ok = 1;
@@ -254,22 +258,7 @@ void dial_sw_fast_scan(void) {
     }
 #endif
     // Win or Mac
-    if (dial_scan_sys) {
-        if (dev_info.sys_sw_state != SYS_SW_MAC) {
-            default_layer_set(1 << 0);
-            dev_info.sys_sw_state = SYS_SW_MAC;
-            keymap_config.nkro    = 0;
-            break_all_key();
-        }
-    } else {
-        if (dev_info.sys_sw_state != SYS_SW_WIN) {
-            // f_sys_show = 1;
-            default_layer_set(1 << 2);
-            dev_info.sys_sw_state = SYS_SW_WIN;
-            keymap_config.nkro    = 1;
-            break_all_key();
-        }
-    }
+    apply_os_mode(dial_scan_sys != 0, false);
 }
 
 /**
@@ -282,7 +271,7 @@ void kb_config_reset(void) {
     rgb_matrix_sethsv(RGB_DEFAULT_COLOR, 255, DEFAULT_RGB_MATRIX_BRIGHTNESS);
 
     init_keyboard_config();
-    keyboard_config.been_initiated = 0x45;
+    keyboard_config.been_initiated = NUPHY_CONFIG_INIT_MAGIC;
 
     save_config_to_eeprom();
 }
@@ -290,7 +279,7 @@ void kb_config_reset(void) {
 void load_eeprom_data(void) {
     load_config_from_eeprom();
 
-    if (keyboard_config.been_initiated != 0x45) {
+    if (keyboard_config.been_initiated != NUPHY_CONFIG_INIT_MAGIC) {
         kb_config_reset();
         return;
     }

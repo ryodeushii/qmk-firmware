@@ -207,11 +207,11 @@ static void logo_breathe_mode_show(void) {
 }
 
 static void logo_static_mode_show(void) {
-    if (logo_play_point >= SIDE_COLOR_MAX) logo_play_point = 0;
+    rgb_t rgb = nuphy_static_picker_rgb(keyboard_config.lights.ambient_static_color.hue, keyboard_config.lights.ambient_static_color.sat, keyboard_config.lights.ambient_brightness);
 
-    r_temp = side_color_lib[keyboard_config.lights.ambient_color][0] >> 2;
-    g_temp = side_color_lib[keyboard_config.lights.ambient_color][1] >> 2;
-    b_temp = side_color_lib[keyboard_config.lights.ambient_color][2] >> 2;
+    r_temp = rgb.r >> 2;
+    g_temp = rgb.g >> 2;
+    b_temp = rgb.b >> 2;
 
     logo_count_rgb_light(side_light_table[keyboard_config.lights.ambient_brightness]);
 

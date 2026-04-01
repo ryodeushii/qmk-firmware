@@ -6,7 +6,7 @@ void via_init_kb(void) {
     custom_eeprom_init();
 }
 
-void via_config_set_value(uint8_t *data) {
+__attribute__((weak)) void via_config_set_value(uint8_t *data) {
     // data = [ value_id, value_data ]
 
     uint8_t *value_id   = &(data[0]);
@@ -47,6 +47,10 @@ void via_config_set_value(uint8_t *data) {
         case id_side_light_brightness:
             keyboard_config.lights.side_brightness = *value_data;
             break;
+        case id_side_light_static_color:
+            keyboard_config.lights.side_static_color.hue = value_data[0];
+            keyboard_config.lights.side_static_color.sat = value_data[1];
+            break;
 
         case id_ambient_light_mode:
             keyboard_config.lights.ambient_mode = *value_data;
@@ -59,6 +63,10 @@ void via_config_set_value(uint8_t *data) {
             break;
         case id_ambient_light_brightness:
             keyboard_config.lights.ambient_brightness = *value_data;
+            break;
+        case id_ambient_light_static_color:
+            keyboard_config.lights.ambient_static_color.hue = value_data[0];
+            keyboard_config.lights.ambient_static_color.sat = value_data[1];
             break;
         case id_battery_indicator_brightness:
             keyboard_config.custom.battery_indicator_brightness = *value_data;
@@ -81,7 +89,7 @@ void via_config_set_value(uint8_t *data) {
     }
 }
 
-void via_config_get_value(uint8_t *data) {
+__attribute__((weak)) void via_config_get_value(uint8_t *data) {
     uint8_t *value_id   = &(data[0]);
     uint8_t *value_data = &(data[1]);
     switch (*value_id) {
@@ -119,6 +127,10 @@ void via_config_get_value(uint8_t *data) {
         case id_side_light_brightness:
             *value_data = keyboard_config.lights.side_brightness;
             break;
+        case id_side_light_static_color:
+            value_data[0] = keyboard_config.lights.side_static_color.hue;
+            value_data[1] = keyboard_config.lights.side_static_color.sat;
+            break;
 
         case id_ambient_light_mode:
             *value_data = keyboard_config.lights.ambient_mode;
@@ -131,6 +143,10 @@ void via_config_get_value(uint8_t *data) {
             break;
         case id_ambient_light_brightness:
             *value_data = keyboard_config.lights.ambient_brightness;
+            break;
+        case id_ambient_light_static_color:
+            value_data[0] = keyboard_config.lights.ambient_static_color.hue;
+            value_data[1] = keyboard_config.lights.ambient_static_color.sat;
             break;
         case id_battery_indicator_brightness:
             *value_data = keyboard_config.custom.battery_indicator_brightness;

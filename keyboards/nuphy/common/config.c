@@ -1,5 +1,6 @@
 #include "config.h"
 #include "rf_driver.h"
+#include "rgb_matrix.h"
 
 #ifdef VIA_ENABLE
 #    include "eeprom.h"
@@ -15,6 +16,26 @@ extern DEV_INFO_STRUCT dev_info;
 RGB                    bat_pct_rgb       = {.r = 0x80, .g = 0x80, .b = 0x00};
 uint16_t               rgb_led_last_act  = 0;
 uint16_t               side_led_last_act = 0;
+
+typedef struct {
+    uint8_t side_mode;
+    uint8_t side_brightness;
+    uint8_t side_speed;
+    uint8_t side_rgb;
+    uint8_t side_color;
+    uint8_t ambient_mode;
+    uint8_t ambient_brightness;
+    uint8_t ambient_speed;
+    uint8_t ambient_rgb;
+    uint8_t ambient_color;
+} legacy_lights_config_t;
+
+typedef struct {
+    uint8_t                been_initiated;
+    common_config_t        common;
+    custom_config_t        custom;
+    legacy_lights_config_t lights;
+} legacy_keyboard_config_t;
 
 __attribute((weak)) void pwr_rgb_led_on(void) {}
 __attribute((weak)) void pwr_rgb_led_off(void) {}
@@ -53,17 +74,22 @@ __attribute__((weak)) void init_keyboard_config(void) {
     keyboard_config.common.debounce_press_ms   = DEBOUNCE;
     keyboard_config.common.debounce_release_ms = RELEASE_DEBOUNCE;
     keyboard_config.common.caps_indicator_type = DEFAULT_CAPS_INDICATOR_TYPE;
+    keyboard_config.common.power_on_animation  = DEFAULT_POWER_ON_ANIMATION;
     // lights
-    keyboard_config.lights.side_mode          = DEFAULT_SIDE_MODE;
-    keyboard_config.lights.side_brightness    = DEFAULT_SIDE_BRIGHTNESS;
-    keyboard_config.lights.side_speed         = DEFAULT_SIDE_SPEED;
-    keyboard_config.lights.side_rgb           = DEFAULT_SIDE_RGB;
-    keyboard_config.lights.side_color         = DEFAULT_SIDE_COLOR;
-    keyboard_config.lights.ambient_mode       = DEFAULT_AMBIENT_MODE;
-    keyboard_config.lights.ambient_brightness = DEFAULT_AMBIENT_BRIGHTNESS;
-    keyboard_config.lights.ambient_speed      = DEFAULT_AMBIENT_SPEED;
-    keyboard_config.lights.ambient_rgb        = DEFAULT_AMBIENT_RGB;
-    keyboard_config.lights.ambient_color      = DEFAULT_AMBIENT_COLOR;
+    keyboard_config.lights.side_mode                = DEFAULT_SIDE_MODE;
+    keyboard_config.lights.side_brightness          = DEFAULT_SIDE_BRIGHTNESS;
+    keyboard_config.lights.side_speed               = DEFAULT_SIDE_SPEED;
+    keyboard_config.lights.side_rgb                 = DEFAULT_SIDE_RGB;
+    keyboard_config.lights.side_color               = DEFAULT_SIDE_COLOR;
+    keyboard_config.lights.side_static_color.hue    = DEFAULT_SIDE_STATIC_HUE;
+    keyboard_config.lights.side_static_color.sat    = DEFAULT_SIDE_STATIC_SAT;
+    keyboard_config.lights.ambient_mode             = DEFAULT_AMBIENT_MODE;
+    keyboard_config.lights.ambient_brightness       = DEFAULT_AMBIENT_BRIGHTNESS;
+    keyboard_config.lights.ambient_speed            = DEFAULT_AMBIENT_SPEED;
+    keyboard_config.lights.ambient_rgb              = DEFAULT_AMBIENT_RGB;
+    keyboard_config.lights.ambient_color            = DEFAULT_AMBIENT_COLOR;
+    keyboard_config.lights.ambient_static_color.hue = DEFAULT_AMBIENT_STATIC_HUE;
+    keyboard_config.lights.ambient_static_color.sat = DEFAULT_AMBIENT_STATIC_SAT;
     // custom
     keyboard_config.custom.battery_indicator_brightness = DEFAULT_BATTERY_INDICATOR_BRIGHTNESS;
     keyboard_config.custom.toggle_custom_keys_highlight = DEFAULT_LIGHT_CUSTOM_KEYS;
@@ -72,12 +98,41 @@ __attribute__((weak)) void init_keyboard_config(void) {
     keyboard_config.custom.show_socd_indicator          = DEFAULT_SHOW_SOCD_INDICATOR;
 }
 
+static void migrate_legacy_keyboard_config(void) {
+    legacy_keyboard_config_t legacy = {0};
+
+    read_custom_config(&legacy, 0, sizeof(legacy));
+    init_keyboard_config();
+
+    keyboard_config.common                    = legacy.common;
+    keyboard_config.custom                    = legacy.custom;
+    keyboard_config.lights.side_mode          = legacy.lights.side_mode;
+    keyboard_config.lights.side_brightness    = legacy.lights.side_brightness;
+    keyboard_config.lights.side_speed         = legacy.lights.side_speed;
+    keyboard_config.lights.side_rgb           = legacy.lights.side_rgb;
+    keyboard_config.lights.side_color         = legacy.lights.side_color;
+    keyboard_config.lights.ambient_mode       = legacy.lights.ambient_mode;
+    keyboard_config.lights.ambient_brightness = legacy.lights.ambient_brightness;
+    keyboard_config.lights.ambient_speed      = legacy.lights.ambient_speed;
+    keyboard_config.lights.ambient_rgb        = legacy.lights.ambient_rgb;
+    keyboard_config.lights.ambient_color      = legacy.lights.ambient_color;
+    keyboard_config.been_initiated            = NUPHY_CONFIG_INIT_MAGIC;
+    save_config_to_eeprom();
+}
+
 __attribute__((weak)) void custom_eeprom_init(void) {
     if (eeconfig_is_enabled()) {
         load_config_from_eeprom();
+        if (keyboard_config.been_initiated == NUPHY_CONFIG_LEGACY_MAGIC) {
+            migrate_legacy_keyboard_config();
+        } else if (keyboard_config.been_initiated != NUPHY_CONFIG_INIT_MAGIC) {
+            init_keyboard_config();
+            keyboard_config.been_initiated = NUPHY_CONFIG_INIT_MAGIC;
+            save_config_to_eeprom();
+        }
     } else {
         init_keyboard_config();
-        keyboard_config.been_initiated = 0x45;
+        keyboard_config.been_initiated = NUPHY_CONFIG_INIT_MAGIC;
         save_config_to_eeprom();
     }
 };
@@ -219,6 +274,17 @@ uint8_t two_digit_ones_led(uint8_t value) {
     uint8_t ones_led_idx = get_led_index(1, ones);
 
     return ones_led_idx;
+}
+
+rgb_t nuphy_static_picker_rgb(uint8_t hue, uint8_t sat, uint8_t brightness) {
+    hsv_t hsv = {.h = hue, .s = sat, .v = 0};
+
+    if (brightness > 5) {
+        brightness = 5;
+    }
+
+    hsv.v = (brightness * UINT8_MAX) / 5;
+    return hsv_to_rgb_nocie(hsv);
 }
 
 void adjust_sleep_timeout(uint8_t dir) {

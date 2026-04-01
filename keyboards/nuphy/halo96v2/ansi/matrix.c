@@ -35,19 +35,7 @@ static inline matrix_row_t read_cols(void) {
     uint16_t portC = palReadPort(GPIOC);
     uint16_t portD = palReadPort(GPIOD);
 
-    matrix_row_t result = 0;
-
-    // Each bit is 1 if key is pressed (active-low input)
-    result |= ((portA & (PAL_PORT_BIT(PAL_PAD(A4)) | PAL_PORT_BIT(PAL_PAD(A5)) | PAL_PORT_BIT(PAL_PAD(A6)) | PAL_PORT_BIT(PAL_PAD(A7)))) ^ 0x00F0) >> 4;
-    result |= ((portB & (PAL_PORT_BIT(PAL_PAD(B0)) | PAL_PORT_BIT(PAL_PAD(B1)))) ^ 0x0003) << 4;
-    result |= ((portB & (PAL_PORT_BIT(PAL_PAD(B10)) | PAL_PORT_BIT(PAL_PAD(B11)) | PAL_PORT_BIT(PAL_PAD(B12)) | PAL_PORT_BIT(PAL_PAD(B13)) | PAL_PORT_BIT(PAL_PAD(B14)) | PAL_PORT_BIT(PAL_PAD(B15)))) ^ 0xFC00) >> 4;
-    result |= ((portA & (PAL_PORT_BIT(PAL_PAD(A8)) | PAL_PORT_BIT(PAL_PAD(A9)) | PAL_PORT_BIT(PAL_PAD(A10)))) ^ 0x0700) << 3;
-    result |= ((portA & PAL_PORT_BIT(PAL_PAD(A15))) ^ PAL_PORT_BIT(PAL_PAD(A15))) ? (1 << 14) : 0;
-    result |= ((portC & (PAL_PORT_BIT(PAL_PAD(C10)) | PAL_PORT_BIT(PAL_PAD(C11)) | PAL_PORT_BIT(PAL_PAD(C12)))) ^ 0x1C00) >> 1;
-    result |= ((portD & PAL_PORT_BIT(PAL_PAD(D2))) ^ PAL_PORT_BIT(PAL_PAD(D2))) ? (1 << 18) : 0;
-    result |= ((portB & PAL_PORT_BIT(PAL_PAD(B3))) ^ PAL_PORT_BIT(PAL_PAD(B3))) ? (1 << 20) : 0;
-
-    return result;
+    return ((((portA & 0x00F0) ^ 0x00F0) >> 4) | (((portB & 0x0003) ^ 0x0003) << 4) | (((portB & 0xFC00) ^ 0xFC00) >> 4) | (((portA & 0x0700) ^ 0x0700) << 4) | ((portA & 0x8000) ^ 0x8000) | (((portC & 0x1C00) ^ 0x1C00) << 6) | ((((portD & 0x0004) ^ 0x0004) != 0) ? (1u << 19) : 0) | (((portB & 0x0008) ^ 0x0008) << 17));
 }
 
 static inline void unselect_rows(void) {

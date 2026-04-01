@@ -441,6 +441,6 @@ void break_all_key(void) {
 
     keymap_config.nkro = nkro_temp;
 
-    void clear_report_buffer_and_queue(void);
-    clear_report_buffer_and_queue();
+    void clear_report_buffer(void);
+    clear_report_buffer();
 }

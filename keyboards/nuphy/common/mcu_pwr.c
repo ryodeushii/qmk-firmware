@@ -230,7 +230,6 @@ void exit_deep_sleep(void) {
 
 #if (WORK_MODE == THREE_MODE)
     uart_send_cmd(CMD_HAND, 0, 1);
-    f_rf_wakeup_pending = (dev_info.link_mode != LINK_USB);
 #endif
     if (dev_info.link_mode == LINK_USB) {
         if (USB_DRIVER.state == USB_SUSPENDED) {
@@ -263,7 +262,6 @@ void exit_light_sleep(void) {
     led_pwr_wake_handle();
 #if (WORK_MODE == THREE_MODE)
     uart_send_cmd(CMD_HAND, 0, 1);
-    f_rf_wakeup_pending = (dev_info.link_mode != LINK_USB);
 #endif
     if (dev_info.link_mode == LINK_USB) {
         if (USB_DRIVER.state == USB_SUSPENDED) {

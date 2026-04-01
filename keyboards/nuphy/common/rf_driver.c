@@ -30,7 +30,6 @@ DEV_INFO_STRUCT dev_info = {
 extern report_buffer_t report_buff_a;
 extern report_buffer_t report_buff_b;
 extern rf_queue_t      rf_queue;
-extern bool            f_rf_wakeup_pending;
 
 /* Host driver */
 static uint8_t rf_keyboard_leds(void);
@@ -50,7 +49,7 @@ void uart_send_report(uint8_t report_type, uint8_t *report_buf, uint8_t report_s
  *
  */
 static void send_or_queue(report_buffer_t *report) {
-    if (!f_rf_wakeup_pending && dev_info.rf_state == RF_CONNECT && rf_queue.is_empty()) {
+    if (dev_info.rf_state == RF_CONNECT && rf_queue.is_empty()) {
         uart_send_report(report->cmd, report->buffer, report->length);
         report->repeat++;
     } else {
@@ -170,3 +169,4 @@ static void rf_send_extra(report_extra_t *report) {
         rf_send_extra_helper(CMD_RPT_SYS, report);
     }
 }
+

@@ -61,6 +61,8 @@ typedef struct {
 #define RF_SNIF 6
 #define RF_INVAILD 0XFE
 #define RF_ERR_STATE 0XFF
+#define RF_WAKE 0XA5 // made this up
+
 #define CMD_POWER_UP 0XF0
 #define CMD_SLEEP 0XF1
 #define CMD_HAND 0XF2
@@ -97,8 +99,6 @@ void    uart_send_report_repeat(void);
 void    uart_receive_pro(void);
 void    uart_send_report(uint8_t report_type, uint8_t *report_buf, uint8_t report_size);
 uint8_t uart_send_cmd(uint8_t cmd, uint8_t ack_cnt, uint8_t delayms);
-
-extern bool f_rf_wakeup_pending;
 
 #define RF_LONG_PRESS_DELAY 30
 #define DEV_RESET_PRESS_DELAY 30

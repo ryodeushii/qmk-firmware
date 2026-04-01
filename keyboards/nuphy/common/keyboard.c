@@ -2,6 +2,7 @@
 #include "quantum.h"
 #include "rf_driver.h"
 #include "config.h"
+#include "indicator.h"
 #include "keys.h"
 #include "keyboard.h"
 
@@ -535,7 +536,7 @@ bool rgb_matrix_indicators_nuphy(void) {
         showCapsLock = dev_info.rf_led & 0x02;
     }
 
-    if (rf_blink_cnt) {
+    if (nuphy_should_render_wireless_profile_indicator(dev_info.link_mode, rf_blink_cnt)) {
         uint8_t r = 0, g = 0x80, b = 0;
 
         uint8_t col = 4;

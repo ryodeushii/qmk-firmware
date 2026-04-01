@@ -65,7 +65,7 @@
   },
   "diode_direction": "COL2ROW",
   "rgb_matrix": {
-    "driver": "is31fl3763",
+    "driver": "custom",
     "center_point": [
       90,
       20

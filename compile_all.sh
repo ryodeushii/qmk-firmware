@@ -10,7 +10,7 @@ function log_info() {
     echo "Compiled keyboard:$1 with keymap:$2"
 }
 
-for KEYMAP in "via" "default" "ryodeushii"; do
+for KEYMAP in "default" "ryodeushii"; do
     for LAYOUT in "ansi" "iso"; do
         for KEYBOARD in "air75v2" "halo75v2" "halo96v2" "gem80"; do
             if [ ! -d "keyboards/nuphy/$KEYBOARD/$LAYOUT/keymaps/$KEYMAP" ] ; then

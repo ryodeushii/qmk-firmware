@@ -1,3 +1,6 @@
+// Copyright 2024 Evgeny Kapusta (@ryodeushii)
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "wait.h"
@@ -10,12 +13,9 @@
 #define rowA_bits (PAL_PORT_BIT(PAL_PAD(A0)) | PAL_PORT_BIT(PAL_PAD(A1)) | PAL_PORT_BIT(PAL_PAD(A2)) | PAL_PORT_BIT(PAL_PAD(A3)))
 #define rowC_bits (PAL_PORT_BIT(PAL_PAD(C14)) | PAL_PORT_BIT(PAL_PAD(C15)))
 
-#define colA_bits (PAL_PORT_BIT(PAL_PAD(A4)) | PAL_PORT_BIT(PAL_PAD(A5)) | PAL_PORT_BIT(PAL_PAD(A6)) | PAL_PORT_BIT(PAL_PAD(A7)) | \
-                   PAL_PORT_BIT(PAL_PAD(A8)) | PAL_PORT_BIT(PAL_PAD(A9)) | PAL_PORT_BIT(PAL_PAD(A10)) | PAL_PORT_BIT(PAL_PAD(A15)))
+#define colA_bits (PAL_PORT_BIT(PAL_PAD(A4)) | PAL_PORT_BIT(PAL_PAD(A5)) | PAL_PORT_BIT(PAL_PAD(A6)) | PAL_PORT_BIT(PAL_PAD(A7)) | PAL_PORT_BIT(PAL_PAD(A8)) | PAL_PORT_BIT(PAL_PAD(A9)) | PAL_PORT_BIT(PAL_PAD(A10)) | PAL_PORT_BIT(PAL_PAD(A15)))
 
-#define colB_bits (PAL_PORT_BIT(PAL_PAD(B0)) | PAL_PORT_BIT(PAL_PAD(B1)) | PAL_PORT_BIT(PAL_PAD(B3)) | \
-                   PAL_PORT_BIT(PAL_PAD(B10)) | PAL_PORT_BIT(PAL_PAD(B11)) | PAL_PORT_BIT(PAL_PAD(B12)) | \
-                   PAL_PORT_BIT(PAL_PAD(B13)) | PAL_PORT_BIT(PAL_PAD(B14)) | PAL_PORT_BIT(PAL_PAD(B15)))
+#define colB_bits (PAL_PORT_BIT(PAL_PAD(B0)) | PAL_PORT_BIT(PAL_PAD(B1)) | PAL_PORT_BIT(PAL_PAD(B3)) | PAL_PORT_BIT(PAL_PAD(B10)) | PAL_PORT_BIT(PAL_PAD(B11)) | PAL_PORT_BIT(PAL_PAD(B12)) | PAL_PORT_BIT(PAL_PAD(B13)) | PAL_PORT_BIT(PAL_PAD(B14)) | PAL_PORT_BIT(PAL_PAD(B15)))
 
 #define colC_bits (PAL_PORT_BIT(PAL_PAD(C10)) | PAL_PORT_BIT(PAL_PAD(C11)) | PAL_PORT_BIT(PAL_PAD(C12)))
 #define colD_bits (PAL_PORT_BIT(PAL_PAD(D2)))
@@ -81,12 +81,7 @@ uint8_t matrix_scan_custom(matrix_row_t current_matrix[]) {
     for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
         uint8_t debounce_guard = MATRIX_DEBOUNCE;
         while (debounce_guard > 0)
-            debounce_guard = ((((palReadPort(GPIOA) & colA_bits) ^ colA_bits) |
-                               ((palReadPort(GPIOB) & colB_bits) ^ colB_bits) |
-                               ((palReadPort(GPIOC) & colC_bits) ^ colC_bits) |
-                               ((palReadPort(GPIOD) & colD_bits) ^ colD_bits)) == 0)
-                                  ? debounce_guard - 1
-                                  : MATRIX_DEBOUNCE;
+            debounce_guard = ((((palReadPort(GPIOA) & colA_bits) ^ colA_bits) | ((palReadPort(GPIOB) & colB_bits) ^ colB_bits) | ((palReadPort(GPIOC) & colC_bits) ^ colC_bits) | ((palReadPort(GPIOD) & colD_bits) ^ colD_bits)) == 0) ? debounce_guard - 1 : MATRIX_DEBOUNCE;
 
         select_row(row);
         matrix_output_select_delay();

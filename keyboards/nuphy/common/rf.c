@@ -40,7 +40,7 @@ bool     f_rf_hand_ok      = 0;
 bool     f_goto_sleep      = 0;
 bool     f_wakeup_prepare  = 0;
 uint16_t rf_link_show_time = 0;
-uint16_t rf_linking_time       = 0;
+uint16_t rf_linking_time   = 0;
 
 uint8_t  func_tab[32]     = {0};
 uint8_t  sync_lost        = 0;

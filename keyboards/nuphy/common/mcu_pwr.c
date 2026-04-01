@@ -236,8 +236,6 @@ void exit_deep_sleep(void) {
             usb_lld_wakeup_host(&USB_DRIVER);
         }
     }
-
-    dev_info.rf_state = RF_WAKE;
 }
 
 void enter_light_sleep(void) {
@@ -270,10 +268,6 @@ void exit_light_sleep(void) {
             usb_lld_wakeup_host(&USB_DRIVER);
         }
     }
-
-#if (WORK_MODE == THREE_MODE)
-    dev_info.rf_state = RF_WAKE;
-#endif
 }
 
 void led_pwr_sleep_handle(void) {

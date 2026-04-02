@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "common/config_size.h"
+
 #ifndef WORK_MODE
 #    define WORK_MODE THREE_MODE
 #endif
@@ -79,11 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGB_MATRIX_KEYPRESSES
 #define RGB_MATRIX_KEYRELEASES
 
-#ifdef VIA_ENABLE
-#    define VIA_EEPROM_CUSTOM_CONFIG_SIZE 19 // sizeof via_config
-#else
-#    define EECONFIG_KB_DATA_SIZE 17
-#endif
+#define VIA_EEPROM_CUSTOM_CONFIG_SIZE NUPHY_VIA_EEPROM_CUSTOM_CONFIG_SIZE
 
 #define RGB_MATRIX_SLEEP
 

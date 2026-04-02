@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "color.h"
+#include "config_size.h"
 
 #define USB_MODE 0
 #define THREE_MODE 1
@@ -187,6 +188,8 @@ typedef struct {
     custom_config_t custom;
     lights_config_t lights;
 } keyboard_config_t;
+
+_Static_assert(sizeof(keyboard_config_t) == NUPHY_VIA_EEPROM_CUSTOM_CONFIG_SIZE, "keyboard_config_t size changed; update NUPHY_VIA_EEPROM_CUSTOM_CONFIG_SIZE");
 
 keyboard_config_t keyboard_config;
 

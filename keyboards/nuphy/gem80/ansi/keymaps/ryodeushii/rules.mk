@@ -4,4 +4,4 @@ RGB_MATRIX_CUSTOM_USER = no
 
 
 # dev stuff
-CONSOLE_ENABLE = yes
+CONSOLE_ENABLE = no

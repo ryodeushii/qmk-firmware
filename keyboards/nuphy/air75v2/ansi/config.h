@@ -17,6 +17,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "common/config_size.h"
+
 #ifndef WORK_MODE
 #    define WORK_MODE THREE_MODE
 #endif
@@ -50,11 +52,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define UART_RX_PIN B7
 #define UART_RX_PAL_MODE 0
 
-#ifdef VIA_ENABLE
-#    define VIA_EEPROM_CUSTOM_CONFIG_SIZE 23
-#else
-#    define EECONFIG_KB_DATA_SIZE 21
-#endif
+#define VIA_EEPROM_CUSTOM_CONFIG_SIZE NUPHY_VIA_EEPROM_CUSTOM_CONFIG_SIZE
 #ifdef RGB_MATRIX_LED_COUNT
 #    undef RGB_MATRIX_LED_COUNT
 #endif

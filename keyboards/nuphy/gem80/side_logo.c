@@ -5,7 +5,7 @@
 #include "side.h"
 #include "timer.h"
 
-extern const uint8_t side_speed_table[6][5];
+extern const uint8_t side_speed_table[5][5];
 extern const uint8_t side_light_table[6];
 extern const uint8_t light_value_tab[101];
 extern const uint8_t breathe_data_tab[BREATHE_TAB_LEN];

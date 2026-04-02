@@ -17,10 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#ifdef WORK_MODE
-#    undef WORK_MODE
+#ifndef WORK_MODE
+#    define WORK_MODE THREE_MODE
 #endif
-#define WORK_MODE THREE_MODE
 
 #define DYNAMIC_KEYMAP_MACRO_DELAY 8
 #define TAPPING_TERM 200
@@ -150,4 +149,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*
  * END OF DEFAULT VALUES
  */
-#define CFW_VERSION "put_version_here"
+#ifndef NUPHY_STRINGIFY_HELPER
+#    define NUPHY_STRINGIFY_HELPER(x) #x
+#    define NUPHY_STRINGIFY(x) NUPHY_STRINGIFY_HELPER(x)
+#endif
+
+#ifndef CFW_VERSION
+#    ifdef CFW_VERSION_TOKEN
+#        define CFW_VERSION NUPHY_STRINGIFY(CFW_VERSION_TOKEN)
+#    else
+#        define CFW_VERSION "put_version_here"
+#    endif
+#endif

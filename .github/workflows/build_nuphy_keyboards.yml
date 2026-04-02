@@ -36,6 +36,8 @@ jobs:
       run: pip3 install -r requirements.txt
 
     - name: Run `./compile_halo.sh`
+      env:
+        SILENT: true
       run: |
         chmod +x compile_all.sh
         ./compile_all.sh ${{ github.ref_name }}

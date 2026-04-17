@@ -235,12 +235,12 @@ void side_rgb_refresh(void) {
  */
 void set_left_rgb(uint8_t r, uint8_t g, uint8_t b) {
     for (int i = 0; i < SIDE_INDICATOR_LED_COUNT; i++) {
-        rgb_matrix_set_color(side_led_index_tab[i], r, g, b);
+        rgb_matrix_set_color(SIDE_INDEX + i, r, g, b);
     }
 }
 
 static void set_side_led_color(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
-    rgb_matrix_set_color(side_led_index_tab[index], r, g, b);
+    rgb_matrix_set_color(SIDE_INDEX + index, r, g, b);
 }
 
 void set_side_rgb(uint8_t r, uint8_t g, uint8_t b) {

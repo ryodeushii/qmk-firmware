@@ -21,7 +21,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "common/keyboard.h"
 #include "common/keys.h"
 #include "common/rf_driver.h"
-#include "common/via.h"
 #include "config.h"
 #include "host.h"
 #include "is31fl3733.h"

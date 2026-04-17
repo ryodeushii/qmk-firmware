@@ -21,17 +21,36 @@ void timer_pro(void) {
         m_host_driver  = host_get_driver();
     }
 
-    // step 10ms
-    if (timer_elapsed32(interval_timer) < TIMER_STEP) return;
-    interval_timer = timer_read32();
+    // Count all elapsed timer steps so slower housekeeping loops do not stretch timeouts.
+    uint32_t elapsed = timer_elapsed32(interval_timer);
+    if (elapsed < TIMER_STEP) return;
 
-    if (rf_link_show_time < RF_LINK_SHOW_TIME) rf_link_show_time++;
+    uint32_t steps = elapsed / TIMER_STEP;
+    interval_timer += steps * TIMER_STEP;
 
-    if (no_act_time < 0xffffffff) no_act_time++;
+    if (rf_link_show_time < RF_LINK_SHOW_TIME) {
+        uint32_t remaining = RF_LINK_SHOW_TIME - rf_link_show_time;
+        rf_link_show_time += (steps < remaining) ? steps : remaining;
+    }
+
+    if (no_act_time <= 0xffffffffU - steps) {
+        no_act_time += steps;
+    } else {
+        no_act_time = 0xffffffffU;
+    }
 #if (WORK_MODE == THREE_MODE)
-    if (rf_linking_time < 0xffff) rf_linking_time++;
+    if (rf_linking_time < 0xffff) {
+        uint32_t remaining = 0xffff - rf_linking_time;
+        rf_linking_time += (steps < remaining) ? steps : remaining;
+    }
 #endif
-    if (rgb_led_last_act < 0xffff) rgb_led_last_act++;
+    if (rgb_led_last_act < 0xffff) {
+        uint32_t remaining = 0xffff - rgb_led_last_act;
+        rgb_led_last_act += (steps < remaining) ? steps : remaining;
+    }
 
-    if (side_led_last_act < 0xffff) side_led_last_act++;
+    if (side_led_last_act < 0xffff) {
+        uint32_t remaining = 0xffff - side_led_last_act;
+        side_led_last_act += (steps < remaining) ? steps : remaining;
+    }
 }

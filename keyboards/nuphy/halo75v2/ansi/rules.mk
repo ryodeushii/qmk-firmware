@@ -1,5 +1,3 @@
-# common rules for nuphy keyboards
-SRC += common/features/socd_cleaner.c common/rf_driver.c common/rf_queue.c common/rf.c
 SRC += side.c
 
 SRC += mcu_pwr.c

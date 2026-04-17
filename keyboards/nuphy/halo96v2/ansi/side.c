@@ -36,10 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define AMBIENT_MODE_7 6
 
 #define LIGHT_COLOR_MAX 8
-#define SIDE_COLOR_MAX 8
 #define LIGHT_SPEED_MAX 4
 
-const uint8_t side_speed_table[SIDE_STATIC + 1][5] = {
+static const uint8_t side_speed_table[SIDE_STATIC + 1][5] = {
     [SIDE_WAVE] = {6, 14, 20, 25, 40}, [SIDE_MIX] = {10, 20, 25, 30, 45}, [SIDE_NEW] = {30, 50, 60, 70, 100}, [SIDE_BREATH] = {10, 20, 25, 30, 45}, [SIDE_STATIC] = {10, 20, 25, 30, 45},
 };
 
@@ -224,18 +223,14 @@ void side_speed_control(uint8_t dir) {
  * @param  dir: 0 - prev, 1 - next.
  * @note  save to eeprom.
  */
-static uint8_t light_color_max = 8;
-void           side_color_control(uint8_t dir) {
+void side_color_control(uint8_t dir) {
+    uint8_t light_color_max = keyboard_config.lights.side_mode == SIDE_NEW ? 3 : LIGHT_COLOR_MAX;
+
     if (keyboard_config.lights.side_mode == SIDE_WAVE || keyboard_config.lights.side_mode == SIDE_BREATH || keyboard_config.lights.side_mode == SIDE_STATIC) {
         keyboard_config.lights.side_static_color.hue += dir ? RGB_MATRIX_HUE_STEP : (uint8_t)(-RGB_MATRIX_HUE_STEP);
         save_config_to_eeprom();
         return;
     }
-
-    if (keyboard_config.lights.side_mode == SIDE_NEW) {
-        light_color_max = 3;
-    } else
-        light_color_max = 8;
 
     if (dir) {
         keyboard_config.lights.side_color++;
@@ -443,9 +438,9 @@ static void count_rgb_light(uint8_t light_temp) {
 /**
  * @brief  auxiliary_rgb_light.
  */
-uint8_t key_pwm_tab[45]  = {0x00};
-uint8_t power_play_index = 0;
-uint8_t f_power_show     = 1;
+static uint8_t key_pwm_tab[HALO_LED_COUNT] = {0x00};
+static uint8_t power_play_index            = 0;
+static bool    f_power_show                = true;
 
 static void reset_power_animation_state(void) {
     for (uint8_t i = 0; i < 45; i++) {
@@ -453,7 +448,7 @@ static void reset_power_animation_state(void) {
     }
 
     power_play_index = 0;
-    f_power_show     = 1;
+    f_power_show     = true;
     side_play_cnt    = 0;
     side_play_timer  = timer_read32();
 }
@@ -669,60 +664,6 @@ void bat_charging_breathe(void) {
     set_indicator_on_side(r_temp, g_temp, b_temp);
 }
 
-/**
- * @brief  rf state indicate
- */
-#define RF_LED_LINK_PERIOD 500
-#define RF_LED_PAIR_PERIOD 250
-void rf_led_show(void) {
-    static uint32_t rf_blink_timer = 0;
-    static bool     flag_power_on  = 1;
-    uint16_t        rf_blink_priod = 0;
-    extern uint8_t  rf_blink_cnt;
-
-    if (dev_info.link_mode == LINK_RF_24) {
-        r_temp = side_color_lib[3][0];
-        g_temp = side_color_lib[3][1];
-        b_temp = side_color_lib[3][2];
-    } else if (dev_info.link_mode == LINK_USB) {
-        r_temp = side_color_lib[2][0];
-        g_temp = side_color_lib[2][1];
-        b_temp = side_color_lib[2][2];
-        if (flag_power_on && (rf_link_show_time < RF_LINK_SHOW_TIME)) return;
-    } else {
-        r_temp = side_color_lib[5][0];
-        g_temp = side_color_lib[5][1];
-        b_temp = side_color_lib[5][2];
-    }
-
-    flag_power_on = 0;
-
-    if (rf_blink_cnt) {
-        if (dev_info.rf_state == RF_PAIRING)
-            rf_blink_priod = RF_LED_PAIR_PERIOD;
-        else
-            rf_blink_priod = RF_LED_LINK_PERIOD;
-
-        if (timer_elapsed32(rf_blink_timer) < (rf_blink_priod >> 1)) {
-        } else {
-            r_temp = 0x00;
-            g_temp = 0x00;
-            b_temp = 0x00;
-        }
-
-        if (timer_elapsed32(rf_blink_timer) >= rf_blink_priod) {
-            rf_blink_cnt--;
-            rf_blink_timer = timer_read32();
-        }
-    } else if (rf_link_show_time < RF_LINK_SHOW_TIME) {
-    } else {
-        rf_blink_timer = timer_read32();
-        return;
-    }
-
-    set_indicator_on_side(r_temp, g_temp, b_temp);
-}
-
 uint8_t low_bat_blink_cnt = 6;
 #define LOW_BAT_BLINK_PRIOD 500
 void low_bat_show(void) {
@@ -748,10 +689,8 @@ void low_bat_show(void) {
 /**
  * @brief  Battery level indicator
  */
-uint8_t bat_pwm_buf[6 * 3] = {0};
-uint8_t bat_end_led        = 0;
+uint8_t bat_end_led = 0;
 uint8_t bat_r, bat_g, bat_b;
-bool    low_bat_flag = 0;
 void    bat_percent_led(uint8_t bat_percent) {
     uint8_t i;
     if (bat_percent <= 20) { // 0-20 red
@@ -859,7 +798,6 @@ void bat_led_show(void) {
         if ((battery_percent < 10) && (!(battery_charge_state & 0x01))) {
             battery_show_flag = true;
             battery_show_time = timer_read32();
-            low_bat_flag      = 1;
             if (rgb_matrix_config.hsv.v > RGB_MATRIX_VAL_STEP) {
                 rgb_matrix_config.hsv.v = RGB_MATRIX_VAL_STEP;
             }
@@ -867,8 +805,6 @@ void bat_led_show(void) {
             if (keyboard_config.lights.side_brightness > 1) {
                 keyboard_config.lights.side_brightness = 1;
             }
-        } else {
-            low_bat_flag = 0;
         }
     }
 
@@ -986,7 +922,7 @@ static void side_power_mode_show(void) {
     }
 
     if (key_pwm_tab[HALO_LED_COUNT - 1] == 1) {
-        f_power_show = 0;
+        f_power_show = false;
         save_config_to_eeprom();
         rf_link_show_time = 0;
         battery_show_flag = true;
@@ -1015,7 +951,7 @@ void side_led_show(void) {
     side_play_timer = timer_read32();
 
     if (!keyboard_config.common.power_on_animation) {
-        f_power_show = 0;
+        f_power_show = false;
     }
 
     clear_indicator_overlay();

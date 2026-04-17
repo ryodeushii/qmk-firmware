@@ -22,7 +22,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "common/config.h"
 #include "common/keyboard.h"
 #include "common/keys.h"
-#include "common/via.h"
 #include "config.h"
 #include "host.h"
 #include "keyboard.h"

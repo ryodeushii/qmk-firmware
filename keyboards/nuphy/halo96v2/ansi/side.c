@@ -49,6 +49,7 @@ const uint8_t side_light_table[6] = {
 };
 
 #define SIDE_INDEX 99
+#define SIDE_INDICATOR_LED_COUNT 5
 
 const uint8_t side_led_index_tab[45] = {
     SIDE_INDEX + 10, SIDE_INDEX + 11, SIDE_INDEX + 12, SIDE_INDEX + 13, SIDE_INDEX + 14, SIDE_INDEX + 15, SIDE_INDEX + 16, SIDE_INDEX + 17, SIDE_INDEX + 18, SIDE_INDEX + 19, SIDE_INDEX + 20, SIDE_INDEX + 21, SIDE_INDEX + 22, SIDE_INDEX + 23, SIDE_INDEX + 0, SIDE_INDEX + 1, SIDE_INDEX + 2, SIDE_INDEX + 3, SIDE_INDEX + 4, SIDE_INDEX + 24, SIDE_INDEX + 25, SIDE_INDEX + 26, SIDE_INDEX + 27, SIDE_INDEX + 28, SIDE_INDEX + 29, SIDE_INDEX + 30, SIDE_INDEX + 31, SIDE_INDEX + 32, SIDE_INDEX + 33, SIDE_INDEX + 34, SIDE_INDEX + 35, SIDE_INDEX + 36, SIDE_INDEX + 37, SIDE_INDEX + 38, SIDE_INDEX + 39, SIDE_INDEX + 40, SIDE_INDEX + 41, SIDE_INDEX + 42, SIDE_INDEX + 43, SIDE_INDEX + 44, SIDE_INDEX + 9, SIDE_INDEX + 8, SIDE_INDEX + 7, SIDE_INDEX + 6, SIDE_INDEX + 5,
@@ -233,8 +234,13 @@ void side_rgb_refresh(void) {
  * @param  ...
  */
 void set_left_rgb(uint8_t r, uint8_t g, uint8_t b) {
-    for (int i = 0; i < 5; i++)
-        rgb_matrix_set_color(SIDE_INDEX + i, r, g, b);
+    for (int i = 0; i < SIDE_INDICATOR_LED_COUNT; i++) {
+        rgb_matrix_set_color(side_led_index_tab[i], r, g, b);
+    }
+}
+
+static void set_side_led_color(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
+    rgb_matrix_set_color(side_led_index_tab[index], r, g, b);
 }
 
 void set_side_rgb(uint8_t r, uint8_t g, uint8_t b) {
@@ -265,7 +271,7 @@ static void apply_indicator_overlay(void) {
 
 void set_all_side_off(void) {
     for (int i = 0; i < 45; i++) {
-        rgb_matrix_set_color(SIDE_INDEX + i, 0, 0, 0);
+        rgb_matrix_set_color(side_led_index_tab[i], 0, 0, 0);
     }
 }
 
@@ -672,12 +678,6 @@ static void side_breathe_mode_show(void) {
  * @brief  side_static_mode_show.
  */
 static void side_static_mode_show(void) {
-    if (side_play_cnt <= side_speed_table[keyboard_config.lights.side_mode][keyboard_config.lights.side_speed])
-        return;
-    else
-        side_play_cnt -= side_speed_table[keyboard_config.lights.side_mode][keyboard_config.lights.side_speed];
-    if (side_play_cnt > 20) side_play_cnt = 0;
-
     if (side_line == 0) set_all_side_off();
 
     rgb_t rgb = nuphy_static_picker_rgb(keyboard_config.lights.side_static_color.hue, keyboard_config.lights.side_static_color.sat, keyboard_config.lights.side_brightness);
@@ -845,8 +845,13 @@ void    bat_percent_led(uint8_t bat_percent) {
     } else {
         bat_end_led       = 4;
         low_bat_blink_cnt = 6;
-        for (i = 0; i <= bat_end_led; i++)
-            rgb_matrix_set_color(SIDE_INDEX + i, bat_r, bat_g, bat_b);
+        for (i = 0; i < SIDE_INDICATOR_LED_COUNT; i++) {
+            if (i <= bat_end_led) {
+                set_side_led_color(i, bat_r, bat_g, bat_b);
+            } else {
+                set_side_led_color(i, 0x00, 0x00, 0x00);
+            }
+        }
     }
 }
 

@@ -944,9 +944,23 @@ static void side_power_mode_show(void) {
     uint8_t i;
 
     for (i = 0; i < HALO_LED_COUNT; i++) {
-        r_temp = side_color_lib[keyboard_config.lights.side_color][0];
-        g_temp = side_color_lib[keyboard_config.lights.side_color][1];
-        b_temp = side_color_lib[keyboard_config.lights.side_color][2];
+        if (keyboard_config.lights.side_mode == SIDE_NEW) {
+            uint8_t color = clamp_color(keyboard_config.lights.side_color, 3);
+
+            r_temp = dual_side_color_lib[color][0];
+            g_temp = dual_side_color_lib[color][1];
+            b_temp = dual_side_color_lib[color][2];
+        } else if (keyboard_config.lights.side_mode == SIDE_MIX) {
+            r_temp = flow_rainbow_color_tab[side_play_point % FLOW_COLOR_TAB_LEN][0];
+            g_temp = flow_rainbow_color_tab[side_play_point % FLOW_COLOR_TAB_LEN][1];
+            b_temp = flow_rainbow_color_tab[side_play_point % FLOW_COLOR_TAB_LEN][2];
+        } else {
+            rgb_t rgb = nuphy_picker_hsv_rgb(keyboard_config.lights.side_static_color.hue, keyboard_config.lights.side_static_color.sat, 255);
+
+            r_temp = rgb.r;
+            g_temp = rgb.g;
+            b_temp = rgb.b;
+        }
 
         count_rgb_light(key_pwm_tab[i]);
         count_rgb_light(side_light_table[clamp_brightness(keyboard_config.lights.side_brightness)]);

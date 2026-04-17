@@ -273,10 +273,10 @@
                     "label": "Halo Light",
                     "content": [
                         {
-                            "label": "Mode A",
+                            "label": "Side Mode",
                             "type": "dropdown",
                             "content": [
-                                "id_side_light_mode_a",
+                                "id_side_light_mode",
                                 0,
                                 10
                             ],
@@ -292,9 +292,9 @@
                             "label": "Ambient Mode",
                             "type": "dropdown",
                             "content": [
-                                "id_side_light_mode_b",
+                                "id_ambient_light_mode",
                                 0,
-                                11
+                                20
                             ],
                             "options": [
                                 "1",
@@ -308,7 +308,7 @@
                         },
                         {
                             "label": "Speed (higher is slower)",
-                            "showIf": "{id_side_light_mode_a} != 4",
+                            "showIf": "{id_side_light_mode} != 4",
                             "type": "dropdown",
                             "content": [
                                 "id_side_light_speed",
@@ -325,7 +325,7 @@
                         },
                         {
                             "label": "Palette Color",
-                            "showIf": "{id_side_light_mode_a} == 2",
+                            "showIf": "{id_side_light_mode} == 2",
                             "type": "dropdown",
                             "content": [
                                 "id_side_light_color",
@@ -345,12 +345,12 @@
                         },
                         {
                             "label": "Static Color",
-                            "showIf": "{id_side_light_mode_a} == 0 || {id_side_light_mode_a} == 3 || {id_side_light_mode_a} == 4",
+                            "showIf": "{id_side_light_mode} == 0 || {id_side_light_mode} == 3 || {id_side_light_mode} == 4",
                             "type": "color",
                             "content": [
                                 "id_side_light_static_color",
                                 0,
-                                15
+                                14
                             ]
                         },
                         {
@@ -359,7 +359,7 @@
                             "content": [
                                 "id_side_light_brightness",
                                 0,
-                                14
+                                13
                             ],
                             "options": [
                                 0,
@@ -726,12 +726,12 @@
             "title": "Side Light -"
         },
         {
-            "name": "Side\nMode_A",
+            "name": "Side\nMode",
             "title": "Side Next Mode"
         },
         {
-            "name": "Side\nMode_B",
-            "title": "Side Next Mode"
+            "name": "Ambient\nMode",
+            "title": "Ambient Next Mode"
         },
         {
             "name": "Side\nColor",

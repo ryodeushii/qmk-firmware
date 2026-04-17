@@ -50,8 +50,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 0b1110111 AD <-> VCC
 // 0b1110101 AD <-> SCL
 // 0b1110110 AD <-> SDA
-#define DRIVER_ADDR_1 0b1101100
-#define DRIVER_ADDR_2 0b1100011
+#define IS31FL3763_I2C_ADDRESS_1 0b1101100
+#define IS31FL3763_I2C_ADDRESS_2 0b1100011
 
 #define ISSI_TIMEOUT 1
 

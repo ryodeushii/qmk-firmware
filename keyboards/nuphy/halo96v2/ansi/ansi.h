@@ -18,6 +18,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include "common/keys.h"
-
-#define SIDE_MOD_A SIDE_MOD
-#define SIDE_MOD_B AMBIENT_MOD

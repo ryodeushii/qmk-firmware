@@ -26,28 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "host.h"
 #include "is31fl3763.h"
 #include "keyboard.h"
-#include "matrix.h"
 #include "mcu_pwr.h"
 #include "quantum.h"
 #include "rgb_matrix.h"
 
-#ifdef VIA_ENABLE
-#    include "eeprom.h"
-#    include "via.h"
-#else
-#    include "eeconfig.h"
-#endif
-
-enum halo96_via_ids {
-    id_side_light_mode_a = id_side_light_mode,
-    id_side_light_mode_b = id_ambient_light_mode,
-};
-
-#define HALO96_ID_SIDE_LIGHT_STATIC_COLOR 15
-
 extern DEV_INFO_STRUCT dev_info;
-
-void side_mode_b_control(uint8_t dir);
 
 bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
     if (!process_record_user(keycode, record)) {
@@ -73,7 +56,7 @@ bool rgb_matrix_indicators_kb(void) {
 }
 
 bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
-    rgb_matrix_set_color(98, 0, 0, 0);
+    rgb_matrix_set_color(RGB_MATRIX_LED_COUNT - 1, 0, 0, 0);
 
     if (keyboard_config.custom.toggle_custom_keys_highlight) {
         uint8_t layer = get_highest_layer(layer_state);
@@ -89,7 +72,11 @@ bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
                         if (index >= led_min && index <= led_max && index != NO_LED) {
                             int keycode = keymap_key_to_keycode(layer, (keypos_t){col, row});
 
-                            if ((keycode >= SIDE_VAI && keycode <= SIDE_SPD) || keycode == TOG_POWER_ON_ANIMATION) {
+                            if (keycode >= AMBIENT_VAI && keycode <= AMBIENT_SPD) {
+                                rgb_matrix_set_color(index, RGB_WHITE);
+                            } else if (keycode >= SIDE_VAI && keycode <= SIDE_SPD) {
+                                rgb_matrix_set_color(index, RGB_YELLOW);
+                            } else if (keycode == TOG_POWER_ON_ANIMATION) {
                                 rgb_matrix_set_color(index, RGB_YELLOW);
                             } else if (keycode >= DEBOUNCE_PRESS_INC && keycode <= DEBOUNCE_PRESS_SHOW) {
                                 rgb_matrix_set_color(index, 0, 255, 0);
@@ -137,140 +124,6 @@ void gpio_init(void) {
     gpio_set_pin_output(DC_BOOST_PIN);
     gpio_write_pin_high(DC_BOOST_PIN);
 }
-
-#ifdef VIA_ENABLE
-void via_config_set_value(uint8_t *data) {
-    uint8_t *value_id   = &(data[0]);
-    uint8_t *value_data = &(data[1]);
-
-    switch (*value_id) {
-        case id_usb_sleep_toggle:
-            keyboard_config.common.usb_sleep_toggle = *value_data;
-            break;
-        case id_deep_sleep_toggle:
-            keyboard_config.common.deep_sleep_toggle = *value_data;
-            break;
-        case id_debounce_press:
-            keyboard_config.common.debounce_press_ms = *value_data;
-            break;
-        case id_debounce_release:
-            keyboard_config.common.debounce_release_ms = *value_data;
-            break;
-        case id_sleep_timeout:
-            keyboard_config.common.sleep_timeout = *value_data + 1;
-            break;
-        case id_caps_indicator_type:
-            keyboard_config.common.caps_indicator_type = *value_data;
-            break;
-        case id_sleep_toggle:
-            keyboard_config.common.sleep_toggle = *value_data;
-            break;
-        case id_side_light_mode_a:
-            keyboard_config.lights.side_mode = *value_data;
-            break;
-        case id_side_light_mode_b:
-            keyboard_config.lights.ambient_mode = *value_data;
-            break;
-        case id_side_light_speed:
-            keyboard_config.lights.side_speed = *value_data;
-            break;
-        case id_side_light_color:
-            keyboard_config.lights.side_color = *value_data;
-            break;
-        case id_side_light_brightness:
-            keyboard_config.lights.side_brightness = *value_data;
-            break;
-        case HALO96_ID_SIDE_LIGHT_STATIC_COLOR:
-            keyboard_config.lights.side_static_color.hue = value_data[0];
-            keyboard_config.lights.side_static_color.sat = value_data[1];
-            break;
-        case id_power_on_animation:
-            keyboard_config.common.power_on_animation = *value_data;
-            break;
-        case id_battery_indicator_brightness:
-            keyboard_config.custom.battery_indicator_brightness = *value_data;
-            break;
-        case id_toggle_custom_keys_highlight:
-            keyboard_config.custom.toggle_custom_keys_highlight = *value_data;
-            break;
-        case id_toggle_detect_numlock_state:
-            keyboard_config.custom.detect_numlock_state = *value_data;
-            break;
-        case id_battery_indicator_numeric:
-            keyboard_config.custom.battery_indicator_numeric = *value_data;
-            break;
-        case id_toggle_socd_indicator:
-            keyboard_config.custom.show_socd_indicator = *value_data;
-            break;
-    }
-}
-
-void via_config_get_value(uint8_t *data) {
-    uint8_t *value_id   = &(data[0]);
-    uint8_t *value_data = &(data[1]);
-
-    switch (*value_id) {
-        case id_usb_sleep_toggle:
-            *value_data = keyboard_config.common.usb_sleep_toggle;
-            break;
-        case id_deep_sleep_toggle:
-            *value_data = keyboard_config.common.deep_sleep_toggle;
-            break;
-        case id_debounce_press:
-            *value_data = keyboard_config.common.debounce_press_ms;
-            break;
-        case id_debounce_release:
-            *value_data = keyboard_config.common.debounce_release_ms;
-            break;
-        case id_sleep_timeout:
-            *value_data = keyboard_config.common.sleep_timeout - 1;
-            break;
-        case id_caps_indicator_type:
-            *value_data = keyboard_config.common.caps_indicator_type;
-            break;
-        case id_sleep_toggle:
-            *value_data = keyboard_config.common.sleep_toggle;
-            break;
-        case id_side_light_mode_a:
-            *value_data = keyboard_config.lights.side_mode;
-            break;
-        case id_side_light_mode_b:
-            *value_data = keyboard_config.lights.ambient_mode;
-            break;
-        case id_side_light_speed:
-            *value_data = keyboard_config.lights.side_speed;
-            break;
-        case id_side_light_color:
-            *value_data = keyboard_config.lights.side_color;
-            break;
-        case id_side_light_brightness:
-            *value_data = keyboard_config.lights.side_brightness;
-            break;
-        case HALO96_ID_SIDE_LIGHT_STATIC_COLOR:
-            value_data[0] = keyboard_config.lights.side_static_color.hue;
-            value_data[1] = keyboard_config.lights.side_static_color.sat;
-            break;
-        case id_power_on_animation:
-            *value_data = keyboard_config.common.power_on_animation;
-            break;
-        case id_battery_indicator_brightness:
-            *value_data = keyboard_config.custom.battery_indicator_brightness;
-            break;
-        case id_toggle_custom_keys_highlight:
-            *value_data = keyboard_config.custom.toggle_custom_keys_highlight;
-            break;
-        case id_toggle_detect_numlock_state:
-            *value_data = keyboard_config.custom.detect_numlock_state;
-            break;
-        case id_battery_indicator_numeric:
-            *value_data = keyboard_config.custom.battery_indicator_numeric;
-            break;
-        case id_toggle_socd_indicator:
-            *value_data = keyboard_config.custom.show_socd_indicator;
-            break;
-    }
-}
-#endif
 
 // led matrix config
 // FIXME: driver is coming from nuphy-src repo, not refactored to new QMK standard yet

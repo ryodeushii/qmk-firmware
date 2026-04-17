@@ -68,8 +68,8 @@
 #endif
 
 const uint8_t i2c_addresses[DRIVER_COUNT] = {
-    DRIVER_ADDR_1,
-    DRIVER_ADDR_2,
+    IS31FL3763_I2C_ADDRESS_1,
+    IS31FL3763_I2C_ADDRESS_2,
 };
 
 uint8_t g_twi_transfer_buffer[20];

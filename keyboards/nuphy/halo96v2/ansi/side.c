@@ -21,25 +21,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "common/config.h"
 #include "common/rf_driver.h"
 
-#define SIDE_WAVE 0
-#define SIDE_MIX 1
+#define SIDE_WAVE EFFECT_WAVE
+#define SIDE_MIX EFFECT_MIX
 #define SIDE_NEW 2
 #define SIDE_BREATH 3
 #define SIDE_STATIC 4
 
-#define SIDE_MODE_1 0
-#define SIDE_MODE_2 1
-#define SIDE_MODE_3 2
-#define SIDE_MODE_4 3
-#define SIDE_MODE_5 4
-#define SIDE_MODE_6 5
-#define SIDE_MODE_7 6
+#define AMBIENT_MODE_1 0
+#define AMBIENT_MODE_2 1
+#define AMBIENT_MODE_3 2
+#define AMBIENT_MODE_4 3
+#define AMBIENT_MODE_5 4
+#define AMBIENT_MODE_6 5
+#define AMBIENT_MODE_7 6
 
 #define LIGHT_COLOR_MAX 8
 #define SIDE_COLOR_MAX 8
 #define LIGHT_SPEED_MAX 4
 
-const uint8_t side_speed_table[5][5] = {
+const uint8_t side_speed_table[SIDE_STATIC + 1][5] = {
     [SIDE_WAVE] = {6, 14, 20, 25, 40}, [SIDE_MIX] = {10, 20, 25, 30, 45}, [SIDE_NEW] = {30, 50, 60, 70, 100}, [SIDE_BREATH] = {10, 20, 25, 30, 45}, [SIDE_STATIC] = {10, 20, 25, 30, 45},
 };
 
@@ -76,6 +76,9 @@ extern bool            f_sleep_show;
 extern bool            f_usb_sleep_show;
 extern bool            f_deep_sleep_show;
 extern uint16_t        rf_link_show_time;
+void                   os_mode_led_show(void);
+void                   sleep_indicator_show(void);
+void                   wireless_mode_show(void);
 
 static bool    left_overlay_active = false;
 static uint8_t left_overlay_r      = 0;
@@ -204,25 +207,21 @@ void    side_mode_control(uint8_t dir) {
     save_config_to_eeprom();
 }
 
-void side_mode_b_control(uint8_t dir) {
+void ambient_mode_control(uint8_t dir) {
     if (dir) {
         keyboard_config.lights.ambient_mode++;
-        if (keyboard_config.lights.ambient_mode > SIDE_MODE_7) {
-            keyboard_config.lights.ambient_mode = SIDE_MODE_1;
+        if (keyboard_config.lights.ambient_mode > AMBIENT_MODE_7) {
+            keyboard_config.lights.ambient_mode = AMBIENT_MODE_1;
         }
     } else {
         if (keyboard_config.lights.ambient_mode > 0) {
             keyboard_config.lights.ambient_mode--;
         } else {
-            keyboard_config.lights.ambient_mode = SIDE_MODE_1;
+            keyboard_config.lights.ambient_mode = AMBIENT_MODE_1;
         }
     }
     side_play_point = 0;
     save_config_to_eeprom();
-}
-
-void ambient_mode_control(uint8_t dir) {
-    side_mode_b_control(dir);
 }
 
 void side_rgb_refresh(void) {
@@ -236,6 +235,12 @@ void side_rgb_refresh(void) {
 void set_left_rgb(uint8_t r, uint8_t g, uint8_t b) {
     for (int i = 0; i < 5; i++)
         rgb_matrix_set_color(SIDE_INDEX + i, r, g, b);
+}
+
+void set_side_rgb(uint8_t r, uint8_t g, uint8_t b) {
+    for (int i = 0; i < side_line; i++) {
+        rgb_matrix_set_color(side_led_index_tab[i], r, g, b);
+    }
 }
 
 void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
@@ -418,6 +423,36 @@ void sys_led_show(void) {
                 break;
         }
     }
+}
+
+static void halo_side_indicators_show(void) {
+    bool show_caps_lock = false;
+
+    if (dev_info.link_mode == LINK_USB) {
+        show_caps_lock = host_keyboard_led_state().caps_lock;
+    } else {
+        show_caps_lock = dev_info.rf_led & 0x02;
+    }
+
+    if (show_caps_lock) {
+        switch (keyboard_config.common.caps_indicator_type) {
+            case CAPS_INDICATOR_SIDE:
+            case CAPS_INDICATOR_BOTH:
+                set_indicator_on_side(0x00, 0x80, 0x80);
+                break;
+            case CAPS_INDICATOR_UNDER_KEY:
+            case CAPS_INDICATOR_OFF:
+            default:
+                break;
+        }
+    }
+
+    os_mode_led_show();
+    sleep_indicator_show();
+
+#if (WORK_MODE == THREE_MODE)
+    wireless_mode_show();
+#endif
 }
 
 /**
@@ -1029,37 +1064,37 @@ void side_led_show(void) {
     }
 
     switch (keyboard_config.lights.ambient_mode) {
-        case SIDE_MODE_1:
+        case AMBIENT_MODE_1:
             side_line   = 0;
             f_side_flag = 0;
             break;
 
-        case SIDE_MODE_2:
+        case AMBIENT_MODE_2:
             side_line   = 45;
             f_side_flag = 0x08;
             break;
 
-        case SIDE_MODE_3:
+        case AMBIENT_MODE_3:
             side_line   = 45;
             f_side_flag = 0x18;
             break;
 
-        case SIDE_MODE_4:
+        case AMBIENT_MODE_4:
             side_line   = 45;
             f_side_flag = 0x1f;
             break;
 
-        case SIDE_MODE_5:
+        case AMBIENT_MODE_5:
             side_line   = 45;
             f_side_flag = 0x01;
             break;
 
-        case SIDE_MODE_6:
+        case AMBIENT_MODE_6:
             side_line   = 45;
             f_side_flag = 0x09;
             break;
 
-        case SIDE_MODE_7:
+        case AMBIENT_MODE_7:
             side_line   = 45;
             f_side_flag = 0x19;
             break;
@@ -1085,9 +1120,6 @@ void side_led_show(void) {
     }
 
     bat_led_show();
-    sys_led_show();
-    sys_sw_led_show();
-    sleep_sw_led_show();
-    rf_led_show();
+    halo_side_indicators_show();
     apply_indicator_overlay();
 }

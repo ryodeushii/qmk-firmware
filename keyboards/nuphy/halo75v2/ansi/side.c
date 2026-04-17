@@ -117,13 +117,6 @@ static uint8_t clamp_brightness(uint8_t brightness) {
     return brightness;
 }
 
-static uint8_t clamp_color(uint8_t color) {
-    if (color >= LIGHT_COLOR_MAX) {
-        return 0;
-    }
-    return color;
-}
-
 static void set_segment_rgb(const uint8_t *indices, uint8_t count, uint8_t r, uint8_t g, uint8_t b) {
     for (uint8_t i = 0; i < count; i++) {
         rgb_matrix_set_color(indices[i], r, g, b);
@@ -693,9 +686,17 @@ static void side_power_mode_show(void) {
     }
 
     for (uint8_t i = 0; i < HALO_LED_COUNT; i++) {
-        r_temp = side_color_lib[clamp_color(keyboard_config.lights.side_color)][0];
-        g_temp = side_color_lib[clamp_color(keyboard_config.lights.side_color)][1];
-        b_temp = side_color_lib[clamp_color(keyboard_config.lights.side_color)][2];
+        if (keyboard_config.lights.side_mode == SIDE_MIX) {
+            r_temp = flow_rainbow_color_tab[side_play_point % FLOW_COLOR_TAB_LEN][0];
+            g_temp = flow_rainbow_color_tab[side_play_point % FLOW_COLOR_TAB_LEN][1];
+            b_temp = flow_rainbow_color_tab[side_play_point % FLOW_COLOR_TAB_LEN][2];
+        } else {
+            rgb_t rgb = nuphy_picker_hsv_rgb(keyboard_config.lights.side_static_color.hue, keyboard_config.lights.side_static_color.sat, 255);
+
+            r_temp = rgb.r;
+            g_temp = rgb.g;
+            b_temp = rgb.b;
+        }
 
         count_rgb_light(key_pwm_tab[i]);
         count_rgb_light(side_light_table[2]);

@@ -13,8 +13,6 @@ enum {
 } side_effects;
 
 #define LIGHT_COLOR_MAX 8
-#define SIDE_COLOR_MAX 8
-
 // from side_logo.c
 #define STARRY_INDEX_LEN (160)
 #define FIREWORK_INDEX_LEN (158)

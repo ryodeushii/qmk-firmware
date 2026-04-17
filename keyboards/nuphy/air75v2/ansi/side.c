@@ -46,7 +46,6 @@ extern DEV_INFO_STRUCT dev_info;
 extern bool            f_bat_hold;
 
 extern uint8_t  logo_play_point;
-extern uint8_t  rf_blink_cnt;
 extern uint16_t rf_link_show_time;
 extern uint8_t  logo_play_cnt;
 extern uint32_t logo_play_timer;

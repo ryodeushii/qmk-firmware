@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #include <stdint.h>
 #include "color.h"
+#include "config.h"
 #include "host.h"
 #include "rgb_matrix.h"
 #include "timer.h"
-#include "side_table.h"
 #include "side_table.h"
 #include "common/rf_driver.h"
 #include "common/config.h"
@@ -46,7 +46,6 @@ extern void kb_config_reset(void);
 
 extern bool     f_dial_sw_init_ok;
 extern uint8_t  logo_play_point;
-extern uint8_t  rf_blink_cnt;
 extern uint16_t rf_link_show_time;
 extern uint8_t  logo_play_cnt;
 extern uint32_t logo_play_timer;

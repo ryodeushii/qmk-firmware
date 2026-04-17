@@ -17,12 +17,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "common/config_size.h"
+
+#ifndef WORK_MODE
+#    define WORK_MODE THREE_MODE
+#endif
+
 #define DYNAMIC_KEYMAP_MACRO_DELAY 8
 #define TAPPING_TERM 200
 #define TAP_CODE_DELAY 8
 
-#define DEV_MODE_PIN C0
-#define SYS_MODE_PIN C1
+#define DEVICE_MODE_PIN C0
+#define OS_MODE_PIN C1
 #define DC_BOOST_PIN C2
 #define NRF_RESET_PIN B4
 #define NRF_TEST_PIN B5
@@ -32,10 +38,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGB_DRIVER_SDB2 C7
 
 #define SERIAL_DRIVER SD1
-#define SD1_TX_PIN B6
-#define SD1_TX_PAL_MODE 0
-#define SD1_RX_PIN B7
-#define SD1_RX_PAL_MODE 0
+#define UART_TX_PIN B6
+#define UART_TX_PAL_MODE 0
+#define UART_RX_PIN B7
+#define UART_RX_PAL_MODE 0
 
 // This is a 7-bit address, that gets left-shifted and bit 0
 // set to 0 for write, 1 for read (as per I2C protocol)
@@ -44,8 +50,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // 0b1110111 AD <-> VCC
 // 0b1110101 AD <-> SCL
 // 0b1110110 AD <-> SDA
-#define DRIVER_ADDR_1 0b1101100
-#define DRIVER_ADDR_2 0b1100011
+#define IS31FL3763_I2C_ADDRESS_1 0b1101100
+#define IS31FL3763_I2C_ADDRESS_2 0b1100011
 
 #define ISSI_TIMEOUT 1
 
@@ -75,11 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGB_MATRIX_KEYPRESSES
 #define RGB_MATRIX_KEYRELEASES
 
-#ifdef VIA_ENABLE
-#    define VIA_EEPROM_CUSTOM_CONFIG_SIZE 19 // sizeof via_config
-#else
-#    define EECONFIG_KB_DATA_SIZE 17
-#endif
+#define VIA_EEPROM_CUSTOM_CONFIG_SIZE NUPHY_VIA_EEPROM_CUSTOM_CONFIG_SIZE
 
 #define RGB_MATRIX_SLEEP
 
@@ -101,9 +103,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #define LED_HITS_TO_REMEMBER 16
 #define WS2812_SPI_USE_CIRCULAR_BUFFER
 
-// debounce override - for clangd compliance - info_json.h - doesn't work most of the times
-#define DEBOUNCE 5
-#define RELEASE_DEBOUNCE (DEBOUNCE)
 // use dedicated timer for wait_us interrupts instead on ChibiOS defaulting to minimum 100us even if you sleep for 10us
 #define WAIT_US_TIMER GPTD14
 #define USB_POLLING_INTERVAL_MS 1
@@ -114,9 +113,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_position_mode
 #define RGB_DEFAULT_COLOR 168
 
+#define NUPHY_BLE_NAME "NuPhy Halo96 V2"
+#define NUPHY_24G_NAME "NuPhy Halo96 V2 Dongle"
+
 #define DEFAULT_SLEEP_TOGGLE true
 #define DEFAULT_USB_SLEEP_TOGGLE false
 #define DEFAULT_DEEP_SLEEP_TOGGLE true
+#define NUPHY_OS_SWITCH_HIGH_IS_WIN 1
 #define DEFAULT_SLEEP_TIMEOUT 5
 #define DEFAULT_TOGGLE_POWER_ON_ANIMATION 1
 #define DEFAULT_CAPS_INDICATOR_TYPE CAPS_INDICATOR_SIDE
@@ -124,14 +127,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEFAULT_LIGHT_CUSTOM_KEYS 0
 #define DEFAULT_SIDE_MODE_A 0
 #define DEFAULT_SIDE_MODE_B 3
+#define DEFAULT_SIDE_MODE DEFAULT_SIDE_MODE_A
+#define DEFAULT_AMBIENT_MODE DEFAULT_SIDE_MODE_B
 #define DEFAULT_SIDE_BRIGHTNESS 2
 #define DEFAULT_SIDE_SPEED 2
 #define DEFAULT_SIDE_RGB 1
 #define DEFAULT_SIDE_COLOR 0
+#define DEFAULT_AMBIENT_BRIGHTNESS DEFAULT_SIDE_BRIGHTNESS
+#define DEFAULT_AMBIENT_SPEED DEFAULT_SIDE_SPEED
+#define DEFAULT_AMBIENT_RGB DEFAULT_SIDE_RGB
+#define DEFAULT_AMBIENT_COLOR DEFAULT_SIDE_COLOR
 #define DEFAULT_BATTERY_INDICATOR_NUMERIC 1
 #define DEFAULT_DETECT_NUMLOCK 1
 #define DEFAULT_SHOW_SOCD_INDICATOR 0
+#define WIN_LOCK_ROW 0
+#define WIN_LOCK_COL 15
+#define NUM_LOCK_ROW 1
+#define NUM_LOCK_COL 15
 /*
  * END OF DEFAULT VALUES
  */
-#define CFW_VERSION "put_version_here"
+#ifndef NUPHY_STRINGIFY_HELPER
+#    define NUPHY_STRINGIFY_HELPER(x) #x
+#    define NUPHY_STRINGIFY(x) NUPHY_STRINGIFY_HELPER(x)
+#endif
+
+#ifndef CFW_VERSION
+#    ifdef CFW_VERSION_TOKEN
+#        define CFW_VERSION NUPHY_STRINGIFY(CFW_VERSION_TOKEN)
+#    else
+#        define CFW_VERSION "put_version_here"
+#    endif
+#endif

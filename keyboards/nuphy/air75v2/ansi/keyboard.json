@@ -11,8 +11,6 @@
     "bootmagic": true,
     "mousekey": false,
     "extrakey": true,
-    "console": false,
-    "command": false,
     "nkro": true,
     "key_lock": false,
     "rgb_matrix": true
@@ -878,7 +876,7 @@
     "LAYOUT_ansi_84": "LAYOUT_75_ansi"
   },
   "layouts": {
-    "LAYOUT_ansi_84": {
+    "LAYOUT_75_ansi": {
       "layout": [
         {
           "label": "Esc",

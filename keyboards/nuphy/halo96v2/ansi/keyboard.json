@@ -11,8 +11,6 @@
     "bootmagic": true,
     "mousekey": false,
     "extrakey": true,
-    "console": false,
-    "command": false,
     "nkro": true,
     "key_lock": false,
     "encoder": false,
@@ -67,12 +65,11 @@
   },
   "diode_direction": "COL2ROW",
   "rgb_matrix": {
-    "driver": "is31fl3763",
+    "driver": "custom",
     "center_point": [
       90,
       20
     ],
-    "max_brightness": 255,
     "val_steps": 64,
     "speed_steps": 52,
     "animations": {

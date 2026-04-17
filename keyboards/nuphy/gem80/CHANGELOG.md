@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.32.7-sync
+
+- synced the keyboard with upstream QMK `0.32.7`
+- aligned Gem80 with the shared `keyboards/nuphy/common` implementation used across supported Nuphy boards
+- kept Gem80 as the main common-code reference while moving shared startup, key processing, config, debounce, RF, sleep, and power-management logic into the common path
+- updated shared RF naming and wireless wake handling used by Gem80
+
 ### 1.0.0 - initial attempt to fix double keystrokes
 
 1. Override originally used sym_eager_pk with asym_eager_defer_pk for better double keystroke prevention + bump default QMK debounce from 5 to 7 ms. And there will be another prebuilt variant with 10ms debounce
@@ -249,5 +256,4 @@ FIX: non-saving keyboard options (technically not loading :D)
 ### 1.1.0.2 Fixed version with new VIA UI
 
 Fix issue with macOS (layer0) keys receiving random assignments
-
 

@@ -1,0 +1,70 @@
+#include "action.h"
+#include "quantum_keycodes.h"
+
+enum custom_keycodes {
+    RF_DFU = QK_KB_0,
+    LNK_USB,
+    LNK_RF,
+    LNK_BLE1,
+    LNK_BLE2,
+    LNK_BLE3,
+
+    MAC_TASK,
+    MAC_SEARCH,
+    MAC_VOICE,
+    MAC_CONSOLE,
+    MAC_DND,
+
+    WIN_LOCK,
+    DEV_RESET,
+    SLEEP_MODE,
+    BAT_SHOW,
+    RGB_TEST,
+    SHIFT_GRV,
+
+    SIDE_VAI,
+    SIDE_VAD,
+    SIDE_MOD,
+    SIDE_HUI,
+    SIDE_SPI,
+    SIDE_SPD,
+
+    AMBIENT_VAI,
+    AMBIENT_VAD,
+    AMBIENT_MOD,
+    AMBIENT_HUI,
+    AMBIENT_SPI,
+    AMBIENT_SPD,
+    TOG_USB_SLP,
+    TOG_CAPS_IND,
+    DEBOUNCE_PRESS_INC,
+    DEBOUNCE_PRESS_DEC,
+    DEBOUNCE_PRESS_SHOW,
+    SLEEP_TIMEOUT_INC,
+    SLEEP_TIMEOUT_DEC,
+    SLEEP_TIMEOUT_SHOW,
+    MAC_GLOBE,
+    DEBOUNCE_RELEASE_INC,
+    DEBOUNCE_RELEASE_DEC,
+    DEBOUNCE_RELEASE_SHOW,
+    TOG_DEEP_SLEEP,
+    TOG_BAT_IND_NUM,
+    SOCDON,
+    SOCDOFF,
+    SOCDTOG,
+    FW_VERSION,
+    TOG_POWER_ON_ANIMATION,
+};
+
+#define MAC_PRT G(S(KC_3))
+#define MAC_PRTA G(S(KC_4))
+#define WIN_PRTA G(S(KC_S))
+
+extern void toggle_usb_sleep(void);
+extern void toggle_deep_sleep(void);
+extern void toggle_caps_indication(void);
+extern void adjust_sleep_timeout(uint8_t);
+void timer_pro(void);
+void break_all_key(void);
+
+bool process_record_nuphy(uint16_t keycode, keyrecord_t *record);

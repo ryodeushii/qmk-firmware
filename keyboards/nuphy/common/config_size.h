@@ -1,0 +1,3 @@
+#pragma once
+
+#define NUPHY_VIA_EEPROM_CUSTOM_CONFIG_SIZE 23

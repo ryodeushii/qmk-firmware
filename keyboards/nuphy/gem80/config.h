@@ -17,16 +17,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#define USB_MODE 0
-#define THREE_MODE 1
-#define WORK_MODE THREE_MODE
+#include "common/config_size.h"
+
+#ifndef WORK_MODE
+#    define WORK_MODE THREE_MODE
+#endif
 
 #define DYNAMIC_KEYMAP_MACRO_DELAY 8
 #define TAPPING_TERM 200
 #define TAP_CODE_DELAY 8
 
-#define DEV_MODE_PIN C0
-#define SYS_MODE_PIN C1
+#define DEVICE_MODE_PIN C0
+#define OS_MODE_PIN C1
 #define DC_BOOST_PIN C2
 #define NRF_RESET_PIN B4
 #define NRF_TEST_PIN B5
@@ -39,9 +41,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define WS2812_DMA_CHANNEL 3
 #define WS2812_PWM_TARGET_PERIOD 800000
 
-#define DRIVER_RGB_DI_PIN A7
-#define DRIVER_LED_CS_PIN C6
-#define DRIVER_SIDE_PIN C8
+#define DRIVER_MATRIX_DI_PIN A7
+#define DRIVER_MATRIX_CS_PIN C6
+#define DRIVER_SIDE_DI_PIN C8
 #define DRIVER_SIDE_CS_PIN C9
 
 #define SERIAL_DRIVER SD1
@@ -50,11 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define UART_RX_PIN B7
 #define UART_RX_PAL_MODE 0
 
-#ifdef VIA_ENABLE
-#    define VIA_EEPROM_CUSTOM_CONFIG_SIZE 22 // sizeof via_config
-#else
-#    define EECONFIG_KB_DATA_SIZE 20
-#endif
+#define VIA_EEPROM_CUSTOM_CONFIG_SIZE NUPHY_VIA_EEPROM_CUSTOM_CONFIG_SIZE
 #ifdef RGB_MATRIX_LED_COUNT
 #    undef RGB_MATRIX_LED_COUNT
 #endif
@@ -62,6 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define RGB_MATRIX_SLEEP
 
+#define WS2812_SIDE_REFRESH
 // #define DEBUG_MATRIX_SCAN_RATE
 
 // NOTE: uncomment if you want to have random colors in Reactive RGB effects
@@ -80,9 +79,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #define LED_HITS_TO_REMEMBER 16
 #define WS2812_SPI_USE_CIRCULAR_BUFFER
 
-// debounce override - for clangd compliance - info_json.h - doesn't work most of the times
-#define DEBOUNCE 5
-#define RELEASE_DEBOUNCE (DEBOUNCE)
 // use dedicated timer for wait_us interrupts instead on ChibiOS defaulting to minimum 100us even if you sleep for 10us
 #define WAIT_US_TIMER GPTD14
 
@@ -91,6 +87,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #define RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_CUSTOM_position_mode
 #define RGB_DEFAULT_COLOR 168
+
+#define NUPHY_BLE_NAME "NuPhy Gem80"
+#define NUPHY_24G_NAME "NuPhy Gem80 Dongle"
 
 #define DEFAULT_SLEEP_TOGGLE true
 #define DEFAULT_USB_SLEEP_TOGGLE false
@@ -104,15 +103,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEFAULT_SIDE_SPEED 2
 #define DEFAULT_SIDE_RGB 1
 #define DEFAULT_SIDE_COLOR 0
-#define DEFAULT_LOGO_MODE 0
-#define DEFAULT_LOGO_BRIGHTNESS 3
-#define DEFAULT_LOGO_SPEED 2
-#define DEFAULT_LOGO_RGB 1
-#define DEFAULT_LOGO_COLOR 0
+#define DEFAULT_AMBIENT_MODE 0
+#define DEFAULT_AMBIENT_BRIGHTNESS 3
+#define DEFAULT_AMBIENT_SPEED 2
+#define DEFAULT_AMBIENT_RGB 1
+#define DEFAULT_AMBIENT_COLOR 0
 #define DEFAULT_BATTERY_INDICATOR_NUMERIC 0
 #define DEFAULT_DETECT_NUMLOCK 0
 #define DEFAULT_SHOW_SOCD_INDICATOR 0
+#define WIN_LOCK_ROW 0
+#define WIN_LOCK_COL 16
+#define NUM_LOCK_ROW 0
+#define NUM_LOCK_COL 15
 /*
  * END OF DEFAULT VALUES
  */
-#define CFW_VERSION "put_version_here"
+#ifndef NUPHY_STRINGIFY_HELPER
+#    define NUPHY_STRINGIFY_HELPER(x) #x
+#    define NUPHY_STRINGIFY(x) NUPHY_STRINGIFY_HELPER(x)
+#endif
+
+#ifndef CFW_VERSION
+#    ifdef CFW_VERSION_TOKEN
+#        define CFW_VERSION NUPHY_STRINGIFY(CFW_VERSION_TOKEN)
+#    else
+#        define CFW_VERSION "put_version_here"
+#    endif
+#endif

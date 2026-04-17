@@ -949,7 +949,7 @@ static void side_power_mode_show(void) {
         b_temp = side_color_lib[keyboard_config.lights.side_color][2];
 
         count_rgb_light(key_pwm_tab[i]);
-        count_rgb_light(side_light_table[2]);
+        count_rgb_light(side_light_table[clamp_brightness(keyboard_config.lights.side_brightness)]);
         rgb_matrix_set_color(side_led_index_tab[i], r_temp, g_temp, b_temp);
     }
 

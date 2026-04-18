@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "host_driver.h"
 #include "rf_driver.h"
 #include "rf_queue.h"
-#include "config.h"
+#include "../config/config.h"
 
 DEV_INFO_STRUCT dev_info = {
     .rf_battery = 100,
@@ -169,4 +169,3 @@ static void rf_send_extra(report_extra_t *report) {
         rf_send_extra_helper(CMD_RPT_SYS, report);
     }
 }
-

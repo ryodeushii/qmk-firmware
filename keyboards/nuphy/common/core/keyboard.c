@@ -1,8 +1,8 @@
-#include "common/features/socd_cleaner.h"
+#include "../features/socd_cleaner.h"
 #include "quantum.h"
-#include "rf_driver.h"
-#include "config.h"
-#include "indicator.h"
+#include "../wireless/rf_driver.h"
+#include "../config/config.h"
+#include "../lighting/indicator.h"
 #include "keys.h"
 #include "keyboard.h"
 

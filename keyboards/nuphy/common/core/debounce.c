@@ -6,7 +6,7 @@ releasing a key, that state is pushed after no changes occur for DEBOUNCE millis
 
 #include "quantum/debounce.h"
 #include "debounce.h"
-#include "config.h"
+#include "../config/config.h"
 #include "timer.h"
 #include <stdlib.h>
 

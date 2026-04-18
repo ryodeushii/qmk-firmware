@@ -3,7 +3,7 @@
 
 #include "quantum.h"
 #include "quantum_keycodes.h"
-#include "common/keys.h"
+#include "common/core/keys.h"
 #include QMK_KEYBOARD_H
 
 // clang-format off

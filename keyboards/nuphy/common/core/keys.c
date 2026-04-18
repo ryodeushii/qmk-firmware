@@ -1,15 +1,15 @@
 #include "action.h"
-#include "config.h"
+#include "../config/config.h"
 #include "eeconfig.h"
 #include "host.h"
 #include "keys.h"
 #include "debounce.h"
 #include "quantum.h"
 #include "wait.h"
-#include "features/socd_cleaner.h"
-#include "side.h"
-#include "ambient.h"
-#include "rf_driver.h"
+#include "../features/socd_cleaner.h"
+#include "../lighting/side.h"
+#include "../lighting/ambient.h"
+#include "../wireless/rf_driver.h"
 
 extern uint8_t         f_dev_reset_press;
 extern uint8_t         f_sleep_show;

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 #include "color.h"
 #include "config_size.h"

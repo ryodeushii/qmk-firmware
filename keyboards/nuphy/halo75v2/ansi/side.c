@@ -16,8 +16,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ansi.h"
-#include "common/config.h"
-#include "common/rf_driver.h"
+#include "common/config/config.h"
+#include "common/wireless/rf_driver.h"
 #include "host.h"
 #include "rgb_matrix.h"
 #include "side.h"

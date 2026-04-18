@@ -1,3 +1,5 @@
+#pragma once
+
 #include "quantum.h"
 
 __attribute((weak)) void side_mode_control(uint8_t dir) {}

@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include "rf_driver.h"
 #include "uart.h" // qmk uart.h
-#include "keys.h"
+#include "../core/keys.h"
 #include "rf_queue.h"
-#include "config.h"
+#include "../config/config.h"
 
 #ifndef NUPHY_BLE_NAME
 #    define NUPHY_BLE_NAME "NuPhy Keyboard"

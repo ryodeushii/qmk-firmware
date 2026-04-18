@@ -1,3 +1,5 @@
+#pragma once
+
 #include "quantum.h"
 
 typedef enum { DEBOUNCE_PRESS = 0, DEBOUNCE_RELEASE } DEBOUNCE_EVENT;

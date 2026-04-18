@@ -1,15 +1,15 @@
 #include "quantum.h"
-#include "keys.h"
-#include "config.h"
+#include "../core/keys.h"
+#include "../config/config.h"
 #include "rf_driver.h"
 
 extern DEV_INFO_STRUCT dev_info;
-extern uint16_t      rf_link_show_time;
-extern host_driver_t rf_host_driver;
+extern uint16_t        rf_link_show_time;
+extern host_driver_t   rf_host_driver;
 
-host_driver_t  *m_host_driver  = 0;
-uint8_t         host_mode      = 0;
-bool            f_send_channel = 0;
+host_driver_t *m_host_driver  = 0;
+uint8_t        host_mode      = 0;
+bool           f_send_channel = 0;
 /**
  * @brief  switch device link mode.
  * @param mode : link mode

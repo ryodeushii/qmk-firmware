@@ -1,7 +1,7 @@
 // Copyright 2024  Evgeny Kapusta (@ryodeushii)
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "common/keys.h"
+#include "common/core/keys.h"
 #include QMK_KEYBOARD_H
 
 // clang-format off
@@ -76,4 +76,3 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	_______,	_______,	_______,										_______, 							_______,	_______,   	MO(5),		_______,				AMBIENT_MOD,   AMBIENT_VAD,	AMBIENT_HUI),
 };
 // clang-format on
-

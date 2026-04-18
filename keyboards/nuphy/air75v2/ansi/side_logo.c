@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #include "rgb_matrix.h"
 #include "timer.h"
-#include "common/config.h"
+#include "common/config/config.h"
 #include "side.h"
 
 extern const uint8_t side_speed_table[5][5];

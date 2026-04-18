@@ -16,10 +16,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "config.h"
 #include "gpio.h"
-#include "common/mcu_stm32f0xx.h"
+#include "common/power/mcu_stm32f0xx.h"
 #include "mcu_pwr.h"
 #include "rgb_matrix.h"
-#include "common/rf_driver.h"
-#include "common/config.h"
+#include "common/wireless/rf_driver.h"
+#include "common/config/config.h"
 
-#include "common/mcu_pwr.c"
+#include "common/power/mcu_pwr_shared.inc"

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "quantum.h"
 
 void housekeeping_task_nuphy(void);

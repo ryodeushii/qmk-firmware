@@ -1,4 +1,4 @@
-SRC += common/ws2812-side-driver.c
+SRC += common/lighting/ws2812-side-driver.c
 SRC += side.c side_logo.c
 
 SRC += mcu_pwr.c

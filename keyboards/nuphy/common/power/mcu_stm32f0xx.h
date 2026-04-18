@@ -245,8 +245,8 @@ typedef struct {
 void EXTI_DeInit(void);
 
 /* Initialization and Configuration functions *********************************/
-void EXTI_Init(EXTI_InitTypeDef* EXTI_InitStruct);
-void EXTI_StructInit(EXTI_InitTypeDef* EXTI_InitStruct);
+void EXTI_Init(EXTI_InitTypeDef *EXTI_InitStruct);
+void EXTI_StructInit(EXTI_InitTypeDef *EXTI_InitStruct);
 void EXTI_GenerateSWInterrupt(uint32_t EXTI_Line);
 
 /* Interrupts and flags management functions **********************************/
@@ -512,7 +512,7 @@ void RCC_APB1PeriphClockCmd(uint32_t RCC_APB1Periph, FunctionalState NewState) {
  *
  * @retval None
  */
-void RCC_GetClocksFreq(RCC_ClocksTypeDef* RCC_Clocks) {
+void RCC_GetClocksFreq(RCC_ClocksTypeDef *RCC_Clocks) {
     uint32_t tmp = 0, pllmull = 0, pllsource = 0, prediv1factor = 0, presc = 0;
 
     /* Get SYSCLK source -------------------------------------------------------*/
@@ -656,7 +656,7 @@ void PWR_EnterSTOPMode(uint32_t PWR_Regulator, uint8_t PWR_STOPEntry) {
         __WFE();
     }
     /* Reset SLEEPDEEP bit of Cortex System Control Register */
-    SCB->SCR &= (uint32_t) ~((uint32_t)SCB_SCR_SLEEPDEEP_Msk);
+    SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP_Msk);
 }
 
 /**
@@ -670,7 +670,7 @@ void PWR_EnterSTOPMode(uint32_t PWR_Regulator, uint8_t PWR_STOPEntry) {
  */
 void PWR_EnterSleepMode(uint8_t PWR_SLEEPEntry) {
     /* Clear SLEEPDEEP bit of Cortex-M0 System Control Register */
-    SCB->SCR &= (uint32_t) ~((uint32_t)SCB_SCR_SLEEPDEEP_Msk);
+    SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP_Msk);
 
     /* Select SLEEP mode entry -------------------------------------------------*/
     if (PWR_SLEEPEntry == PWR_SLEEPEntry_WFI) {
@@ -892,21 +892,21 @@ typedef struct {
  * @param  GPIOx: where x can be (A, B, C, D or F) to select the GPIO peripheral.
  * @retval None
  */
-void GPIO_DeInit(GPIO_TypeDef* GPIOx) {
-    if (GPIOx == (GPIO_TypeDef*)GPIOA) {
+void GPIO_DeInit(GPIO_TypeDef *GPIOx) {
+    if (GPIOx == (GPIO_TypeDef *)GPIOA) {
         RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOA, ENABLE);
         RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOA, DISABLE);
-    } else if (GPIOx == (GPIO_TypeDef*)GPIOB) {
+    } else if (GPIOx == (GPIO_TypeDef *)GPIOB) {
         RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOB, ENABLE);
         RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOB, DISABLE);
-    } else if (GPIOx == (GPIO_TypeDef*)GPIOC) {
+    } else if (GPIOx == (GPIO_TypeDef *)GPIOC) {
         RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOC, ENABLE);
         RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOC, DISABLE);
-    } else if (GPIOx == (GPIO_TypeDef*)GPIOD) {
+    } else if (GPIOx == (GPIO_TypeDef *)GPIOD) {
         RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOD, ENABLE);
         RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOD, DISABLE);
     } else {
-        if (GPIOx == (GPIO_TypeDef*)GPIOF) {
+        if (GPIOx == (GPIO_TypeDef *)GPIOF) {
             RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOF, ENABLE);
             RCC_AHBPeriphResetCmd(RCC_AHBPeriph_GPIOF, DISABLE);
         }
@@ -923,7 +923,7 @@ void GPIO_DeInit(GPIO_TypeDef* GPIOx) {
  *         GPIO_Pin_0 -> GPIO_Pin_2 for GPIOD, GPIO_Pin_0 -> GPIO_Pin_3 for GPIOF.
  * @retval None
  */
-void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef* GPIO_InitStruct) {
+void GPIO_Init(GPIO_TypeDef *GPIOx, GPIO_InitTypeDef *GPIO_InitStruct) {
     uint32_t pinpos = 0x00, pos = 0x00, currentpin = 0x00;
 
     /*-------------------------- Configure the port pins -----------------------*/
@@ -962,7 +962,7 @@ void GPIO_Init(GPIO_TypeDef* GPIOx, GPIO_InitTypeDef* GPIO_InitStruct) {
  *         be initialized.
  * @retval None
  */
-void GPIO_StructInit(GPIO_InitTypeDef* GPIO_InitStruct) {
+void GPIO_StructInit(GPIO_InitTypeDef *GPIO_InitStruct) {
     /* Reset GPIO init structure parameters values */
     GPIO_InitStruct->GPIO_Pin   = GPIO_Pin_All;
     GPIO_InitStruct->GPIO_Mode  = GPIO_Mode_IN;
@@ -979,7 +979,7 @@ void GPIO_StructInit(GPIO_InitTypeDef* GPIO_InitStruct) {
  *         GPIOB or GPIOC,(0..2) for GPIOD and(0..3) for GPIOF.
  * @retval None
  */
-void GPIO_SetBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
+void GPIO_SetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin) {
     GPIOx->BSRR = GPIO_Pin;
 }
 
@@ -991,7 +991,7 @@ void GPIO_SetBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
  *         GPIOB or GPIOC,(0..2) for GPIOD and(0..3) for GPIOF.
  * @retval None
  */
-void GPIO_ResetBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
+void GPIO_ResetBits(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin) {
     GPIOx->BRR = GPIO_Pin;
 }
 
@@ -1007,7 +1007,7 @@ void GPIO_ResetBits(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin) {
  *         GPIOB or GPIOC,(0..2) for GPIOD and(0..3) for GPIOF.
  * @retval None
  */
-void GPIO_WriteBit(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, BitAction BitVal) {
+void GPIO_WriteBit(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, BitAction BitVal) {
     if (BitVal != Bit_RESET) {
         GPIOx->BSRR = GPIO_Pin;
     } else {
@@ -1038,7 +1038,7 @@ void GPIO_WriteBit(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin, BitAction BitVal) {
  *        function I/O pins.
  * @retval None
  */
-void GPIO_PinAFConfig(GPIO_TypeDef* GPIOx, uint16_t GPIO_PinSource, uint8_t GPIO_AF) {
+void GPIO_PinAFConfig(GPIO_TypeDef *GPIOx, uint16_t GPIO_PinSource, uint8_t GPIO_AF) {
     uint32_t temp   = 0x00;
     uint32_t temp_2 = 0x00;
 
@@ -1154,19 +1154,19 @@ typedef struct {
  *   that contains the configuration information for the specified USART peripheral.
  * @retval None
  */
-void USART_Init(USART_TypeDef* USARTx, USART_InitTypeDef* USART_InitStruct) {
+void USART_Init(USART_TypeDef *USARTx, USART_InitTypeDef *USART_InitStruct) {
     uint32_t          tmpreg = 0, apbclock = 0;
     uint32_t          integerdivider    = 0;
     uint32_t          fractionaldivider = 0;
     RCC_ClocksTypeDef RCC_ClocksStatus;
 
     /* Disable USART */
-    USARTx->CR1 &= (uint32_t) ~((uint32_t)USART_CR1_UE);
+    USARTx->CR1 &= (uint32_t)~((uint32_t)USART_CR1_UE);
 
     /*---------------------------- USART CR2 Configuration -----------------------*/
     tmpreg = USARTx->CR2;
     /* Clear STOP[13:12] bits */
-    tmpreg &= (uint32_t) ~((uint32_t)USART_CR2_STOP);
+    tmpreg &= (uint32_t)~((uint32_t)USART_CR2_STOP);
 
     /* Configure the USART Stop Bits, Clock, CPOL, CPHA and LastBit ------------*/
     /* Set STOP[13:12] bits according to USART_StopBits value */
@@ -1178,7 +1178,7 @@ void USART_Init(USART_TypeDef* USARTx, USART_InitTypeDef* USART_InitStruct) {
     /*---------------------------- USART CR1 Configuration -----------------------*/
     tmpreg = USARTx->CR1;
     /* Clear M, PCE, PS, TE and RE bits */
-    tmpreg &= (uint32_t) ~((uint32_t)CR1_CLEAR_MASK);
+    tmpreg &= (uint32_t)~((uint32_t)CR1_CLEAR_MASK);
 
     /* Configure the USART Word Length, Parity and mode ----------------------- */
     /* Set the M bits according to USART_WordLength value */
@@ -1192,7 +1192,7 @@ void USART_Init(USART_TypeDef* USARTx, USART_InitTypeDef* USART_InitStruct) {
     /*---------------------------- USART CR3 Configuration -----------------------*/
     tmpreg = USARTx->CR3;
     /* Clear CTSE and RTSE bits */
-    tmpreg &= (uint32_t) ~((uint32_t)CR3_CLEAR_MASK);
+    tmpreg &= (uint32_t)~((uint32_t)CR3_CLEAR_MASK);
 
     /* Configure the USART HFC -------------------------------------------------*/
     /* Set CTSE and RTSE bits according to USART_HardwareFlowControl value */
@@ -1243,13 +1243,13 @@ void USART_Init(USART_TypeDef* USARTx, USART_InitTypeDef* USART_InitStruct) {
  *   This parameter can be: ENABLE or DISABLE.
  * @retval None
  */
-void USART_Cmd(USART_TypeDef* USARTx, FunctionalState NewState) {
+void USART_Cmd(USART_TypeDef *USARTx, FunctionalState NewState) {
     if (NewState != DISABLE) {
         /* Enable the selected USART by setting the UE bit in the CR1 register */
         USARTx->CR1 |= USART_CR1_UE;
     } else {
         /* Disable the selected USART by clearing the UE bit in the CR1 register */
-        USARTx->CR1 &= (uint32_t) ~((uint32_t)USART_CR1_UE);
+        USARTx->CR1 &= (uint32_t)~((uint32_t)USART_CR1_UE);
     }
 }
 
@@ -1282,7 +1282,7 @@ void USART_Cmd(USART_TypeDef* USARTx, FunctionalState NewState) {
  *     @arg USART_FLAG_PE:  Parity Error flag.
  * @retval The new state of USART_FLAG (SET or RESET).
  */
-ST_FlagStatus USART_GetFlagStatus(USART_TypeDef* USARTx, uint32_t USART_FLAG) {
+ST_FlagStatus USART_GetFlagStatus(USART_TypeDef *USARTx, uint32_t USART_FLAG) {
     ST_FlagStatus bitstatus = ST_RESET;
 
     if ((USARTx->ISR & USART_FLAG) != (uint16_t)ST_RESET) {
@@ -1323,7 +1323,7 @@ ST_FlagStatus USART_GetFlagStatus(USART_TypeDef* USARTx, uint32_t USART_FLAG) {
  *           (USART_RequestCmd()).
  * @retval None
  */
-void USART_ClearFlag(USART_TypeDef* USARTx, uint32_t USART_FLAG) {
+void USART_ClearFlag(USART_TypeDef *USARTx, uint32_t USART_FLAG) {
     USARTx->ICR = USART_FLAG;
 }
 
@@ -1348,7 +1348,7 @@ void USART_ClearFlag(USART_TypeDef* USARTx, uint32_t USART_FLAG) {
  *   This parameter can be: ENABLE or DISABLE.
  * @retval None
  */
-void USART_ITConfig(USART_TypeDef* USARTx, uint32_t USART_IT, FunctionalState NewState) {
+void USART_ITConfig(USART_TypeDef *USARTx, uint32_t USART_IT, FunctionalState NewState) {
     uint32_t usartreg = 0, itpos = 0, itmask = 0;
     uint32_t usartxbase = 0;
 
@@ -1371,9 +1371,9 @@ void USART_ITConfig(USART_TypeDef* USARTx, uint32_t USART_IT, FunctionalState Ne
     {
     }
     if (NewState != DISABLE) {
-        *(__IO uint32_t*)usartxbase |= itmask;
+        *(__IO uint32_t *)usartxbase |= itmask;
     } else {
-        *(__IO uint32_t*)usartxbase &= ~itmask;
+        *(__IO uint32_t *)usartxbase &= ~itmask;
     }
 }
 
@@ -1382,7 +1382,7 @@ void USART_ITConfig(USART_TypeDef* USARTx, uint32_t USART_IT, FunctionalState Ne
  * @param  USARTx: where x can be 1 or 2 to select the USART peripheral.
  * @retval The received data.
  */
-uint16_t USART_ReceiveData(USART_TypeDef* USARTx) {
+uint16_t USART_ReceiveData(USART_TypeDef *USARTx) {
     /* Receive Data */
     return (uint16_t)(USARTx->RDR & (uint16_t)0x01FF);
 }
@@ -1414,7 +1414,7 @@ typedef struct {
  *         the configuration information for the specified NVIC peripheral.
  * @retval None
  */
-void NVIC_Init(NVIC_InitTypeDef* NVIC_InitStruct) {
+void NVIC_Init(NVIC_InitTypeDef *NVIC_InitStruct) {
     uint32_t tmppriority = 0x00;
 
     if (NVIC_InitStruct->NVIC_IRQChannelCmd != DISABLE) {
@@ -1501,7 +1501,7 @@ typedef struct {
  *         the specified TIM peripheral.
  * @retval None
  */
-void TIM_TimeBaseInit(TIM_TypeDef* TIMx, TIM_TimeBaseInitTypeDef* TIM_TimeBaseInitStruct) {
+void TIM_TimeBaseInit(TIM_TypeDef *TIMx, TIM_TimeBaseInitTypeDef *TIM_TimeBaseInitStruct) {
     uint16_t tmpcr1 = 0;
 
     tmpcr1 = TIMx->CR1;
@@ -1560,7 +1560,7 @@ void TIM_TimeBaseInit(TIM_TypeDef* TIMx, TIM_TimeBaseInitTypeDef* TIM_TimeBaseIn
  *   This parameter can be: ENABLE or DISABLE.
  * @retval None
  */
-void TIM_ITConfig(TIM_TypeDef* TIMx, uint16_t TIM_IT, FunctionalState NewState) {
+void TIM_ITConfig(TIM_TypeDef *TIMx, uint16_t TIM_IT, FunctionalState NewState) {
     if (NewState != DISABLE) {
         /* Enable the Interrupt sources */
         TIMx->DIER |= TIM_IT;
@@ -1596,7 +1596,7 @@ void TIM_ITConfig(TIM_TypeDef* TIMx, uint16_t TIM_IT, FunctionalState NewState) 
  *   - TIM_FLAG_COM is used only with TIM1 TIM15, TIM16 and TIM17.
  * @retval The new state of TIM_FLAG (SET or RESET).
  */
-ST_FlagStatus TIM_GetFlagStatus(TIM_TypeDef* TIMx, uint16_t TIM_FLAG) {
+ST_FlagStatus TIM_GetFlagStatus(TIM_TypeDef *TIMx, uint16_t TIM_FLAG) {
     ST_FlagStatus bitstatus = ST_RESET;
 
     if ((TIMx->SR & TIM_FLAG) != (uint16_t)ST_RESET) {
@@ -1633,7 +1633,7 @@ ST_FlagStatus TIM_GetFlagStatus(TIM_TypeDef* TIMx, uint16_t TIM_FLAG) {
  *   - TIM_FLAG_COM is used only with TIM1, TIM15, TIM16 and TIM17.
  * @retval None
  */
-void TIM_ClearFlag(TIM_TypeDef* TIMx, uint16_t TIM_FLAG) {
+void TIM_ClearFlag(TIM_TypeDef *TIMx, uint16_t TIM_FLAG) {
     /* Clear the flags */
     TIMx->SR = (uint16_t)~TIM_FLAG;
 }
@@ -1646,7 +1646,7 @@ void TIM_ClearFlag(TIM_TypeDef* TIMx, uint16_t TIM_FLAG) {
  *         This parameter can be: ENABLE or DISABLE.
  * @retval None
  */
-void TIM_Cmd(TIM_TypeDef* TIMx, FunctionalState NewState) {
+void TIM_Cmd(TIM_TypeDef *TIMx, FunctionalState NewState) {
     if (NewState != DISABLE) {
         /* Enable the TIM Counter */
         TIMx->CR1 |= TIM_CR1_CEN;

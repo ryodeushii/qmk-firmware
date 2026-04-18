@@ -1,5 +1,5 @@
 #include "config.h"
-#include "rf_driver.h"
+#include "../wireless/rf_driver.h"
 #include "rgb_matrix.h"
 
 #ifdef VIA_ENABLE

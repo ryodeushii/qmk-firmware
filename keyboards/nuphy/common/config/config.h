@@ -254,18 +254,10 @@ uint8_t  two_digit_decimals_led(uint8_t value);
 uint8_t  two_digit_ones_led(uint8_t value);
 rgb_t    nuphy_static_picker_rgb(uint8_t hue, uint8_t sat, uint8_t brightness);
 rgb_t    nuphy_picker_hsv_rgb(uint8_t hue, uint8_t sat, uint8_t value);
+void     toggle_usb_sleep(void);
+void     toggle_deep_sleep(void);
+void     toggle_caps_indication(void);
+void     adjust_sleep_timeout(uint8_t dir);
 
 #define SYS_SW_WIN 0xa1
 #define SYS_SW_MAC 0xa2
-
-#define HOST_USB_TYPE 0
-#define HOST_BLE_TYPE 1
-#define HOST_RF_TYPE 2
-
-#define LINK_RF_24 0
-#define LINK_BT_1 1
-#define LINK_BT_2 2
-#define LINK_BT_3 3
-#define LINK_USB 4
-
-#define TIMER_STEP 10

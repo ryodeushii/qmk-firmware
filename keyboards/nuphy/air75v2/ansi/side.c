@@ -6,9 +6,9 @@
 #include "rgb_matrix.h"
 #include "timer.h"
 #include "side_table.h"
-#include "common/config/config.h"
-#include "common/core/keyboard.h"
-#include "common/wireless/rf_driver.h"
+#include "common/config.h"
+#include "common/keyboard.h"
+#include "common/wireless.h"
 
 extern bool f_dial_sw_init_ok;
 extern void kb_config_reset(void);

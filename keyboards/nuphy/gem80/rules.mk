@@ -1,9 +1,6 @@
 SRC += common/lighting/ws2812-side-driver.c
 SRC += side.c side_logo.c
 
-# can be separated with needed fields implemented in gem80-common.h
-SRC += mcu_pwr.c
-
 SRC += gem80-common.c
 
 UART_DRIVER_REQUIRED = yes

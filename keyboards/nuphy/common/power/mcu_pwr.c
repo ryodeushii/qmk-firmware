@@ -15,8 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Shared implementation body. Include this from a board-local mcu_pwr.c that
-// already pulled in the board's config.h, mcu_pwr.h, and related dependencies.
+#include "config.h"
+#include "gpio.h"
+#include "hal_lld.h"
+#include "hal_usb.h"
+#include "mcu_pwr.h"
+#include "rgb_matrix.h"
+#include "usb_main.h"
+
+#include "mcu_stm32f0xx.h"
+#include "../config.h"
+#include "../wireless.h"
+#include "../wireless/rf_driver.h"
 
 #if defined(DRIVER_SIDE_DI_PIN)
 #    define NUPHY_PREPARE_SIDE_DRIVER_FOR_SLEEP()    \
@@ -89,18 +99,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         } while (0)
 #endif
 
-#ifndef NUPHY_MATRIX_WAKE_INIT
-#    define NUPHY_MATRIX_WAKE_INIT()              \
-        do {                                      \
-            extern void matrix_init_custom(void); \
-            matrix_init_custom();                 \
-        } while (0)
-#endif
+__attribute__((weak)) void nuphy_matrix_wake_init(void) {
+    extern void matrix_init_custom(void);
+
+    matrix_init_custom();
+}
 
 static const pin_t row_pins[MATRIX_ROWS] = MATRIX_ROW_PINS;
 static const pin_t col_pins[MATRIX_COLS] = MATRIX_COL_PINS;
-
-extern DEV_INFO_STRUCT dev_info;
 
 static bool tim6_enabled = false;
 static bool sleeping     = false;
@@ -108,21 +114,7 @@ static bool sleeping     = false;
 static bool rgb_led_on  = 0;
 static bool side_led_on = 0;
 
-#if (WORK_MODE == THREE_MODE)
-static void prepare_wireless_wakeup(void) {
-    if (dev_info.link_mode == LINK_USB) {
-        return;
-    }
-
-    // Force the first wake key through the RF queue until the module reports
-    // that the wireless link is live again.
-    dev_info.rf_state = RF_IDLE;
-    uart_send_cmd(CMD_HAND, 0, 1);
-}
-#endif
-
 void rgb_matrix_update_pwm_buffers(void);
-void clear_report_buffer_and_queue(void);
 void pwr_side_led_off(void);
 void pwr_side_led_on(void);
 
@@ -141,9 +133,6 @@ void m_deinit_usb_072(void) {
     GPIO_Init((GPIO_TypeDef *)GPIOA, &GPIO_InitStructure);
 }
 
-#include "hal_usb.h"
-#include "usb_main.h"
-
 void SYSCFG_EXTILineConfig(uint8_t EXTI_PortSourceGPIOx, uint8_t EXTI_PinSourcex) {
     uint32_t tmp = 0x00;
 
@@ -152,18 +141,13 @@ void SYSCFG_EXTILineConfig(uint8_t EXTI_PortSourceGPIOx, uint8_t EXTI_PinSourcex
     SYSCFG->EXTICR[EXTI_PinSourcex >> 0x02] |= (((uint32_t)EXTI_PortSourceGPIOx) << (0x04 * (EXTI_PinSourcex & (uint8_t)0x03)));
 }
 
-#include "hal_lld.h"
-
 #define EXTI_PortSourceGPIOA ((uint8_t)0x00)
 #define EXTI_PortSourceGPIOB ((uint8_t)0x01)
 #define EXTI_PortSourceGPIOC ((uint8_t)0x02)
 #define EXTI_PortSourceGPIOD ((uint8_t)0x03)
 
 void enter_deep_sleep(void) {
-    if (dev_info.rf_state == RF_CONNECT)
-        uart_send_cmd(CMD_SET_CONFIG, 5, 5);
-    else
-        uart_send_cmd(CMD_SLEEP, 5, 5);
+    nuphy_rf_request_sleep(dev_info.rf_state == RF_CONNECT);
 
     if (tim6_enabled) TIM_Cmd(TIM6, DISABLE);
 
@@ -223,7 +207,7 @@ void enter_deep_sleep(void) {
 }
 
 void exit_deep_sleep(void) {
-    NUPHY_MATRIX_WAKE_INIT();
+    nuphy_matrix_wake_init();
 
 #if (WORK_MODE == THREE_MODE)
     gpio_set_pin_input_high(DEVICE_MODE_PIN);
@@ -242,7 +226,7 @@ void exit_deep_sleep(void) {
     if (tim6_enabled) TIM_Cmd(TIM6, ENABLE);
 
 #if (WORK_MODE == THREE_MODE)
-    prepare_wireless_wakeup();
+    nuphy_rf_prepare_wakeup();
 #endif
     if (dev_info.link_mode == LINK_USB) {
         if (USB_DRIVER.state == USB_SUSPENDED) {
@@ -253,19 +237,11 @@ void exit_deep_sleep(void) {
 
 void enter_light_sleep(void) {
 #if (WORK_MODE == THREE_MODE)
-    dev_sts_sync();
-
-    if (dev_info.rf_state == RF_CONNECT)
-        uart_send_cmd(CMD_SET_CONFIG, 5, 5);
-    else
-        uart_send_cmd(CMD_SLEEP, 5, 5);
-
-#endif
-    led_pwr_sleep_handle();
-
-#if (WORK_MODE == THREE_MODE)
+    nuphy_rf_sync_status();
+    nuphy_rf_request_sleep(dev_info.rf_state == RF_CONNECT);
     clear_report_buffer_and_queue();
 #endif
+    led_pwr_sleep_handle();
     sleeping = true;
 }
 
@@ -274,7 +250,7 @@ void exit_light_sleep(void) {
 
     led_pwr_wake_handle();
 #if (WORK_MODE == THREE_MODE)
-    prepare_wireless_wakeup();
+    nuphy_rf_prepare_wakeup();
 #endif
     if (dev_info.link_mode == LINK_USB) {
         if (USB_DRIVER.state == USB_SUSPENDED) {

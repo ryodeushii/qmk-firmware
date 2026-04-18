@@ -1,6 +1,6 @@
 #include "quantum.h"
-#include "../wireless/rf_driver.h"
-#include "../config/config.h"
+#include "housekeeping_timer.h"
+#include "../wireless.h"
 
 extern host_driver_t *m_host_driver;
 extern uint16_t       rf_link_show_time;

@@ -1,5 +1,6 @@
 #include "config.h"
-#include "../wireless/rf_driver.h"
+#include "../timer.h"
+#include "../wireless.h"
 #include "rgb_matrix.h"
 
 #ifdef VIA_ENABLE

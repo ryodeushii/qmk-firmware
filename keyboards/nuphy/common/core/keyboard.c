@@ -1,8 +1,10 @@
 #include "../features/socd_cleaner.h"
 #include "quantum.h"
-#include "../wireless/rf_driver.h"
 #include "../config/config.h"
-#include "../lighting/indicator.h"
+#include "../debounce.h"
+#include "../indicator.h"
+#include "../timer.h"
+#include "../wireless.h"
 #include "keys.h"
 #include "keyboard.h"
 
@@ -81,13 +83,7 @@ void long_press_key(void) {
             dev_info.rf_channel  = rf_sw_temp;
             dev_info.ble_channel = rf_sw_temp;
 
-            uint8_t timeout = 5;
-            while (timeout--) {
-                uart_send_cmd(CMD_NEW_ADV, 0, 1);
-                wait_ms(20);
-                uart_receive_pro();
-                if (f_rf_new_adv_ok) break;
-            }
+            nuphy_rf_request_new_adv(5);
         }
 #endif
     } else {
@@ -111,9 +107,9 @@ void long_press_key(void) {
                 dev_info.rf_channel  = LINK_BT_1;
             }
 
-            uart_send_cmd(CMD_SET_LINK, 10, 10);
+            nuphy_rf_set_link(dev_info.link_mode, 10, 10);
             wait_ms(500);
-            uart_send_cmd(CMD_CLR_DEVICE, 10, 10);
+            nuphy_rf_factory_reset();
 
             void device_reset_show(void);
             void device_reset_init(void);
@@ -291,11 +287,9 @@ void housekeeping_task_nuphy(void) {
     timer_pro();
 
 #if (WORK_MODE == THREE_MODE)
-    uart_receive_pro();
-
-    uart_send_report_repeat();
-
-    dev_sts_sync();
+    nuphy_rf_poll();
+    nuphy_rf_repeat_reports();
+    nuphy_rf_sync_status();
 #endif
 
     long_press_key();
@@ -313,9 +307,9 @@ void keyboard_post_init_nuphy(void) {
     gpio_init();
 
 #if (WORK_MODE == THREE_MODE)
-    rf_uart_init();
+    nuphy_rf_transport_init();
     wait_ms(500);
-    rf_device_init();
+    nuphy_rf_device_init();
 #endif
     break_all_key();
     dial_sw_fast_scan();

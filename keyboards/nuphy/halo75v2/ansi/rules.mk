@@ -1,7 +1,5 @@
 SRC += side.c
 
-SRC += mcu_pwr.c
-
 UART_DRIVER_REQUIRED = yes
 
 OPT ?= 2

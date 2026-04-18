@@ -1,7 +1,12 @@
 #include "quantum.h"
-#include "../core/keys.h"
-#include "../config/config.h"
-#include "rf_driver.h"
+#include "../debounce.h"
+#include "../wireless.h"
+
+enum {
+    HOST_USB_TYPE = 0,
+    HOST_BLE_TYPE,
+    HOST_RF_TYPE,
+};
 
 extern DEV_INFO_STRUCT dev_info;
 extern uint16_t        rf_link_show_time;

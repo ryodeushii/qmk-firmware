@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "hal_usb.h"
 #include "usb_main.h"
 #include "mcu_pwr.h"
-#include "../wireless/rf_driver.h"
-#include "../core/debounce.h"
+#include "../debounce.h"
 #include "../config/config.h"
+#include "../wireless.h"
 
 extern DEV_INFO_STRUCT dev_info;
 extern uint16_t        rf_linking_time;
@@ -32,7 +32,7 @@ extern bool            f_wakeup_prepare;
 
 void deep_sleep_handle(void) {
     // Sync again before sleeping. Without this, the wake keystroke is more likely to be lost.
-    dev_sts_sync();
+    nuphy_rf_sync_status();
 
     enter_deep_sleep(); // puts the board in WFI mode and pauses the MCU
     exit_deep_sleep();  // This gets called when there is an interrupt (wake) event.

@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "host.h"
 #include "rgb_matrix.h"
 #include "side.h"
-#include "common/config/config.h"
-#include "common/wireless/rf_driver.h"
+#include "common/config.h"
+#include "common/wireless.h"
 #include "timer.h"
 
 #define SIDE_WAVE EFFECT_WAVE

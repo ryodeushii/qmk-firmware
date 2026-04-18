@@ -17,8 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "host_driver.h"
 #include "rf_driver.h"
-#include "rf_queue.h"
-#include "../config/config.h"
 
 DEV_INFO_STRUCT dev_info = {
     .rf_battery = 100,
@@ -38,7 +36,7 @@ static void    rf_send_nkro(report_nkro_t *report);
 static void    rf_send_mouse(report_mouse_t *report);
 static void    rf_send_extra(report_extra_t *report);
 
-const host_driver_t rf_host_driver = {rf_keyboard_leds, rf_send_keyboard, rf_send_nkro, rf_send_mouse, rf_send_extra};
+host_driver_t rf_host_driver = {rf_keyboard_leds, rf_send_keyboard, rf_send_nkro, rf_send_mouse, rf_send_extra};
 
 /* defined in rf.c */
 void clear_report_buffer(void);

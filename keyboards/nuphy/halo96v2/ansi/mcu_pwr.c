@@ -15,18 +15,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "config.h"
-#include "gpio.h"
-#include "common/config/config.h"
-#include "common/power/mcu_stm32f0xx.h"
-#include "common/wireless/rf_driver.h"
-#include "mcu_pwr.h"
-#include "rgb_matrix.h"
+void nuphy_matrix_wake_init(void) {
+    extern void matrix_init(void);
 
-#define NUPHY_MATRIX_WAKE_INIT()       \
-    do {                               \
-        extern void matrix_init(void); \
-        matrix_init();                 \
-    } while (0)
-
-#include "common/power/mcu_pwr_shared.inc"
+    matrix_init();
+}

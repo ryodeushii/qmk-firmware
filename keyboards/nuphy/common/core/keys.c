@@ -1,15 +1,15 @@
 #include "action.h"
 #include "../config/config.h"
+#include "../debounce.h"
+#include "../wireless.h"
 #include "eeconfig.h"
 #include "host.h"
 #include "keys.h"
-#include "debounce.h"
 #include "quantum.h"
 #include "wait.h"
 #include "../features/socd_cleaner.h"
-#include "../lighting/side.h"
-#include "../lighting/ambient.h"
-#include "../wireless/rf_driver.h"
+#include "../side.h"
+#include "../ambient.h"
 
 extern uint8_t         f_dev_reset_press;
 extern uint8_t         f_sleep_show;
@@ -59,7 +59,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
         case RF_DFU:
             if (record->event.pressed) {
                 if (dev_info.link_mode != LINK_USB) return false;
-                uart_send_cmd(CMD_RF_DFU, 10, 20);
+                nuphy_rf_enter_dfu();
             }
             return false;
 #endif
@@ -67,8 +67,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 break_all_key();
             } else {
-                dev_info.link_mode = LINK_USB;
-                uart_send_cmd(CMD_SET_LINK, 10, 10);
+                nuphy_rf_set_link(LINK_USB, 10, 10);
             }
             return false;
 
@@ -84,10 +83,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
                 f_rf_sw_press = 0;
 
                 if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
-                    dev_info.link_mode   = rf_sw_temp;
-                    dev_info.rf_channel  = rf_sw_temp;
-                    dev_info.ble_channel = rf_sw_temp;
-                    uart_send_cmd(CMD_SET_LINK, 10, 20);
+                    nuphy_rf_set_link(rf_sw_temp, 10, 20);
                 }
             }
             return false;
@@ -103,10 +99,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
                 f_rf_sw_press = 0;
 
                 if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
-                    dev_info.link_mode   = rf_sw_temp;
-                    dev_info.rf_channel  = rf_sw_temp;
-                    dev_info.ble_channel = rf_sw_temp;
-                    uart_send_cmd(CMD_SET_LINK, 10, 20);
+                    nuphy_rf_set_link(rf_sw_temp, 10, 20);
                 }
             }
             return false;
@@ -122,10 +115,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
                 f_rf_sw_press = 0;
 
                 if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
-                    dev_info.link_mode   = rf_sw_temp;
-                    dev_info.rf_channel  = rf_sw_temp;
-                    dev_info.ble_channel = rf_sw_temp;
-                    uart_send_cmd(CMD_SET_LINK, 10, 20);
+                    nuphy_rf_set_link(rf_sw_temp, 10, 20);
                 }
             }
             return false;
@@ -141,10 +131,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
                 f_rf_sw_press = 0;
 
                 if (rf_sw_press_delay < RF_LONG_PRESS_DELAY) {
-                    dev_info.link_mode   = rf_sw_temp;
-                    dev_info.rf_channel  = rf_sw_temp;
-                    dev_info.ble_channel = rf_sw_temp;
-                    uart_send_cmd(CMD_SET_LINK, 10, 20);
+                    nuphy_rf_set_link(rf_sw_temp, 10, 20);
                 }
             }
             return false;

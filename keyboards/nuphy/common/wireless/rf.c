@@ -17,11 +17,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdint.h>
 #include <string.h>
+#include "../debounce.h"
+#include "../timer.h"
+#include "../wireless.h"
 #include "rf_driver.h"
+#include "rf_protocol.h"
 #include "uart.h" // qmk uart.h
-#include "../core/keys.h"
 #include "rf_queue.h"
-#include "../config/config.h"
+
+enum {
+    HOST_USB_TYPE = 0,
+    HOST_BLE_TYPE,
+    HOST_RF_TYPE,
+};
 
 #ifndef NUPHY_BLE_NAME
 #    define NUPHY_BLE_NAME "NuPhy Keyboard"
@@ -685,4 +693,68 @@ void rf_device_init(void) {
 
     uart_send_cmd(CMD_SET_NAME, 10, 20);
     uart_send_cmd(CMD_SET_24G_NAME, 10, 20);
+}
+
+void nuphy_rf_sync_status(void) {
+    dev_sts_sync();
+}
+
+void nuphy_rf_transport_init(void) {
+    rf_uart_init();
+}
+
+void nuphy_rf_device_init(void) {
+    rf_device_init();
+}
+
+void nuphy_rf_repeat_reports(void) {
+    uart_send_report_repeat();
+}
+
+void nuphy_rf_poll(void) {
+    uart_receive_pro();
+}
+
+void nuphy_rf_enter_dfu(void) {
+    uart_send_cmd(CMD_RF_DFU, 10, 20);
+}
+
+void nuphy_rf_set_link(uint8_t mode, uint8_t ack_count, uint8_t delay_ms) {
+    dev_info.link_mode = mode;
+    if (mode != LINK_USB) {
+        dev_info.rf_channel  = mode;
+        dev_info.ble_channel = mode;
+    }
+    uart_send_cmd(CMD_SET_LINK, ack_count, delay_ms);
+}
+
+bool nuphy_rf_request_new_adv(uint8_t retries) {
+    while (retries--) {
+        uart_send_cmd(CMD_NEW_ADV, 0, 1);
+        wait_ms(20);
+        uart_receive_pro();
+        if (f_rf_new_adv_ok) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void nuphy_rf_factory_reset(void) {
+    uart_send_cmd(CMD_SET_LINK, 10, 10);
+    uart_send_cmd(CMD_CLR_DEVICE, 10, 10);
+}
+
+void nuphy_rf_prepare_wakeup(void) {
+    if (dev_info.link_mode == LINK_USB) {
+        return;
+    }
+
+    dev_info.rf_state = RF_IDLE;
+    uart_send_cmd(CMD_HAND, 0, 1);
+}
+
+void nuphy_rf_request_sleep(bool keep_connection) {
+    uart_send_cmd(keep_connection ? CMD_SET_CONFIG : CMD_SLEEP, 5, 5);
 }

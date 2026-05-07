@@ -21,8 +21,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	_______, 	LNK_BLE1,  	LNK_BLE2,  	LNK_BLE3,  	LNK_RF,   	_______,   	_______,   	_______,   	_______,   	_______,  	_______,   	_______,	_______, 	_______,	            _______,
 	_______, 	_______,   	_______,   	_______,   	_______,   	_______,   	DEBOUNCE_PRESS_DEC,   	DEBOUNCE_PRESS_SHOW,   	DEBOUNCE_PRESS_INC,   	TOG_DEEP_SLEEP,  	TOG_USB_SLP,   	DEV_RESET,	SLEEP_MODE, BAT_SHOW,	            _______,
 	TOG_CAPS_IND,	SLEEP_TIMEOUT_DEC,   	SLEEP_TIMEOUT_SHOW,   	SLEEP_TIMEOUT_INC,  	_______,   	_______,   	DEBOUNCE_RELEASE_DEC,	DEBOUNCE_RELEASE_SHOW,   	DEBOUNCE_RELEASE_INC,   	_______,  	_______,	_______, 	_______,	                            _______,
-	_______,				_______,   	_______,   	RGB_TEST,  	_______,    _______,   	MO(5),	MO(4), 		UG_SPDD,	UG_SPDU,	_______,	_______,	            UG_VALU,    _______,
-	_______,	_______,	_______,						_______, 							_______,	MO(1),   	_______,				UG_NEXT,	UG_VALD,    UG_HUEU),
+	_______,				_______,   	_______,   	RGB_TEST,  	_______,    _______,   	MO(5),	MO(4), 		RM_SPDD,	RM_SPDU,	_______,	_______,	            RM_VALU,    _______,
+	_______,	_______,	_______,						_______, 							_______,	MO(1),   	_______,				RM_NEXT,	RM_VALD,    RM_HUEU),
 
 // layer win
 [2] = LAYOUT_ansi_84(
@@ -39,8 +39,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	_______, 	LNK_BLE1,  	LNK_BLE2,  	LNK_BLE3,  	LNK_RF,   	_______,   	_______,   	_______,   	_______,   	_______,  	_______,   	_______,	_______, 	_______,	            _______,
 	_______, 	_______,   	_______,   	_______,   	_______,   	_______,   	DEBOUNCE_PRESS_DEC,   	DEBOUNCE_PRESS_SHOW,   	DEBOUNCE_PRESS_INC,   	TOG_DEEP_SLEEP,  	TOG_USB_SLP,   	DEV_RESET,	SLEEP_MODE, BAT_SHOW,	            _______,
 	TOG_CAPS_IND,	SLEEP_TIMEOUT_DEC,   	SLEEP_TIMEOUT_SHOW,   	SLEEP_TIMEOUT_INC,  	_______,   	_______,   	DEBOUNCE_RELEASE_DEC,	DEBOUNCE_RELEASE_SHOW,   	DEBOUNCE_RELEASE_INC,   	_______,  	_______,	_______, 	_______,	                            _______,
-	_______,				_______,   	_______,   	RGB_TEST,  	_______,    _______,   	MO(5),	MO(4), 		UG_SPDD,	UG_SPDU,	_______,	_______,	            UG_VALU,    _______,
-	_______,	_______,	_______,						_______, 							_______,	MO(3),		_______,				UG_NEXT,    UG_VALD,	UG_HUEU),
+	_______,				_______,   	_______,   	RGB_TEST,  	_______,    _______,   	MO(5),	MO(4), 		RM_SPDD,	RM_SPDU,	_______,	_______,	            RM_VALU,    _______,
+	_______,	_______,	_______,						_______, 							_______,	MO(3),		_______,				RM_NEXT,    RM_VALD,	RM_HUEU),
 
 // layer 4
 [4] = LAYOUT_ansi_84(

@@ -21,8 +21,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	_______, 	LNK_BLE1,  	LNK_BLE2,  	LNK_BLE3,  	LNK_RF,   	_______,   	_______,   	_______,   	_______,   	_______,  	_______,   	_______,	_______, 	_______,				_______,	_______,	_______,	_______,
 	_______, 	_______,   	_______,   	_______,  	_______,   	_______,   	DEBOUNCE_PRESS_DEC,	DEBOUNCE_PRESS_SHOW,	DEBOUNCE_PRESS_INC,	TOG_DEEP_SLEEP,	TOG_USB_SLP,	DEV_RESET,	SLEEP_MODE, BAT_SHOW,				_______,	_______,	_______,	_______,
 	TOG_CAPS_IND,	SLEEP_TIMEOUT_DEC,	SLEEP_TIMEOUT_SHOW,	SLEEP_TIMEOUT_INC,	_______,	_______,	DEBOUNCE_RELEASE_DEC,	DEBOUNCE_RELEASE_SHOW,	DEBOUNCE_RELEASE_INC,	_______,	_______,	_______,	_______,							_______,	_______,	_______,
-	_______,				_______,   	_______,   	RGB_TEST, 	_______,   	_______,   	_______,	MO(4), 		UG_SPDD,	UG_SPDU,	_______,	KC_NO,				    UG_VALU,	_______,	_______,	_______,	_______,
-	_______,	_______,	_______,										_______, 							_______,	MO(1),   							UG_NEXT,	UG_VALD,   UG_HUEU,	_______,	_______),
+	_______,				_______,   	_______,   	RGB_TEST, 	_______,   	_______,   	_______,	MO(4), 		RM_SPDD,	RM_SPDU,	_______,	KC_NO,				    RM_VALU,	_______,	_______,	_______,	_______,
+	_______,	_______,	_______,										_______, 							_______,	MO(1),   							RM_NEXT,	RM_VALD,   RM_HUEU,	_______,	_______),
 // layer 2 win
 [2] = LAYOUT(
 	KC_ESC, 	KC_F1,  	KC_F2,  	KC_F3, 		KC_F4,  	KC_F5,  	KC_F6,  	KC_F7,  	KC_F8,  	KC_F9, 		KC_F10, 	KC_F11, 	KC_F12, 	WIN_PRTA,	KC_DEL,		KC_HOME,	KC_END,		KC_PGUP,	KC_PGDN,
@@ -37,8 +37,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	_______, 	LNK_BLE1,  	LNK_BLE2,   	LNK_BLE3,  	LNK_RF,   	_______,   	_______,   	_______,   	_______,   	_______,  	_______,   	_______,	_______, 	_______,				_______,	_______,	_______,	_______,
 	_______, 	_______,   	_______,   	_______,  	_______,   	_______,   	DEBOUNCE_PRESS_DEC,	DEBOUNCE_PRESS_SHOW,	DEBOUNCE_PRESS_INC,	TOG_DEEP_SLEEP,	TOG_USB_SLP,	DEV_RESET,	SLEEP_MODE, BAT_SHOW,				_______,	_______,	_______,	_______,
 	TOG_CAPS_IND,	SLEEP_TIMEOUT_DEC,	SLEEP_TIMEOUT_SHOW,	SLEEP_TIMEOUT_INC,	_______,	_______,	DEBOUNCE_RELEASE_DEC,	DEBOUNCE_RELEASE_SHOW,	DEBOUNCE_RELEASE_INC,	_______,	_______,	_______,	_______,							_______,	_______,	_______,
-	_______,				_______,   	_______,   	RGB_TEST, 	_______,   	_______,   	_______,	MO(4), 		UG_SPDD,	UG_SPDU,	_______,	KC_NO,				    UG_VALU,	_______,	_______,	_______,	_______,
-	_______,	_______,	_______,										_______, 							_______,	MO(3), 							UG_NEXT,	UG_VALD,   UG_HUEU,	_______,	_______),
+	_______,				_______,   	_______,   	RGB_TEST, 	_______,   	_______,   	_______,	MO(4), 		RM_SPDD,	RM_SPDU,	_______,	KC_NO,				    RM_VALU,	_______,	_______,	_______,	_______,
+	_______,	_______,	_______,										_______, 							_______,	MO(3), 							RM_NEXT,	RM_VALD,   RM_HUEU,	_______,	_______),
 // layer 4 function
 [4] = LAYOUT(
 	_______, 	_______,  	_______,  	_______, 	_______,  	_______,  	_______,  	_______,  	_______,  	_______, 	_______, 	_______, 	_______, 	_______,	_______,	_______,	_______,	_______,	_______,

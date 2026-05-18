@@ -6,6 +6,28 @@
 #include "quantum.h"
 #include "ws2812.h"
 
+#ifdef WS2812_TIMING
+#    undef WS2812_TIMING
+#endif
+#ifdef WS2812_T1H
+#    undef WS2812_T1H
+#endif
+#ifdef WS2812_T1L
+#    undef WS2812_T1L
+#endif
+#ifdef WS2812_T0H
+#    undef WS2812_T0H
+#endif
+#ifdef WS2812_T0L
+#    undef WS2812_T0L
+#endif
+
+#define WS2812_TIMING 850
+#define WS2812_T1H 700
+#define WS2812_T1L (WS2812_TIMING - WS2812_T1H)
+#define WS2812_T0H 150
+#define WS2812_T0L (WS2812_TIMING - WS2812_T0H)
+
 /* Adapted from https://github.com/bigjosh/SimpleNeoPixelDemo/ */
 
 #ifndef NOP_FUDGE

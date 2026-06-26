@@ -7,7 +7,6 @@
 #include "keys.h"
 #include "quantum.h"
 #include "wait.h"
-#include "../features/socd_cleaner.h"
 #include "../side.h"
 #include "../ambient.h"
 
@@ -29,9 +28,6 @@ extern bool            f_wakeup_prepare;
 
 extern void exit_light_sleep(void);
 
-socd_cleaner_t socd_v = {{KC_W, KC_S}, SOCD_CLEANER_LAST};
-socd_cleaner_t socd_h = {{KC_A, KC_D}, SOCD_CLEANER_LAST};
-
 bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) {
     // wakeup check for light sleep/no sleep - fire this immediately to not lose wake keys.
     if (f_wakeup_prepare) {
@@ -45,14 +41,6 @@ bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) {
 bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
     no_act_time     = 0;
     rf_linking_time = 0;
-
-    // socd handling
-    if (!process_socd_cleaner(keycode, record, &socd_v)) {
-        return false;
-    }
-    if (!process_socd_cleaner(keycode, record, &socd_h)) {
-        return false;
-    }
 
     switch (keycode) {
 #if (WORK_MODE == THREE_MODE)
@@ -371,21 +359,6 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
             if (record->event.pressed) {
                 keyboard_config.custom.battery_indicator_numeric = !keyboard_config.custom.battery_indicator_numeric;
                 save_config_to_eeprom();
-            }
-            return false;
-        case SOCDON: // Turn SOCD Cleaner on.
-            if (record->event.pressed) {
-                socd_cleaner_enabled = true;
-            }
-            return false;
-        case SOCDOFF: // Turn SOCD Cleaner off.
-            if (record->event.pressed) {
-                socd_cleaner_enabled = false;
-            }
-            return false;
-        case SOCDTOG: // Toggle SOCD Cleaner.
-            if (record->event.pressed) {
-                socd_cleaner_enabled = !socd_cleaner_enabled;
             }
             return false;
         case FW_VERSION:

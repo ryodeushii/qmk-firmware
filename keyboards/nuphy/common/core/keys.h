@@ -51,9 +51,6 @@ enum custom_keycodes {
     DEBOUNCE_RELEASE_SHOW,
     TOG_DEEP_SLEEP,
     TOG_BAT_IND_NUM,
-    SOCDON,
-    SOCDOFF,
-    SOCDTOG,
     FW_VERSION,
     TOG_POWER_ON_ANIMATION,
 };

@@ -109,7 +109,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DEFAULT_AMBIENT_COLOR 0
 #define DEFAULT_BATTERY_INDICATOR_NUMERIC 0
 #define DEFAULT_DETECT_NUMLOCK 0
-#define DEFAULT_SHOW_SOCD_INDICATOR 0
 #define WIN_LOCK_ROW 0
 #define WIN_LOCK_COL 16
 #define NUM_LOCK_ROW 0

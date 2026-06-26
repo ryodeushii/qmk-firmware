@@ -80,9 +80,6 @@ __attribute__((weak)) void via_config_set_value(uint8_t *data) {
         case id_battery_indicator_numeric:
             keyboard_config.custom.battery_indicator_numeric = *value_data;
             break;
-        case id_toggle_socd_indicator:
-            keyboard_config.custom.show_socd_indicator = *value_data;
-            break;
         case id_power_on_animation:
             keyboard_config.common.power_on_animation = *value_data;
             break;
@@ -160,9 +157,6 @@ __attribute__((weak)) void via_config_get_value(uint8_t *data) {
 
         case id_battery_indicator_numeric:
             *value_data = keyboard_config.custom.battery_indicator_numeric;
-            break;
-        case id_toggle_socd_indicator:
-            *value_data = keyboard_config.custom.show_socd_indicator;
             break;
         case id_power_on_animation:
             *value_data = keyboard_config.common.power_on_animation;

@@ -24,7 +24,6 @@ The common layer is grouped by subsystem:
 - `power/`: sleep support and shared MCU power implementation
 - `system/`: housekeeping timer helpers
 - `wireless/`: RF transport, queueing, and link helpers
-- `features/`: opt-in shared features such as SOCD cleaning
 
 ## Public Headers
 
@@ -56,7 +55,7 @@ Each keyboard still keeps board-specific files for hardware details that are not
 The shared layer is intentionally directional:
 
 - `config` provides persistent config state and shared helpers used by `core`, `lighting`, and `power`
-- `core` depends on `config`, `wireless`, `lighting`, and optional `features`
+- `core` depends on `config`, `wireless`, and `lighting`
 - `power` depends on `config`, `wireless`, and board-local hardware headers
 - `system` depends on `wireless` for shared runtime counters
 - `wireless` owns RF transport details and exposes a smaller high-level API through `common/wireless.h`

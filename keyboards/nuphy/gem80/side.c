@@ -6,7 +6,8 @@
 #include "host.h"
 #include "rgb_matrix.h"
 #include "timer.h"
-#include "side_table.h"
+#include "side.h"
+#include "common/lighting/side_table.h"
 #include "common/wireless.h"
 #include "common/config.h"
 

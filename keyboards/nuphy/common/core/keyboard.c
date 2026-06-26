@@ -1,4 +1,3 @@
-#include "../features/socd_cleaner.h"
 #include "quantum.h"
 #include "../config/config.h"
 #include "../debounce.h"
@@ -596,13 +595,6 @@ bool rgb_matrix_indicators_nuphy(void) {
     if (f_sleep_timeout_show) { // cyan numbers - sleep timeout
         rgb_matrix_set_color(two_digit_decimals_led(keyboard_config.common.sleep_timeout), 0x00, 0x80, 0x80);
         rgb_matrix_set_color(two_digit_ones_led(keyboard_config.common.sleep_timeout), 0x00, 0x80, 0x80);
-    }
-
-    if (keyboard_config.custom.show_socd_indicator && socd_cleaner_enabled) {
-        rgb_matrix_set_color(get_led_index(2, 2), RGB_BLUE);
-        rgb_matrix_set_color(get_led_index(3, 2), RGB_BLUE);
-        rgb_matrix_set_color(get_led_index(3, 1), RGB_BLUE);
-        rgb_matrix_set_color(get_led_index(3, 3), RGB_BLUE);
     }
 
     if (keyboard_config.custom.detect_numlock_state) {

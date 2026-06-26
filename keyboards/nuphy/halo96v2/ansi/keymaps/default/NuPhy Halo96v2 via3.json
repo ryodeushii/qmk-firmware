@@ -594,15 +594,6 @@
                             ]
                         },
                         {
-                            "label": "Show SOCD feature indicators (WASD position)",
-                            "type": "toggle",
-                            "content": [
-                                "id_toggle_socd_indicator",
-                                0,
-                                35
-                            ]
-                        },
-                        {
                             "label": "Power On Animation",
                             "type": "toggle",
                             "content": [
@@ -804,18 +795,6 @@
         {
             "name": "TOG BAT\nIND\nNUMERIC",
             "title": "Toggle indicator numeric visual"
-        },
-        {
-            "name": "SOCD\nON",
-            "title": "Turn SOCD On"
-        },
-        {
-            "name": "SOCD\nOFF",
-            "title": "Turn SOCD Off"
-        },
-        {
-            "name": "SOCD\nTOGGLE",
-            "title": "Toggle SOCD"
         },
         {
             "name": "PRNT\nCFW\nVERSION",

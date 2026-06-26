@@ -96,7 +96,6 @@ __attribute__((weak)) void init_keyboard_config(void) {
     keyboard_config.custom.toggle_custom_keys_highlight = DEFAULT_LIGHT_CUSTOM_KEYS;
     keyboard_config.custom.detect_numlock_state         = DEFAULT_DETECT_NUMLOCK;
     keyboard_config.custom.battery_indicator_numeric    = DEFAULT_BATTERY_INDICATOR_NUMERIC;
-    keyboard_config.custom.show_socd_indicator          = DEFAULT_SHOW_SOCD_INDICATOR;
 }
 
 static void migrate_legacy_keyboard_config(void) {

@@ -340,14 +340,6 @@ void side_rgb_refresh(void) {
     rgb_matrix_update_pwm_buffers();
 }
 
-void suspend_power_down_kb(void) {
-    rgb_matrix_set_suspend_state(true);
-}
-
-void suspend_wakeup_init_kb(void) {
-    rgb_matrix_set_suspend_state(false);
-}
-
 void side_brightness_control(uint8_t brighten) {
     adjust_brightness(&keyboard_config.lights.side_brightness, brighten);
 }

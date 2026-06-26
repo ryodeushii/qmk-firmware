@@ -102,18 +102,6 @@ static uint8_t left_overlay_b      = 0;
 
 void kb_config_reset(void);
 
-/**
- * @brief suspend_power_down_kb
- *
- */
-void suspend_power_down_kb(void) {
-    rgb_matrix_set_suspend_state(true);
-}
-
-void suspend_wakeup_init_kb(void) {
-    rgb_matrix_set_suspend_state(false);
-}
-
 static uint8_t clamp_speed(uint8_t speed) {
     if (speed > LIGHT_SPEED_MAX) {
         return LIGHT_SPEED_MAX / 2;

@@ -52,7 +52,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define UART_RX_PIN B7
 #define UART_RX_PAL_MODE 0
 
-#define VIA_EEPROM_CUSTOM_CONFIG_SIZE NUPHY_VIA_EEPROM_CUSTOM_CONFIG_SIZE
 #ifdef RGB_MATRIX_LED_COUNT
 #    undef RGB_MATRIX_LED_COUNT
 #endif

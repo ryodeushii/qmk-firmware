@@ -2,6 +2,7 @@
 
 #include "color.h"
 #include "common/config.h"
+#include "common/config/config.h"
 #include "common/keys.h"
 #include "common/wireless.h"
 #include "config.h"
@@ -37,7 +38,7 @@ static bool is_media_keycode(uint16_t keycode) {
 }
 
 void nuphy_highlight_custom_keys(uint8_t led_min, uint8_t led_max) {
-    if (!keyboard_config.custom.toggle_custom_keys_highlight) {
+    if (!CUSTOM_KEYS_HIGHLIGHT_ENABLED || !keyboard_config.custom.toggle_custom_keys_highlight) {
         return;
     }
 

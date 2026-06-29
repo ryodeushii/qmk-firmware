@@ -130,3 +130,4 @@ via*.json
 /keyboards/**/keymaps/vial/*
 
 !/keyboards/nuphy/**/*/via/*
+.failed

@@ -18,6 +18,10 @@
 #    define DEFAULT_USB_SLEEP_TOGGLE false
 #endif
 
+#ifndef CUSTOM_KEYS_HIGHLIGHT_ENABLED
+#    define CUSTOM_KEYS_HIGHLIGHT_ENABLED true
+#endif
+
 #ifndef DEFAULT_DEEP_SLEEP_TOGGLE
 #    define DEFAULT_DEEP_SLEEP_TOGGLE true
 #endif

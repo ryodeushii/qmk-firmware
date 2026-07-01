@@ -113,7 +113,6 @@ fi
 if [[ -f ./modules/signalrgb/gen-version.sh ]]; then
   printf "Updating QMK version for SignalRGB module..."
   cd ./modules/signalrgb && (
-    chmod +x gen-version.sh
     ./gen-version.sh
   ) || {
     printf "Failed to update QMK version for SignalRGB module\n" >&2

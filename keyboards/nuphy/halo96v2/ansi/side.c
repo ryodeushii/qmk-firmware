@@ -16,11 +16,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ansi.h"
+#include "common/config.h"
+#include "common/wireless.h"
+#include "config.h"
 #include "host.h"
 #include "rgb_matrix.h"
 #include "side.h"
-#include "common/config.h"
-#include "common/wireless.h"
 #include "timer.h"
 
 #define SIDE_WAVE EFFECT_WAVE
@@ -254,11 +255,17 @@ static void apply_ambient_layout(void) {
  * @note  save to eeprom.
  */
 void side_brightness_control(uint8_t brighten) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     adjust_brightness(&keyboard_config.lights.side_brightness, brighten);
     sync_ambient_effect_state_from_side();
 }
 
 void side_speed_control(uint8_t dir) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     adjust_speed(&keyboard_config.lights.side_speed, dir);
     sync_ambient_effect_state_from_side();
 }
@@ -269,6 +276,9 @@ void side_speed_control(uint8_t dir) {
  * @note  save to eeprom.
  */
 void side_color_control(uint8_t dir) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     uint8_t light_color_max = keyboard_config.lights.side_mode == SIDE_NEW ? 3 : LIGHT_COLOR_MAX;
 
     if (keyboard_config.lights.side_mode == SIDE_WAVE || keyboard_config.lights.side_mode == SIDE_BREATH || keyboard_config.lights.side_mode == SIDE_STATIC) {
@@ -301,6 +311,9 @@ void side_color_control(uint8_t dir) {
 static uint8_t side_old_color = 0;
 static uint8_t side_new_color = 0;
 void           side_mode_control(uint8_t dir) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     if (dir) {
         keyboard_config.lights.side_mode++;
         if (keyboard_config.lights.side_mode > SIDE_STATIC) {
@@ -327,6 +340,9 @@ void           side_mode_control(uint8_t dir) {
 }
 
 void ambient_mode_control(uint8_t dir) {
+#if !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
     if (dir) {
         keyboard_config.lights.ambient_mode++;
         if (keyboard_config.lights.ambient_mode > AMBIENT_MODE_7) {
@@ -344,18 +360,27 @@ void ambient_mode_control(uint8_t dir) {
 }
 
 void ambient_brightness_control(uint8_t brighten) {
+#if !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
     adjust_brightness(&keyboard_config.lights.side_brightness, brighten);
     sync_ambient_effect_state_from_side();
     save_config_to_eeprom();
 }
 
 void ambient_speed_control(uint8_t dir) {
+#if !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
     adjust_speed(&keyboard_config.lights.side_speed, dir);
     sync_ambient_effect_state_from_side();
     save_config_to_eeprom();
 }
 
 void ambient_color_control(uint8_t dir) {
+#if !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
     uint8_t color = clamp_color(keyboard_config.lights.side_color, FLOW_COLOR_TAB_LEN);
 
     if (dir) {
@@ -378,6 +403,9 @@ void side_rgb_refresh(void) {
  * @param  ...
  */
 void set_left_rgb(uint8_t r, uint8_t g, uint8_t b) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     set_segment_rgb(side_indicator_led_index_tab, SIDE_LED_COUNT, r, g, b);
 }
 
@@ -386,10 +414,16 @@ static void set_side_led_color(uint8_t index, uint8_t r, uint8_t g, uint8_t b) {
 }
 
 void set_side_rgb(uint8_t r, uint8_t g, uint8_t b) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED && !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
     set_segment_rgb(side_led_index_tab, current_halo_led_count(), r, g, b);
 }
 
 void set_indicator_on_side(uint8_t r, uint8_t g, uint8_t b) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     left_overlay_active = true;
     left_overlay_r      = r;
     left_overlay_g      = g;
@@ -1005,6 +1039,10 @@ void side_led_show(void) {
         apply_indicator_overlay();
         return;
     }
+
+#if !NUPHY_SIDE_LIGHTING_ENABLED && !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
 
     sync_ambient_effect_state_from_side();
     apply_ambient_layout();

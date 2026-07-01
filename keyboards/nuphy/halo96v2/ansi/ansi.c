@@ -63,7 +63,9 @@ bool rgb_matrix_indicators_kb(void) {
 }
 
 bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
+#if NUPHY_SIDE_LIGHTING_ENABLED
     rgb_matrix_set_color(98, 0, 0, 0); // SIDE_INDEX = 99 -> first side LED; do not clear into the halo segment here.
+#endif
     nuphy_highlight_custom_keys(led_min, led_max);
 
     return rgb_matrix_indicators_advanced_user(led_min, led_max);

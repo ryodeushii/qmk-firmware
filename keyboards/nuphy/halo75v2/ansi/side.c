@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ansi.h"
 #include "common/config.h"
 #include "common/wireless.h"
+#include "config.h"
 #include "host.h"
 #include "rgb_matrix.h"
 #include "side.h"
@@ -341,38 +342,65 @@ void side_rgb_refresh(void) {
 }
 
 void side_brightness_control(uint8_t brighten) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     adjust_brightness(&keyboard_config.lights.side_brightness, brighten);
 }
 
 void side_speed_control(uint8_t fast) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     adjust_speed(&keyboard_config.lights.side_speed, fast);
 }
 
 void side_color_control(uint8_t dir) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     adjust_color(keyboard_config.lights.side_mode, &keyboard_config.lights.side_rgb, &keyboard_config.lights.side_color, dir);
 }
 
 void side_mode_control(uint8_t dir) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     adjust_mode(&keyboard_config.lights.side_mode, dir, &side_play_point);
 }
 
 void ambient_brightness_control(uint8_t brighten) {
+#if !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
     adjust_brightness(&keyboard_config.lights.side_brightness, brighten);
 }
 
 void ambient_speed_control(uint8_t fast) {
+#if !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
     adjust_speed(&keyboard_config.lights.side_speed, fast);
 }
 
 void ambient_color_control(uint8_t dir) {
+#if !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
     adjust_color(keyboard_config.lights.side_mode, &keyboard_config.lights.side_rgb, &keyboard_config.lights.side_color, dir);
 }
 
 void ambient_mode_control(uint8_t dir) {
+#if !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
     adjust_mode(&keyboard_config.lights.side_mode, dir, &side_play_point);
 }
 
 void set_side_rgb(uint8_t r, uint8_t g, uint8_t b) {
+#if !NUPHY_SIDE_LIGHTING_ENABLED
+    return;
+#endif
     set_segment_rgb(side_led_index_tab, SIDE_LED_COUNT, r, g, b);
 }
 
@@ -741,6 +769,10 @@ void side_led_show(void) {
         side_power_mode_show();
         return;
     }
+
+#if !NUPHY_SIDE_LIGHTING_ENABLED && !NUPHY_AMBIENT_LIGHTING_ENABLED
+    return;
+#endif
 
     keyboard_config.lights.ambient_mode       = keyboard_config.lights.side_mode;
     keyboard_config.lights.ambient_brightness = keyboard_config.lights.side_brightness;

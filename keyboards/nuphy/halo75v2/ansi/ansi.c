@@ -61,7 +61,9 @@ bool rgb_matrix_indicators_kb(void) {
 }
 
 bool rgb_matrix_indicators_advanced_kb(uint8_t led_min, uint8_t led_max) {
+#if NUPHY_SIDE_LIGHTING_ENABLED
     rgb_matrix_set_color(RGB_MATRIX_LED_COUNT - 1, 0, 0, 0);
+#endif
     nuphy_highlight_custom_keys(led_min, led_max);
 
     return rgb_matrix_indicators_advanced_user(led_min, led_max);

@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "qmk_base": {
+    "version": "0.32.7",
+    "commit": "ed80e21858"
+  },
+  "release_targets": [
+    {
+      "id": "air75v2-ansi-default-threemode",
+      "keyboard": "air75v2",
+      "layout": "ansi",
+      "keymap": "default",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "air75v2-ansi-via-threemode",
+      "keyboard": "air75v2",
+      "layout": "ansi",
+      "keymap": "via",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "air75v2-ansi-srgb-threemode",
+      "keyboard": "air75v2",
+      "layout": "ansi",
+      "keymap": "srgb",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "gem80-ansi-default-usb",
+      "keyboard": "gem80",
+      "layout": "ansi",
+      "keymap": "default",
+      "work_mode": "USB_MODE",
+      "output_prefix": "wired-"
+    },
+    {
+      "id": "gem80-ansi-via-usb",
+      "keyboard": "gem80",
+      "layout": "ansi",
+      "keymap": "via",
+      "work_mode": "USB_MODE",
+      "output_prefix": "wired-"
+    },
+    {
+      "id": "gem80-ansi-srgb-usb",
+      "keyboard": "gem80",
+      "layout": "ansi",
+      "keymap": "srgb",
+      "work_mode": "USB_MODE",
+      "output_prefix": "wired-"
+    },
+    {
+      "id": "gem80-ansi-default-threemode",
+      "keyboard": "gem80",
+      "layout": "ansi",
+      "keymap": "default",
+      "work_mode": "THREE_MODE",
+      "output_prefix": "threemode-"
+    },
+    {
+      "id": "gem80-ansi-via-threemode",
+      "keyboard": "gem80",
+      "layout": "ansi",
+      "keymap": "via",
+      "work_mode": "THREE_MODE",
+      "output_prefix": "threemode-"
+    },
+    {
+      "id": "gem80-ansi-srgb-threemode",
+      "keyboard": "gem80",
+      "layout": "ansi",
+      "keymap": "srgb",
+      "work_mode": "THREE_MODE",
+      "output_prefix": "threemode-"
+    },
+    {
+      "id": "gem80-iso-default-usb",
+      "keyboard": "gem80",
+      "layout": "iso",
+      "keymap": "default",
+      "work_mode": "USB_MODE",
+      "output_prefix": "wired-"
+    },
+    {
+      "id": "gem80-iso-via-usb",
+      "keyboard": "gem80",
+      "layout": "iso",
+      "keymap": "via",
+      "work_mode": "USB_MODE",
+      "output_prefix": "wired-"
+    },
+    {
+      "id": "gem80-iso-srgb-usb",
+      "keyboard": "gem80",
+      "layout": "iso",
+      "keymap": "srgb",
+      "work_mode": "USB_MODE",
+      "output_prefix": "wired-"
+    },
+    {
+      "id": "gem80-iso-default-threemode",
+      "keyboard": "gem80",
+      "layout": "iso",
+      "keymap": "default",
+      "work_mode": "THREE_MODE",
+      "output_prefix": "threemode-"
+    },
+    {
+      "id": "gem80-iso-via-threemode",
+      "keyboard": "gem80",
+      "layout": "iso",
+      "keymap": "via",
+      "work_mode": "THREE_MODE",
+      "output_prefix": "threemode-"
+    },
+    {
+      "id": "gem80-iso-srgb-threemode",
+      "keyboard": "gem80",
+      "layout": "iso",
+      "keymap": "srgb",
+      "work_mode": "THREE_MODE",
+      "output_prefix": "threemode-"
+    },
+    {
+      "id": "halo75v2-ansi-default-threemode",
+      "keyboard": "halo75v2",
+      "layout": "ansi",
+      "keymap": "default",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "halo75v2-ansi-via-threemode",
+      "keyboard": "halo75v2",
+      "layout": "ansi",
+      "keymap": "via",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "halo75v2-ansi-srgb-threemode",
+      "keyboard": "halo75v2",
+      "layout": "ansi",
+      "keymap": "srgb",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "halo96v2-ansi-default-threemode",
+      "keyboard": "halo96v2",
+      "layout": "ansi",
+      "keymap": "default",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "halo96v2-ansi-via-threemode",
+      "keyboard": "halo96v2",
+      "layout": "ansi",
+      "keymap": "via",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "halo96v2-ansi-srgb-threemode",
+      "keyboard": "halo96v2",
+      "layout": "ansi",
+      "keymap": "srgb",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    }
+  ],
+  "personal_targets": [
+    {
+      "id": "air75v2-ansi-ryodeushii-threemode",
+      "keyboard": "air75v2",
+      "layout": "ansi",
+      "keymap": "ryodeushii",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "gem80-ansi-ryodeushii-usb",
+      "keyboard": "gem80",
+      "layout": "ansi",
+      "keymap": "ryodeushii",
+      "work_mode": "USB_MODE",
+      "output_prefix": "wired-"
+    },
+    {
+      "id": "gem80-ansi-ryodeushii-threemode",
+      "keyboard": "gem80",
+      "layout": "ansi",
+      "keymap": "ryodeushii",
+      "work_mode": "THREE_MODE",
+      "output_prefix": "threemode-"
+    },
+    {
+      "id": "halo75v2-ansi-ryodeushii-threemode",
+      "keyboard": "halo75v2",
+      "layout": "ansi",
+      "keymap": "ryodeushii",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    },
+    {
+      "id": "halo96v2-ansi-ryodeushii-threemode",
+      "keyboard": "halo96v2",
+      "layout": "ansi",
+      "keymap": "ryodeushii",
+      "work_mode": "THREE_MODE",
+      "output_prefix": ""
+    }
+  ],
+  "release_metadata": [
+    "keyboards/nuphy/air75v2/ansi/keymaps/default/NuPhy Air75 V2 via3.json",
+    "keyboards/nuphy/gem80/ansi/keymaps/default/NuPhy Gem80 via3.json",
+    "keyboards/nuphy/gem80/iso/keymaps/default/NuPhy Gem80 ISO via3.json",
+    "keyboards/nuphy/halo75v2/ansi/keymaps/default/NuPhy Halo75v2 via3.json",
+    "keyboards/nuphy/halo96v2/ansi/keymaps/default/NuPhy Halo96v2 via3.json"
+  ]
+}

@@ -28,3 +28,6 @@
 [submodule "modules/signalrgb"]
 	path = modules/signalrgb
 	url = https://github.com/SRGBmods/QMK_Community_Module
+[submodule "modules/openrgb"]
+	path = modules/openrgb
+	url = https://gitlab.com/OpenRGBDevelopers/QMK-OpenRGB.git

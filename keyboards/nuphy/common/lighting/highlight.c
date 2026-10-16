@@ -42,11 +42,13 @@ void nuphy_highlight_custom_keys(uint8_t led_min, uint8_t led_max) {
         return;
     }
 
-    uint8_t layer = get_highest_layer(layer_state);
+    uint8_t                  layer = get_highest_layer(layer_state);
+    nuphy_wireless_status_t status;
     if (layer == 0 || layer == 2) {
         return;
     }
 
+    nuphy_wireless_get_status(&status);
     for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
         for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
             uint8_t index = g_led_config.matrix_co[row][col];
@@ -70,7 +72,7 @@ void nuphy_highlight_custom_keys(uint8_t led_min, uint8_t led_max) {
             } else if (keycode == SLEEP_MODE || keycode == TOG_USB_SLP || keycode == TOG_DEEP_SLEEP || (keycode >= SLEEP_TIMEOUT_INC && keycode <= SLEEP_TIMEOUT_SHOW)) {
                 rgb_matrix_set_color(index, RGB_CYAN);
             } else if (keycode >= LNK_USB && keycode <= LNK_BLE3) {
-                if (dev_info.link_mode != LINK_USB) {
+                if (status.link_mode != LINK_USB) {
                     rgb_matrix_set_color(index, RGB_BLUE);
                 }
             } else if (is_media_keycode(keycode)) {

@@ -17,6 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "host_driver.h"
 #include "rf_driver.h"
+#include "../wireless/internal.h"
+#include "rf_protocol.h"
+#include "rf_queue.h"
 
 DEV_INFO_STRUCT dev_info = {
     .rf_battery = 100,
@@ -37,6 +40,31 @@ static void    rf_send_mouse(report_mouse_t *report);
 static void    rf_send_extra(report_extra_t *report);
 
 host_driver_t rf_host_driver = {rf_keyboard_leds, rf_send_keyboard, rf_send_nkro, rf_send_mouse, rf_send_extra};
+
+void nuphy_wireless_get_status(nuphy_wireless_status_t *status) {
+    if (status == NULL) return;
+
+    status->link_mode    = dev_info.link_mode;
+    status->rf_state     = dev_info.rf_state;
+    status->rf_charge    = dev_info.rf_charge;
+    status->rf_led       = dev_info.rf_led;
+    status->rf_battery   = dev_info.rf_battery;
+    status->sys_sw_state = dev_info.sys_sw_state;
+}
+
+void nuphy_wireless_set_active_link(uint8_t mode) {
+    if (mode > LINK_USB) return;
+
+    dev_info.link_mode = mode;
+    if (mode != LINK_USB) {
+        dev_info.rf_channel  = mode;
+        dev_info.ble_channel = mode;
+    }
+}
+
+void nuphy_wireless_set_system_mode(uint8_t mode) {
+    dev_info.sys_sw_state = mode;
+}
 
 /* defined in rf.c */
 void clear_report_buffer(void);

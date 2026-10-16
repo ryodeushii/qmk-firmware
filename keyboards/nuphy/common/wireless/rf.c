@@ -19,7 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include "../debounce.h"
 #include "../timer.h"
-#include "../wireless.h"
+#include "internal.h"
+#include "timing.h"
 #include "rf_driver.h"
 #include "rf_protocol.h"
 #include "uart.h" // qmk uart.h
@@ -67,13 +68,11 @@ uint32_t uart_rpt_timer   = 0;
 report_buffer_t report_buff_a = {0};
 report_buffer_t report_buff_b = {0};
 
-extern DEV_INFO_STRUCT dev_info;
-extern host_driver_t  *m_host_driver;
-extern host_driver_t   rf_host_driver;
+extern host_driver_t *m_host_driver;
+extern host_driver_t  rf_host_driver;
 extern rf_queue_t      rf_queue;
 extern uint8_t         host_mode;
 extern uint8_t         rf_blink_cnt;
-extern uint16_t        rf_linking_time;
 extern uint32_t        no_act_time;
 extern bool            f_send_channel;
 extern bool            f_dial_sw_init_ok;
@@ -720,11 +719,7 @@ void nuphy_rf_enter_dfu(void) {
 }
 
 void nuphy_rf_set_link(uint8_t mode, uint8_t ack_count, uint8_t delay_ms) {
-    dev_info.link_mode = mode;
-    if (mode != LINK_USB) {
-        dev_info.rf_channel  = mode;
-        dev_info.ble_channel = mode;
-    }
+    nuphy_wireless_set_active_link(mode);
     uart_send_cmd(CMD_SET_LINK, ack_count, delay_ms);
 }
 
@@ -757,4 +752,12 @@ void nuphy_rf_prepare_wakeup(void) {
 
 void nuphy_rf_request_sleep(bool keep_connection) {
     uart_send_cmd(keep_connection ? CMD_SET_CONFIG : CMD_SLEEP, 5, 5);
+}
+
+bool nuphy_wireless_link_show_time_elapsed(void) {
+    return rf_link_show_time >= RF_LINK_SHOW_TIME;
+}
+
+void nuphy_wireless_reset_link_show_time(void) {
+    rf_link_show_time = 0;
 }

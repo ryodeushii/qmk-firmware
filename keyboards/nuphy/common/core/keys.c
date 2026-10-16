@@ -2,6 +2,7 @@
 #include "../config/config.h"
 #include "../debounce.h"
 #include "../wireless.h"
+#include "../wireless/internal.h"
 #include "eeconfig.h"
 #include "host.h"
 #include "keys.h"
@@ -18,7 +19,6 @@ extern uint8_t         f_debounce_press_show;
 extern uint8_t         f_debounce_release_show;
 extern uint8_t         f_sleep_timeout_show;
 extern keymap_config_t keymap_config;
-extern DEV_INFO_STRUCT dev_info;
 extern bool            f_rf_sw_press;
 extern uint8_t         rf_sw_temp;
 extern uint16_t        rf_sw_press_delay;
@@ -42,11 +42,14 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
     no_act_time     = 0;
     rf_linking_time = 0;
 
+    nuphy_wireless_status_t status;
+    nuphy_wireless_get_status(&status);
+
     switch (keycode) {
 #if (WORK_MODE == THREE_MODE)
         case RF_DFU:
             if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) return false;
+                if (status.link_mode != LINK_USB) return false;
                 nuphy_rf_enter_dfu();
             }
             return false;
@@ -62,7 +65,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
 #if (WORK_MODE == THREE_MODE)
         case LNK_RF:
             if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) {
+                if (status.link_mode != LINK_USB) {
                     rf_sw_temp    = LINK_RF_24;
                     f_rf_sw_press = 1;
                     break_all_key();
@@ -78,7 +81,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
 
         case LNK_BLE1:
             if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) {
+                if (status.link_mode != LINK_USB) {
                     rf_sw_temp    = LINK_BT_1;
                     f_rf_sw_press = 1;
                     break_all_key();
@@ -94,7 +97,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
 
         case LNK_BLE2:
             if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) {
+                if (status.link_mode != LINK_USB) {
                     rf_sw_temp    = LINK_BT_2;
                     f_rf_sw_press = 1;
                     break_all_key();
@@ -110,7 +113,7 @@ bool process_record_nuphy(uint16_t keycode, keyrecord_t *record) {
 
         case LNK_BLE3:
             if (record->event.pressed) {
-                if (dev_info.link_mode != LINK_USB) {
+                if (status.link_mode != LINK_USB) {
                     rf_sw_temp    = LINK_BT_3;
                     f_rf_sw_press = 1;
                     break_all_key();

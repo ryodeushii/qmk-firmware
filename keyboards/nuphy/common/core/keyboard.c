@@ -4,6 +4,8 @@
 #include "../indicator.h"
 #include "../timer.h"
 #include "../wireless.h"
+#include "../wireless/internal.h"
+#include "../wireless/timing.h"
 #include "mcu_pwr.h"
 #include "keys.h"
 #include "keyboard.h"
@@ -18,8 +20,7 @@ __attribute((weak)) extern void rgb_test_show(void) {}
 void switch_dev_link(uint8_t mode);
 void sleep_handle(void);
 
-extern DEV_INFO_STRUCT dev_info;
-extern bool            f_wakeup_prepare;
+extern bool f_wakeup_prepare;
 
 bool f_bat_hold              = 0;
 bool f_sys_show              = 0;
@@ -40,9 +41,7 @@ uint16_t dev_reset_press_delay = 0;
 uint16_t rf_sw_press_delay     = 0;
 uint16_t rgb_test_press_delay  = 0;
 
-extern uint16_t           rf_link_show_time;
-extern uint16_t           rf_linking_time;
-extern uint32_t           no_act_time;
+extern uint32_t no_act_time;
 extern bool               f_rf_new_adv_ok;
 extern report_keyboard_t *keyboard_report;
 extern report_nkro_t     *nkro_report;
@@ -52,14 +51,16 @@ static void apply_os_mode(bool switch_high, bool show_indicator) {
     uint8_t target_sys   = switch_high ? (NUPHY_OS_SWITCH_HIGH_IS_WIN ? SYS_SW_WIN : SYS_SW_MAC) : (NUPHY_OS_SWITCH_HIGH_IS_WIN ? SYS_SW_MAC : SYS_SW_WIN);
     uint8_t target_layer = (target_sys == SYS_SW_MAC) ? 0 : 2;
     bool    target_nkro  = (target_sys != SYS_SW_MAC);
+    nuphy_wireless_status_t status;
 
-    if (dev_info.sys_sw_state != target_sys) {
+    nuphy_wireless_get_status(&status);
+    if (status.sys_sw_state != target_sys) {
         if (show_indicator) {
             f_sys_show = 1;
         }
         default_layer_set(1 << target_layer);
-        dev_info.sys_sw_state = target_sys;
-        keymap_config.nkro    = target_nkro;
+        nuphy_wireless_set_system_mode(target_sys);
+        keymap_config.nkro = target_nkro;
         break_all_key();
     }
 }
@@ -80,10 +81,7 @@ void long_press_key(void) {
         if (rf_sw_press_delay >= RF_LONG_PRESS_DELAY) {
             f_rf_sw_press = 0;
 
-            dev_info.link_mode   = rf_sw_temp;
-            dev_info.rf_channel  = rf_sw_temp;
-            dev_info.ble_channel = rf_sw_temp;
-
+            nuphy_wireless_set_active_link(rf_sw_temp);
             nuphy_rf_request_new_adv(5);
         }
 #endif
@@ -97,18 +95,20 @@ void long_press_key(void) {
         if (dev_reset_press_delay >= DEV_RESET_PRESS_DELAY) {
             f_dev_reset_press = 0;
 
-            if (dev_info.link_mode != LINK_USB) {
-                if (dev_info.link_mode != LINK_RF_24) {
-                    dev_info.link_mode   = LINK_BT_1;
-                    dev_info.ble_channel = LINK_BT_1;
-                    dev_info.rf_channel  = LINK_BT_1;
+            nuphy_wireless_status_t status;
+            nuphy_wireless_get_status(&status);
+
+            if (status.link_mode != LINK_USB) {
+                if (status.link_mode != LINK_RF_24) {
+                    nuphy_wireless_set_active_link(LINK_BT_1);
                 }
             } else {
-                dev_info.ble_channel = LINK_BT_1;
-                dev_info.rf_channel  = LINK_BT_1;
+                nuphy_wireless_set_active_link(LINK_BT_1);
+                nuphy_wireless_set_active_link(LINK_USB);
             }
 
-            nuphy_rf_set_link(dev_info.link_mode, 10, 10);
+            nuphy_wireless_get_status(&status);
+            nuphy_rf_set_link(status.link_mode, 10, 10);
             wait_ms(500);
             nuphy_rf_factory_reset();
 
@@ -119,7 +119,8 @@ void long_press_key(void) {
             device_reset_show();
             device_reset_init();
 
-            if (dev_info.sys_sw_state == SYS_SW_MAC) {
+            nuphy_wireless_get_status(&status);
+            if (status.sys_sw_state == SYS_SW_MAC) {
                 default_layer_set(1 << 0);
                 keymap_config.nkro = 0;
             } else {
@@ -182,14 +183,14 @@ void dial_sw_scan(void) {
     }
 
 #if (WORK_MODE == THREE_MODE)
+    nuphy_wireless_status_t status;
+    nuphy_wireless_get_status(&status);
     if (dial_scan & 0x01) {
-        if (dev_info.link_mode != LINK_USB) {
+        if (status.link_mode != LINK_USB) {
             switch_dev_link(LINK_USB);
         }
     } else {
-        if (dev_info.link_mode != dev_info.rf_channel) {
-            switch_dev_link(dev_info.rf_channel);
-        }
+        nuphy_wireless_switch_to_saved_link();
     }
 #endif
 
@@ -200,7 +201,8 @@ void dial_sw_scan(void) {
         f_first           = false;
 
 #if (WORK_MODE == THREE_MODE)
-        if (dev_info.link_mode != LINK_USB) {
+        nuphy_wireless_get_status(&status);
+        if (status.link_mode != LINK_USB) {
             host_set_driver(&rf_host_driver);
         }
 #endif
@@ -245,14 +247,14 @@ void dial_sw_fast_scan(void) {
 
 #if (WORK_MODE == THREE_MODE)
     // RF link mode
+    nuphy_wireless_status_t status;
+    nuphy_wireless_get_status(&status);
     if (dial_scan_dev) {
-        if (dev_info.link_mode != LINK_USB) {
+        if (status.link_mode != LINK_USB) {
             switch_dev_link(LINK_USB);
         }
     } else {
-        if (dev_info.link_mode != dev_info.rf_channel) {
-            switch_dev_link(dev_info.rf_channel);
-        }
+        nuphy_wireless_switch_to_saved_link();
     }
 #endif
     // Win or Mac
@@ -430,7 +432,8 @@ __attribute__((weak)) void os_mode_led_show(void) {
     static uint32_t sys_show_timer = 0;
     static bool     sys_show_flag  = false;
     extern bool     f_sys_show;
-    uint8_t         r_temp, g_temp, b_temp;
+    uint8_t                  r_temp, g_temp, b_temp;
+    nuphy_wireless_status_t status;
 
     if (f_sys_show) {
         f_sys_show     = false;
@@ -440,7 +443,8 @@ __attribute__((weak)) void os_mode_led_show(void) {
     }
 
     if (sys_show_flag) {
-        if (dev_info.sys_sw_state == SYS_SW_MAC) {
+        nuphy_wireless_get_status(&status);
+        if (status.sys_sw_state == SYS_SW_MAC) {
             r_temp = 0x80;
             g_temp = 0x80;
 
@@ -474,10 +478,12 @@ uint8_t r_temp = 0x00, g_temp = 0x00, b_temp = 0x00;
 void rf_show_blink(void) {
     extern uint8_t  rf_blink_cnt;
     static uint32_t interval_timer = 0;
-    uint16_t        show_period;
+    uint16_t                 show_period;
+    nuphy_wireless_status_t status;
 
     if (rf_blink_cnt) {
-        if (dev_info.rf_state == RF_PAIRING)
+        nuphy_wireless_get_status(&status);
+        if (status.rf_state == NUPHY_WIRELESS_STATE_PAIRING)
             show_period = 250;
 
         else
@@ -507,18 +513,20 @@ void wireless_mode_show(void) {
 #if (WORK_MODE == THREE_MODE)
     static bool flag_power_on = 1;
 #endif
+    nuphy_wireless_status_t status;
 
-    if (dev_info.link_mode == LINK_RF_24) {
+    nuphy_wireless_get_status(&status);
+    if (status.link_mode == LINK_RF_24) {
         r_temp = 0x00;
         g_temp = 0x80;
         b_temp = 0x00;
 
-    } else if (dev_info.link_mode == LINK_USB) {
+    } else if (status.link_mode == LINK_USB) {
         r_temp = 0x80;
         g_temp = 0x80;
         b_temp = 0x00;
 #if (WORK_MODE == THREE_MODE)
-        if (flag_power_on && (rf_link_show_time < RF_LINK_SHOW_TIME)) return;
+        if (flag_power_on && !nuphy_wireless_link_show_time_elapsed()) return;
 #endif
     } else {
         r_temp = 0x00;
@@ -531,7 +539,7 @@ void wireless_mode_show(void) {
 #endif
     if (rf_blink_cnt) {
         rf_show_blink();
-    } else if (rf_link_show_time < RF_LINK_SHOW_TIME) {
+    } else if (!nuphy_wireless_link_show_time_elapsed()) {
         set_indicator_on_side(r_temp, g_temp, b_temp);
     }
 }
@@ -540,24 +548,26 @@ bool rgb_matrix_indicators_nuphy(void) {
 #ifdef WS2812_SIDE_REFRESH
     static uint32_t side_refresh_time = 0;
 #endif
-    uint8_t caps_key_led_idx = get_led_index(3, 0);
-    bool    showCapsLock     = false;
+    uint8_t                  caps_key_led_idx = get_led_index(3, 0);
+    bool                     showCapsLock     = false;
+    nuphy_wireless_status_t status;
 
-    if (dev_info.link_mode == LINK_USB) {
+    nuphy_wireless_get_status(&status);
+    if (status.link_mode == LINK_USB) {
         showCapsLock = host_keyboard_led_state().caps_lock;
     } else {
-        showCapsLock = dev_info.rf_led & 0x02;
+        showCapsLock = status.rf_led & 0x02;
     }
 
-    if (nuphy_should_render_wireless_profile_indicator(dev_info.link_mode, rf_blink_cnt)) {
+    if (nuphy_should_render_wireless_profile_indicator(status.link_mode, rf_blink_cnt)) {
         uint8_t r = 0, g = 0x80, b = 0;
 
         uint8_t col = 4;
-        if (dev_info.link_mode >= LINK_BT_1 && dev_info.link_mode <= LINK_BT_3) {
-            col = dev_info.link_mode;
+        if (status.link_mode >= LINK_BT_1 && status.link_mode <= LINK_BT_3) {
+            col = status.link_mode;
             g   = 0;
             b   = 0x80; // blue for BT
-        } else if (dev_info.link_mode == LINK_RF_24) {
+        } else if (status.link_mode == LINK_RF_24) {
             col = 4;
             g   = 0x80;
             b   = 0; // green for RF
@@ -607,8 +617,8 @@ bool rgb_matrix_indicators_nuphy(void) {
 
     if (keyboard_config.custom.detect_numlock_state) {
         uint8_t showNumLock = 0;
-        if (dev_info.link_mode != LINK_USB) {
-            showNumLock = dev_info.rf_led & 0x01;
+        if (status.link_mode != LINK_USB) {
+            showNumLock = status.rf_led & 0x01;
         } else {
             showNumLock = host_keyboard_led_state().num_lock;
         }
@@ -621,8 +631,8 @@ bool rgb_matrix_indicators_nuphy(void) {
     os_mode_led_show();
 
     if (f_bat_hold && keyboard_config.custom.battery_indicator_numeric) {
-        rgb_matrix_set_color(two_digit_decimals_led(dev_info.rf_battery), 0x00, 0x80, 0x80);
-        rgb_matrix_set_color(two_digit_ones_led(dev_info.rf_battery), 0x00, 0x80, 0x80);
+        rgb_matrix_set_color(two_digit_decimals_led(status.rf_battery), 0x00, 0x80, 0x80);
+        rgb_matrix_set_color(two_digit_ones_led(status.rf_battery), 0x00, 0x80, 0x80);
     }
 
     sleep_indicator_show();

@@ -129,5 +129,6 @@ via*.json
 /keyboards/**/keymaps/via/*
 /keyboards/**/keymaps/vial/*
 
-!/keyboards/nuphy/**/*/via/*
 .failed
+personal-artifacts/
+release-artifacts/

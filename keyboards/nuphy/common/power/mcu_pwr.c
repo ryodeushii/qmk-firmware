@@ -149,7 +149,9 @@ void SYSCFG_EXTILineConfig(uint8_t EXTI_PortSourceGPIOx, uint8_t EXTI_PinSourcex
 #define EXTI_PortSourceGPIOD ((uint8_t)0x03)
 
 void enter_deep_sleep(void) {
-    nuphy_rf_request_sleep(dev_info.rf_state == RF_CONNECT);
+    nuphy_wireless_status_t status;
+    nuphy_wireless_get_status(&status);
+    nuphy_rf_request_sleep(status.rf_state == NUPHY_WIRELESS_STATE_CONNECTED);
 
     if (tim6_enabled) TIM_Cmd(TIM6, DISABLE);
 
@@ -209,6 +211,7 @@ void enter_deep_sleep(void) {
 }
 
 void exit_deep_sleep(void) {
+    nuphy_wireless_status_t status;
     nuphy_matrix_wake_init();
 
 #if (WORK_MODE == THREE_MODE)
@@ -230,7 +233,8 @@ void exit_deep_sleep(void) {
 #if (WORK_MODE == THREE_MODE)
     nuphy_rf_prepare_wakeup();
 #endif
-    if (dev_info.link_mode == LINK_USB) {
+    nuphy_wireless_get_status(&status);
+    if (status.link_mode == LINK_USB) {
         if (USB_DRIVER.state == USB_SUSPENDED) {
             usb_lld_wakeup_host(&USB_DRIVER);
         }
@@ -239,8 +243,10 @@ void exit_deep_sleep(void) {
 
 void enter_light_sleep(void) {
 #if (WORK_MODE == THREE_MODE)
+    nuphy_wireless_status_t status;
     nuphy_rf_sync_status();
-    nuphy_rf_request_sleep(dev_info.rf_state == RF_CONNECT);
+    nuphy_wireless_get_status(&status);
+    nuphy_rf_request_sleep(status.rf_state == NUPHY_WIRELESS_STATE_CONNECTED);
     clear_report_buffer_and_queue();
 #endif
     led_pwr_sleep_handle();
@@ -248,13 +254,15 @@ void enter_light_sleep(void) {
 }
 
 void exit_light_sleep(void) {
+    nuphy_wireless_status_t status;
     sleeping = false;
 
     led_pwr_wake_handle();
 #if (WORK_MODE == THREE_MODE)
     nuphy_rf_prepare_wakeup();
 #endif
-    if (dev_info.link_mode == LINK_USB) {
+    nuphy_wireless_get_status(&status);
+    if (status.link_mode == LINK_USB) {
         if (USB_DRIVER.state == USB_SUSPENDED) {
             usb_lld_wakeup_host(&USB_DRIVER);
         }

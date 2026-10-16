@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../debounce.h"
 #include "../config/config.h"
 #include "../wireless.h"
-
-extern DEV_INFO_STRUCT dev_info;
+#include "../wireless/internal.h"
+#include "sleep_policy.h"
 extern uint16_t        rf_linking_time;
 extern uint16_t        rf_link_timeout;
 extern uint32_t        no_act_time;
@@ -54,78 +54,53 @@ void sleep_handle(void) {
     if (timer_elapsed32(delay_step_timer) < 50) return;
     delay_step_timer = timer_read32();
 
-    if (!keyboard_config.common.sleep_toggle) return;
-    uint32_t sleep_time_delay = get_sleep_timeout();
-    // sleep process;
-    if (f_goto_sleep) {
-        // reset all counters
-        f_goto_sleep         = 0;
-        usb_suspend_debounce = 0;
+    nuphy_wireless_status_t wireless_status;
+    nuphy_wireless_get_status(&wireless_status);
+
+    nuphy_sleep_policy_state_t state = {
+        .sleep_toggle     = keyboard_config.common.sleep_toggle,
+        .usb_sleep_toggle = keyboard_config.common.usb_sleep_toggle,
+        .deep_sleep_toggle = keyboard_config.common.deep_sleep_toggle,
+        .transport        = wireless_status.link_mode == LINK_USB ? NUPHY_SLEEP_TRANSPORT_USB : NUPHY_SLEEP_TRANSPORT_WIRELESS,
+        .charging         = (wireless_status.rf_charge & 0x01) != 0 || wireless_status.rf_charge == 0x03,
+        .usb_suspended    = USB_DRIVER.state == USB_SUSPENDED,
+        .inactivity_time  = no_act_time,
+        .sleep_timeout    = get_sleep_timeout(),
+        .usb_suspend_debounce = usb_suspend_debounce,
+        .goto_sleep       = f_goto_sleep,
+        .wakeup_prepare   = f_wakeup_prepare,
+    };
 #if (WORK_MODE == THREE_MODE)
-        rf_linking_time    = 0;
-        rf_disconnect_time = 0;
+    state.rf_connected       = wireless_status.rf_state == NUPHY_WIRELESS_STATE_CONNECTED;
+    state.rf_disconnected    = wireless_status.rf_state == NUPHY_WIRELESS_STATE_DISCONNECTED;
+    state.rf_linking_time    = rf_linking_time;
+    state.rf_disconnect_time = rf_disconnect_time;
 #endif
-        // if LINK_USB -> light sleep
-        if (dev_info.link_mode == LINK_USB) {
-            if (keyboard_config.common.usb_sleep_toggle || USB_DRIVER.state == USB_SUSPENDED) {
-                break_all_key();
-                enter_light_sleep();
-            }
-        }
-        // if not USB
-        else if (keyboard_config.common.sleep_toggle) {
-            // but charging -> light sleep
-            if ((dev_info.rf_charge & 0x01) != 0 || dev_info.rf_charge == 0x03) {
-                break_all_key();
-                enter_light_sleep();
-                // otherwise -> deep sleep
-            } else {
-                break_all_key(); // reset keys before sleeping for new QMK lifecycle to handle on wake.
-                if (keyboard_config.common.deep_sleep_toggle) {
-                    deep_sleep_handle();
-                    return; // don't need to do anything else
-                } else {
-                    enter_light_sleep();
-                }
-            }
-        }
 
-        f_wakeup_prepare = 1; // only if light sleep.
-    }
+    nuphy_sleep_policy_result_t result;
+    nuphy_sleep_policy_step(&state, &result);
 
-    // NOTE: wakeup logic moved to early keypress detection in ansi.c -> pre_process_record_kb
-
-    // sleep check, won't reach here on deep sleep.
-    if (f_goto_sleep || f_wakeup_prepare) return;
-
-    if (dev_info.link_mode == LINK_USB) {
-        if (USB_DRIVER.state == USB_SUSPENDED) {
-            usb_suspend_debounce++;
-            if (usb_suspend_debounce >= 20) {
-                f_goto_sleep = 1;
-            }
-        } else {
-            usb_suspend_debounce = 0;
-            if (keyboard_config.common.usb_sleep_toggle && no_act_time >= sleep_time_delay) {
-                f_goto_sleep = 1;
-            } else {
-                f_goto_sleep = 0;
-            }
-        }
-    }
+    no_act_time            = result.inactivity_time;
+    usb_suspend_debounce   = result.usb_suspend_debounce;
+    f_goto_sleep           = result.goto_sleep;
+    f_wakeup_prepare       = result.wakeup_prepare;
 #if (WORK_MODE == THREE_MODE)
-    else if (no_act_time >= sleep_time_delay) {
-        f_goto_sleep = 1;
-    } else if (rf_linking_time >= LINK_TIMEOUT_ALT) {
-        rf_linking_time = 0;
-        f_goto_sleep    = 1;
-    } else if (dev_info.rf_state == RF_DISCONNECT) {
-        rf_disconnect_time++;
-        if (rf_disconnect_time > 5 * 20) { // 5 seconds
-            f_goto_sleep = 1;
-        }
-    } else if (dev_info.rf_state == RF_CONNECT) {
-        rf_disconnect_time = 0;
-    }
+    rf_linking_time    = (uint16_t)result.rf_linking_time;
+    rf_disconnect_time = result.rf_disconnect_time;
 #endif
+
+    switch (result.action) {
+        case NUPHY_SLEEP_ACTION_LIGHT_SLEEP:
+            break_all_key();
+            enter_light_sleep();
+            break;
+        case NUPHY_SLEEP_ACTION_DEEP_SLEEP:
+            break_all_key();
+            deep_sleep_handle();
+            break;
+        case NUPHY_SLEEP_ACTION_WAKE_PREPARATION:
+        case NUPHY_SLEEP_ACTION_NONE:
+        case NUPHY_SLEEP_ACTION_SLEEP_REQUEST:
+            break;
+    }
 }

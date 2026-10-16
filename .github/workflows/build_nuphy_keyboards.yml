@@ -8,12 +8,20 @@ on:
     tags:
       - 'r*.*.*'
       - 'r*-pre'
+  workflow_dispatch:
+    inputs:
+      build_personal:
+        description: Build personal keymaps
+        required: true
+        default: false
+        type: boolean
 
 concurrency: ci_build-${{ github.ref_name }}
 
 jobs:
   ci_builds:
     name: Build
+    if: github.event_name == 'push'
     timeout-minutes: 1380
     runs-on: ubuntu-latest
 
@@ -35,35 +43,86 @@ jobs:
     - name: Install dependencies
       run: pip3 install -r requirements.txt
 
-    - name: Run `./compile_halo.sh`
+    - name: Validate release manifest and base
+      run: |
+        python3 util/ci/nuphy_release_manifest.py validate \
+          --manifest keyboards/nuphy/release-manifest.json \
+          --repo-root .
+        python3 util/ci/nuphy_release_manifest.py base \
+          --manifest keyboards/nuphy/release-manifest.json \
+          --repo-root .
+
+    - name: Build release artifacts
       env:
         SILENT: true
       run: |
-        chmod +x compile_all.sh
-        ./compile_all.sh ${{ github.ref_name }}
+        ./compile_all.sh \
+          --profile release \
+          --manifest keyboards/nuphy/release-manifest.json \
+          --tag "${{ github.ref_name }}" \
+          --staging-dir release-artifacts
 
-        [ ! -f .failed ] || exit 1
-
-    - name: Upload binaries
+    - name: Upload release artifacts
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: ${{  github.ref_name }}-artifacts
-        if-no-files-found: ignore
-        path: |
-          *.bin
+        name: ${{ github.ref_name }}-artifacts
+        if-no-files-found: error
+        path: release-artifacts/**
 
     - name: Create draft release
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags')
       with:
-        files: |
-          *.bin
-          !*-ryodeushii-*.bin
-          keyboards/nuphy/halo75v2/*/keymaps/via/*via3.json
-          keyboards/nuphy/air75v2/*/keymaps/via/*via3.json
-          keyboards/nuphy/gem80/*/keymaps/via/*via3.json
+        files: release-artifacts/**
         tag_name: ${{ github.ref_name }}
         draft: true
         prerelease: true
         token: ${{ secrets.CUSTOM_TOKEN }}
+
+  personal_build:
+    name: Build personal keymaps
+    if: github.event_name == 'workflow_dispatch' && inputs.build_personal == true
+    timeout-minutes: 1380
+    runs-on: ubuntu-latest
+    container: ghcr.io/qmk/qmk_cli
+
+    steps:
+    - name: Disable safe.directory check
+      run: git config --global --add safe.directory '*'
+
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        ref: ${{ github.ref }}
+        fetch-depth: 0
+
+    - name: Install dependencies
+      run: pip3 install -r requirements.txt
+
+    - name: Validate personal build manifest and base
+      run: |
+        python3 util/ci/nuphy_release_manifest.py validate \
+          --manifest keyboards/nuphy/release-manifest.json \
+          --repo-root .
+        python3 util/ci/nuphy_release_manifest.py base \
+          --manifest keyboards/nuphy/release-manifest.json \
+          --repo-root .
+
+    - name: Build personal artifacts
+      env:
+        SILENT: true
+      run: |
+        ./compile_all.sh \
+          --profile personal \
+          --manifest keyboards/nuphy/release-manifest.json \
+          --tag "${{ github.ref_name }}" \
+          --staging-dir personal-artifacts
+
+    - name: Upload personal artifacts
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: ${{ github.ref_name }}-personal-artifacts
+        if-no-files-found: error
+        path: personal-artifacts/**

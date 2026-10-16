@@ -18,6 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ansi.h"
 #include "common/config.h"
 #include "common/wireless.h"
+#include "common/wireless/timing.h"
 #include "config.h"
 #include "host.h"
 #include "rgb_matrix.h"
@@ -81,9 +82,7 @@ static uint32_t side_play_timer = 0;
 
 static uint8_t r_temp, g_temp, b_temp;
 
-extern DEV_INFO_STRUCT dev_info;
-extern bool            f_bat_hold;
-extern uint16_t        rf_link_show_time;
+extern bool f_bat_hold;
 void                   os_mode_led_show(void);
 void                   sleep_indicator_show(void);
 void                   wireless_mode_show(void);
@@ -448,12 +447,14 @@ void set_all_side_off(void) {
 }
 
 static void halo_side_indicators_show(void) {
-    bool show_caps_lock = false;
+    bool                     show_caps_lock = false;
+    nuphy_wireless_status_t status;
 
-    if (dev_info.link_mode == LINK_USB) {
+    nuphy_wireless_get_status(&status);
+    if (status.link_mode == LINK_USB) {
         show_caps_lock = host_keyboard_led_state().caps_lock;
     } else {
-        show_caps_lock = dev_info.rf_led & 0x02;
+        show_caps_lock = status.rf_led & 0x02;
     }
 
     if (show_caps_lock) {
@@ -825,27 +826,30 @@ void    bat_percent_led(uint8_t bat_percent) {
  * @brief  battery state indicate
  */
 void bat_led_show(void) {
-    if (dev_info.link_mode != LINK_USB) {
-        if (rf_link_show_time < RF_LINK_SHOW_TIME) return;
+    nuphy_wireless_status_t status;
 
-        if (dev_info.rf_state != RF_CONNECT) return;
+    nuphy_wireless_get_status(&status);
+    if (status.link_mode != LINK_USB) {
+        if (!nuphy_wireless_link_show_time_elapsed()) return;
+
+        if (status.rf_state != NUPHY_WIRELESS_STATE_CONNECTED) return;
     }
 
     if (battery_state_init) {
         battery_state_init   = false;
         battery_show_time    = timer_read32();
-        battery_charge_state = dev_info.rf_charge;
-        battery_percent      = dev_info.rf_battery;
+        battery_charge_state = status.rf_charge;
+        battery_percent      = status.rf_battery;
     }
 
-    if (battery_charge_state != dev_info.rf_charge) {
+    if (battery_charge_state != status.rf_charge) {
         if (timer_elapsed32(battery_status_debounce) > 500) {
-            if (((battery_charge_state & 0x01) == 0) && ((dev_info.rf_charge & 0x01) != 0)) {
+            if (((battery_charge_state & 0x01) == 0) && ((status.rf_charge & 0x01) != 0)) {
                 battery_show_flag = true;
                 f_charging        = true;
                 battery_show_time = timer_read32();
             }
-            battery_charge_state = dev_info.rf_charge;
+            battery_charge_state = status.rf_charge;
         }
     } else {
         battery_status_debounce = timer_read32();
@@ -866,9 +870,9 @@ void bat_led_show(void) {
         }
     }
 
-    if (battery_percent != dev_info.rf_battery) {
+    if (battery_percent != status.rf_battery) {
         if (timer_elapsed32(battery_percent_debounce) > 1000) {
-            battery_percent = dev_info.rf_battery;
+            battery_percent = status.rf_battery;
         }
     } else {
         battery_percent_debounce = timer_read32();
@@ -1002,7 +1006,7 @@ static void side_power_mode_show(void) {
     if (key_pwm_tab[HALO_LED_COUNT - 1] == 1) {
         f_power_show = false;
         save_config_to_eeprom();
-        rf_link_show_time = 0;
+        nuphy_wireless_reset_link_show_time();
         battery_show_flag = true;
         f_charging        = true;
         battery_show_time = timer_read32();

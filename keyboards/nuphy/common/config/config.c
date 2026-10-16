@@ -11,9 +11,8 @@
 #endif
 
 // STATE vars
-extern bool            f_deep_sleep_show;
-extern bool            f_usb_sleep_show;
-extern DEV_INFO_STRUCT dev_info;
+extern bool f_deep_sleep_show;
+extern bool f_usb_sleep_show;
 RGB                    bat_pct_rgb       = {.r = 0x80, .g = 0x80, .b = 0x00};
 uint16_t               rgb_led_last_act  = 0;
 uint16_t               side_led_last_act = 0;
@@ -174,7 +173,10 @@ void toggle_caps_indication(void) {
  * @brief Updates RGB value for current bat percentage.
  */
 void update_bat_pct_rgb(void) {
-    uint8_t bat_pct = dev_info.rf_battery;
+    nuphy_wireless_status_t status;
+    nuphy_wireless_get_status(&status);
+
+    uint8_t bat_pct = status.rf_battery;
 
     if (bat_pct > 100) {
         bat_pct = 100;

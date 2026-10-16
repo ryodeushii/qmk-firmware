@@ -10,6 +10,7 @@ SRC += common/wireless/rf_driver.c  \
 	   common/wireless/link_mode.c  \
 	   common/system/housekeeping_timer.c  \
 	   common/power/sleep.c  \
+	   common/power/sleep_policy.c  \
 	   common/core/keyboard.c  \
 	   common/core/keys.c
 

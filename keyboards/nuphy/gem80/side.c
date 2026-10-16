@@ -9,6 +9,7 @@
 #include "side.h"
 #include "common/lighting/side_table.h"
 #include "common/wireless.h"
+#include "common/wireless/timing.h"
 #include "common/config.h"
 
 // clang-format off
@@ -39,16 +40,14 @@ uint8_t side_play_cnt     = 0;
 
 uint32_t side_play_timer = 0;
 
-uint8_t                r_temp, g_temp, b_temp;
-extern DEV_INFO_STRUCT dev_info;
-extern bool            f_bat_hold;
+uint8_t r_temp, g_temp, b_temp;
+extern bool    f_bat_hold;
 
 extern void kb_config_reset(void);
 
-extern bool     f_dial_sw_init_ok;
-extern uint8_t  logo_play_point;
-extern uint16_t rf_link_show_time;
-extern uint8_t  logo_play_cnt;
+extern bool    f_dial_sw_init_ok;
+extern uint8_t logo_play_point;
+extern uint8_t logo_play_cnt;
 extern uint32_t logo_play_timer;
 
 RGB  side_leds[SIDE_LED_NUM] = {0};
@@ -456,29 +455,30 @@ void bat_led_show(void) {
     static uint8_t  charge_state     = 0;
     static uint8_t  bat_percent      = 0;
     static bool     f_init           = 1;
+    nuphy_wireless_status_t status;
 
-    if (dev_info.link_mode != LINK_USB) {
-        extern uint16_t rf_link_show_time;
-        if (rf_link_show_time < RF_LINK_SHOW_TIME) return;
+    nuphy_wireless_get_status(&status);
+    if (status.link_mode != LINK_USB) {
+        if (!nuphy_wireless_link_show_time_elapsed()) return;
 
-        if (dev_info.rf_state != RF_CONNECT) return;
+        if (status.rf_state != NUPHY_WIRELESS_STATE_CONNECTED) return;
     }
 
     if (f_init) {
         f_init        = 0;
         bat_show_time = timer_read32();
-        charge_state  = dev_info.rf_charge;
-        bat_percent   = dev_info.rf_battery;
+        charge_state  = status.rf_charge;
+        bat_percent   = status.rf_battery;
     }
 
-    if (charge_state != dev_info.rf_charge) {
+    if (charge_state != status.rf_charge) {
         if (timer_elapsed32(bat_sts_debounce) > 1000) {
-            if (((charge_state & 0x01) == 0) && ((dev_info.rf_charge & 0x01) != 0)) {
+            if (((charge_state & 0x01) == 0) && ((status.rf_charge & 0x01) != 0)) {
                 bat_show_flag = true;
                 f_charging    = true;
                 bat_show_time = timer_read32();
             }
-            charge_state = dev_info.rf_charge;
+            charge_state = status.rf_charge;
         }
 
     } else {
@@ -496,9 +496,9 @@ void bat_led_show(void) {
         }
     }
 
-    if (bat_percent != dev_info.rf_battery) {
+    if (bat_percent != status.rf_battery) {
         if (timer_elapsed32(bat_per_debounce) > 1000) {
-            bat_percent = dev_info.rf_battery;
+            bat_percent = status.rf_battery;
         }
     } else {
         bat_per_debounce = timer_read32();

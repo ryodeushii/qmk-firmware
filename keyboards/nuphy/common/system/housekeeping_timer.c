@@ -1,11 +1,9 @@
 #include "quantum.h"
 #include "housekeeping_timer.h"
-#include "../wireless.h"
+#include "../wireless/internal.h"
 
 extern host_driver_t *m_host_driver;
-extern uint16_t       rf_link_show_time;
 uint32_t              no_act_time = 0;
-extern uint16_t       rf_linking_time;
 extern uint16_t       rgb_led_last_act;
 extern uint16_t       side_led_last_act;
 /**

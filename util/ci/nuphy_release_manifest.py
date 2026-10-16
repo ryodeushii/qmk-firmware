@@ -26,26 +26,42 @@ SUPPORTED_LAYOUTS = frozenset({
     ("halo96v2", "ansi"),
 })
 EXPECTED_METADATA = (
-    "keyboards/nuphy/air75v2/ansi/keymaps/default/NuPhy Air75 V2 via3.json",
-    "keyboards/nuphy/gem80/ansi/keymaps/default/NuPhy Gem80 via3.json",
-    "keyboards/nuphy/gem80/iso/keymaps/default/NuPhy Gem80 ISO via3.json",
-    "keyboards/nuphy/halo75v2/ansi/keymaps/default/NuPhy Halo75v2 via3.json",
-    "keyboards/nuphy/halo96v2/ansi/keymaps/default/NuPhy Halo96v2 via3.json",
+    "keyboards/nuphy/air75v2/ansi/keymaps/via/NuPhy Air75 V2 via3.json",
+    "keyboards/nuphy/gem80/ansi/keymaps/via/NuPhy Gem80 via3.json",
+    "keyboards/nuphy/gem80/iso/keymaps/via/NuPhy Gem80 ISO via3.json",
+    "keyboards/nuphy/halo75v2/ansi/keymaps/via/NuPhy Halo75v2 via3.json",
+    "keyboards/nuphy/halo96v2/ansi/keymaps/via/NuPhy Halo96v2 via3.json",
 )
 
 
 class ManifestError(ValueError):
-    """Raised when a NuPhy release manifest is invalid."""
+    """Describe an invalid NuPhy release manifest.
+    """
 
 
 
 def load_manifest(path: PathLike) -> dict:
+    """Load and decode a JSON release manifest.
+
+    Args:
+        path
+            Filesystem path to the manifest.
+
+    Returns:
+        The parsed manifest mapping.
+
+    Raises:
+        ManifestError
+            When the file cannot be read, decoded, or parsed as an object.
+    """
     manifest_path = Path(path)
     try:
         with manifest_path.open(encoding="utf-8") as manifest_file:
             manifest = json.load(manifest_file)
     except OSError as error:
         raise ManifestError(f"cannot read manifest {manifest_path}: {error}") from error
+    except UnicodeDecodeError as error:
+        raise ManifestError(f"manifest {manifest_path} is not valid UTF-8: {error}") from error
     except json.JSONDecodeError as error:
         raise ManifestError(f"invalid JSON in manifest {manifest_path}: {error}") from error
 
@@ -56,11 +72,29 @@ def load_manifest(path: PathLike) -> dict:
 
 
 def _is_sequence(value: Any) -> bool:
+    """Check whether value is a non-string sequence.
+
+    Args:
+        value
+            Object to inspect.
+
+    Returns:
+        `True` when value can represent a JSON array.
+    """
     return isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray))
 
 
 
 def _safe_relative_path(value: Any) -> bool:
+    """Check whether value is a safe repository-relative path.
+
+    Args:
+        value
+            Candidate path to inspect.
+
+    Returns:
+        `True` when value is non-empty and contains no traversal parts.
+    """
     if not isinstance(value, str) or not value:
         return False
     path = Path(value)
@@ -69,6 +103,15 @@ def _safe_relative_path(value: Any) -> bool:
 
 
 def _safe_component(value: Any) -> bool:
+    """Check whether value is one safe path component.
+
+    Args:
+        value
+            Candidate path component to inspect.
+
+    Returns:
+        `True` when value is a safe single path component.
+    """
     if not _safe_relative_path(value):
         return False
     return len(Path(value).parts) == 1
@@ -76,17 +119,46 @@ def _safe_component(value: Any) -> bool:
 
 
 def _target_source(repo_root: Path, target: Mapping[str, Any]) -> Path:
+    """Build the keymap source path for a target record.
+
+    Args:
+        repo_root
+            Repository root containing NuPhy keyboard sources.
+        target
+            Validated target record.
+
+    Returns:
+        Filesystem path to the target's `keymap.c` file.
+    """
     return (repo_root / "keyboards" / "nuphy" / target["keyboard"] / target["layout"] /
             "keymaps" / target["keymap"] / "keymap.c")
 
 
 
 def _target_output_identity(target: Mapping[str, Any]) -> str:
+    """Build the collision identity for a target artifact.
+
+    Args:
+        target
+            Target record containing output naming fields.
+
+    Returns:
+        Stable output identity without the release tag or extension.
+    """
     return "{output_prefix}{keyboard}-{layout}-{keymap}".format(**target)
 
 
 
 def _expected_targets(profile: str) -> set:
+    """Return the required target matrix for one profile.
+
+    Args:
+        profile
+            Profile name, either `release` or `personal`.
+
+    Returns:
+        Set of required board, layout, keymap, mode, and prefix tuples.
+    """
     if profile == "release":
         groups = (
             ("air75v2", "ansi", "THREE_MODE", ""),
@@ -126,12 +198,34 @@ def _validate_targets(
     target_ids: set,
     output_identities: set,
 ) -> None:
+    """Validate one target profile and collect actionable violations.
+
+    Args:
+        profile
+            Profile name being validated.
+        records
+            Candidate target records from the manifest.
+        expected_count
+            Required number of records for the profile.
+        allowed_keymaps
+            Keymap names permitted in the profile.
+        repo_root
+            Repository root used to resolve keymap source files.
+        errors
+            Mutable list receiving validation messages.
+        target_ids
+            Mutable set of IDs already seen across profiles.
+        output_identities
+            Mutable set of output identities already seen.
+    """
     if not _is_sequence(records):
         errors.append(f"{profile}_targets must be a JSON array")
         return
 
     if len(records) != expected_count:
-        errors.append(f"expected {expected_count} {profile} targets, found {len(records)}")
+        errors.append(
+            f"expected {expected_count} {profile} targets, found {len(records)}"
+        )
 
     actual_targets = set()
     for index, record in enumerate(records):
@@ -147,24 +241,34 @@ def _validate_targets(
             continue
 
         values = {field: record[field] for field in required_fields}
-        if not isinstance(values["id"], str) or not _safe_component(values["id"]):
-            errors.append(f"{location}.id must be a non-empty safe path component")
-        elif values["id"] in target_ids:
-            errors.append(f"duplicate target id: {values['id']}")
-        else:
-            target_ids.add(values["id"])
+        field_types_valid = True
+        for field in required_fields:
+            if not isinstance(values[field], str):
+                errors.append(f"{location}.{field} must be a string")
+                field_types_valid = False
+
+        if isinstance(values["id"], str):
+            if not _safe_component(values["id"]):
+                errors.append(f"{location}.id must be a non-empty safe path component")
+            elif values["id"] in target_ids:
+                errors.append(f"duplicate target id: {values['id']}")
+            else:
+                target_ids.add(values["id"])
 
         for field in ("keyboard", "layout", "keymap"):
-            if not _safe_component(values[field]):
+            if isinstance(values[field], str) and not _safe_component(values[field]):
                 errors.append(f"{location}.{field} must be a safe path component")
 
-        if (values["keyboard"], values["layout"]) not in SUPPORTED_LAYOUTS:
+        if (isinstance(values["keyboard"], str)
+                and isinstance(values["layout"], str)
+                and (values["keyboard"], values["layout"]) not in SUPPORTED_LAYOUTS):
             errors.append(
                 f"{location} has unsupported board/layout: "
                 f"{values['keyboard']}/{values['layout']}"
             )
 
-        if values["keymap"] not in allowed_keymaps:
+        if (isinstance(values["keymap"], str)
+                and values["keymap"] not in allowed_keymaps):
             if profile == "release" and values["keymap"] == "ryodeushii":
                 errors.append(f"{location} uses personal release keymap: ryodeushii")
             else:
@@ -172,34 +276,38 @@ def _validate_targets(
                     f"{location} has invalid {profile} keymap: {values['keymap']}"
                 )
 
-        if values["work_mode"] not in ALLOWED_MODES:
+        if (isinstance(values["work_mode"], str)
+                and values["work_mode"] not in ALLOWED_MODES):
             errors.append(f"{location} has unknown WORK_MODE: {values['work_mode']}")
 
-        if values["output_prefix"] not in ALLOWED_OUTPUT_PREFIXES:
+        if (isinstance(values["output_prefix"], str)
+                and values["output_prefix"] not in ALLOWED_OUTPUT_PREFIXES):
             errors.append(
                 f"{location} has invalid output prefix: {values['output_prefix']}"
             )
 
-        if all(isinstance(values[field], str) for field in required_fields):
-            output_identity = _target_output_identity(values)
-            if output_identity in output_identities:
-                errors.append(f"duplicate output identity: {output_identity}")
-            else:
-                output_identities.add(output_identity)
+        if not field_types_valid:
+            continue
 
-            actual_targets.add((
-                values["keyboard"],
-                values["layout"],
-                values["keymap"],
-                values["work_mode"],
-                values["output_prefix"],
-            ))
+        output_identity = _target_output_identity(values)
+        if output_identity in output_identities:
+            errors.append(f"duplicate output identity: {output_identity}")
+        else:
+            output_identities.add(output_identity)
 
-            if not all(_safe_component(values[field]) for field in ("keyboard", "layout", "keymap")):
-                continue
-            source = _target_source(repo_root, values)
-            if not source.is_file():
-                errors.append(f"{location} missing keymap source: {source}")
+        actual_targets.add((
+            values["keyboard"],
+            values["layout"],
+            values["keymap"],
+            values["work_mode"],
+            values["output_prefix"],
+        ))
+
+        if not all(_safe_component(values[field]) for field in ("keyboard", "layout", "keymap")):
+            continue
+        source = _target_source(repo_root, values)
+        if not source.is_file():
+            errors.append(f"{location} missing keymap source: {source}")
 
     expected_targets = _expected_targets(profile)
     if actual_targets != expected_targets:
@@ -213,6 +321,18 @@ def _validate_targets(
 
 
 def validate_manifest(manifest: Mapping[str, object], repo_root: PathLike = ".") -> None:
+    """Validate manifest schema, targets, files, and release metadata.
+
+    Args:
+        manifest
+            Candidate manifest mapping.
+        repo_root
+            Repository root used to resolve declared files.
+
+    Raises:
+        ManifestError
+            When one or more manifest invariants are violated.
+    """
     if not isinstance(manifest, Mapping):
         raise ManifestError("manifest must contain a JSON object")
 
@@ -281,21 +401,58 @@ def validate_manifest(manifest: Mapping[str, object], repo_root: PathLike = ".")
 
 
 def resolve_targets(manifest: Mapping[str, object], profile: str) -> list[dict]:
+    """Return ordered target records for a named profile.
+
+    Args:
+        manifest
+            Manifest mapping containing target profiles.
+        profile
+            Profile name, either `release` or `personal`.
+
+    Returns:
+        Copies of target records in manifest order.
+
+    Raises:
+        ManifestError
+            When profile or target record types are invalid.
+    """
     if profile not in ("release", "personal"):
         raise ManifestError(f"unknown profile: {profile}")
     field = f"{profile}_targets"
     records = manifest.get(field)
     if not _is_sequence(records):
         raise ManifestError(f"{field} must be a JSON array")
+    if not all(isinstance(record, Mapping) for record in records):
+        raise ManifestError(f"{field} entries must be JSON objects")
     return [dict(record) for record in records]
 
 
 
 def binary_name(target: Mapping[str, str], tag: str) -> str:
+    """Build a tagged firmware binary filename.
+
+    Args:
+        target
+            Target record containing output naming fields.
+        tag
+            Release tag; slashes are replaced with hyphens.
+
+    Returns:
+        Firmware filename using the target's output prefix.
+
+    Raises:
+        ManifestError
+            When target fields or tag have invalid types or are missing.
+    """
+    if not isinstance(target, Mapping):
+        raise ManifestError("target must be a JSON object")
     required = ("output_prefix", "keyboard", "layout", "keymap")
     missing = [field for field in required if field not in target]
     if missing:
         raise ManifestError(f"target is missing fields: {', '.join(missing)}")
+    for field in required:
+        if not isinstance(target[field], str):
+            raise ManifestError(f"target field {field} must be a string")
     if not isinstance(tag, str) or not tag:
         raise ManifestError("tag must be a non-empty string")
     return (
@@ -306,6 +463,21 @@ def binary_name(target: Mapping[str, str], tag: str) -> str:
 
 
 def _base_info(manifest: Mapping[str, object], repo_root: Path) -> dict:
+    """Resolve and verify the manifest's QMK base ancestry.
+
+    Args:
+        manifest
+            Manifest mapping containing QMK base metadata.
+        repo_root
+            Repository root used to execute Git commands.
+
+    Returns:
+        Declared base metadata and its resolved commit hash.
+
+    Raises:
+        ManifestError
+            When manifest validation, commit resolution, or ancestry fails.
+    """
     validate_manifest(manifest, repo_root)
     qmk_base = manifest["qmk_base"]
     declared_commit = qmk_base["commit"]
@@ -343,10 +515,21 @@ def _base_info(manifest: Mapping[str, object], repo_root: Path) -> dict:
 
 
 def _parser() -> argparse.ArgumentParser:
+    """Build the release manifest command-line parser.
+
+    Returns:
+        Configured parser for manifest validation and queries.
+    """
     parser = argparse.ArgumentParser(description="Validate and query NuPhy release manifests")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     def add_manifest_options(command_parser: argparse.ArgumentParser) -> None:
+        """Add shared manifest and repository options to a command.
+
+        Args:
+            command_parser
+                Subparser receiving the shared options.
+        """
         command_parser.add_argument("--manifest", required=True, type=Path)
         command_parser.add_argument(
             "--repo-root",
@@ -375,6 +558,15 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Union[Sequence[str], None] = None) -> int:
+    """Run the NuPhy release manifest command-line interface.
+
+    Args:
+        argv
+            Optional argument sequence; defaults to process arguments.
+
+    Returns:
+        Zero on success, one when manifest validation fails.
+    """
     args = _parser().parse_args(argv)
     try:
         manifest = load_manifest(args.manifest)

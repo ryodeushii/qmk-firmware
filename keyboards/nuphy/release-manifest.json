@@ -217,10 +217,10 @@
     }
   ],
   "release_metadata": [
-    "keyboards/nuphy/air75v2/ansi/keymaps/default/NuPhy Air75 V2 via3.json",
-    "keyboards/nuphy/gem80/ansi/keymaps/default/NuPhy Gem80 via3.json",
-    "keyboards/nuphy/gem80/iso/keymaps/default/NuPhy Gem80 ISO via3.json",
-    "keyboards/nuphy/halo75v2/ansi/keymaps/default/NuPhy Halo75v2 via3.json",
-    "keyboards/nuphy/halo96v2/ansi/keymaps/default/NuPhy Halo96v2 via3.json"
+    "keyboards/nuphy/air75v2/ansi/keymaps/via/NuPhy Air75 V2 via3.json",
+    "keyboards/nuphy/gem80/ansi/keymaps/via/NuPhy Gem80 via3.json",
+    "keyboards/nuphy/gem80/iso/keymaps/via/NuPhy Gem80 ISO via3.json",
+    "keyboards/nuphy/halo75v2/ansi/keymaps/via/NuPhy Halo75v2 via3.json",
+    "keyboards/nuphy/halo96v2/ansi/keymaps/via/NuPhy Halo96v2 via3.json"
   ]
 }

@@ -1,6 +1,6 @@
 #include "quantum.h"
 #include "../debounce.h"
-#include "../wireless.h"
+#include "internal.h"
 
 enum {
     HOST_USB_TYPE = 0,
@@ -8,9 +8,7 @@ enum {
     HOST_RF_TYPE,
 };
 
-extern DEV_INFO_STRUCT dev_info;
-extern uint16_t        rf_link_show_time;
-extern host_driver_t   rf_host_driver;
+extern host_driver_t rf_host_driver;
 
 host_driver_t *m_host_driver  = 0;
 uint8_t        host_mode      = 0;
@@ -36,5 +34,11 @@ void switch_dev_link(uint8_t mode) {
     } else {
         host_mode = HOST_RF_TYPE;
         host_set_driver(&rf_host_driver);
+    }
+}
+
+void nuphy_wireless_switch_to_saved_link(void) {
+    if (dev_info.link_mode != dev_info.rf_channel) {
+        switch_dev_link(dev_info.rf_channel);
     }
 }

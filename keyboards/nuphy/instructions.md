@@ -10,11 +10,11 @@ Where possible, links have been updated to point at files in this repository or 
 ## Related Files
 
 - [Nuphy directory overview](./README.md)
-- [Air75 V2 ANSI VIA JSON](./air75v2/ansi/keymaps/default/NuPhy%20Air75%20V2%20via3.json)
-- [Gem80 ANSI VIA JSON](./gem80/ansi/keymaps/default/NuPhy%20Gem80%20via3.json)
-- [Gem80 ISO VIA JSON](./gem80/iso/keymaps/default/NuPhy%20Gem80%20ISO%20via3.json)
-- [Halo75 V2 ANSI VIA JSON](./halo75v2/ansi/keymaps/default/NuPhy%20Halo75v2%20via3.json)
-- [Halo96 V2 ANSI VIA JSON](./halo96v2/ansi/keymaps/default/NuPhy%20Halo96v2%20via3.json)
+- [Air75 V2 ANSI VIA JSON](./air75v2/ansi/keymaps/via/NuPhy%20Air75%20V2%20via3.json)
+- [Gem80 ANSI VIA JSON](./gem80/ansi/keymaps/via/NuPhy%20Gem80%20via3.json)
+- [Gem80 ISO VIA JSON](./gem80/iso/keymaps/via/NuPhy%20Gem80%20ISO%20via3.json)
+- [Halo75 V2 ANSI VIA JSON](./halo75v2/ansi/keymaps/via/NuPhy%20Halo75v2%20via3.json)
+- [Halo96 V2 ANSI VIA JSON](./halo96v2/ansi/keymaps/via/NuPhy%20Halo96v2%20via3.json)
 - [QMK Toolbox releases](https://github.com/qmk/qmk_toolbox/releases)
 - [Official NuPhy firmware page](https://nuphy.com/pages/qmk-firmwares)
 - [Official NuPhy VIA guide](https://nuphy.com/pages/via-usage-guide-for-nuphy-keyboards)

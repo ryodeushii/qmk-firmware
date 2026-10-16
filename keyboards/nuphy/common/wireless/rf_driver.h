@@ -1,9 +1,6 @@
 #pragma once
 
-#include "../wireless.h"
-
-#include "rf_protocol.h"
-#include "rf_queue.h"
+#include "host_driver.h"
 
 extern host_driver_t rf_host_driver;
 

@@ -31,6 +31,18 @@ class ReleaseManifestTest(unittest.TestCase):
         self.assertEqual(len(self.manifest["release_metadata"]), 5)
         validate_manifest(self.manifest, REPOSITORY_ROOT)
 
+    def test_metadata_lives_with_via_keymap(self):
+        self.assertEqual(
+            self.manifest["release_metadata"],
+            [
+                "keyboards/nuphy/air75v2/ansi/keymaps/via/NuPhy Air75 V2 via3.json",
+                "keyboards/nuphy/gem80/ansi/keymaps/via/NuPhy Gem80 via3.json",
+                "keyboards/nuphy/gem80/iso/keymaps/via/NuPhy Gem80 ISO via3.json",
+                "keyboards/nuphy/halo75v2/ansi/keymaps/via/NuPhy Halo75v2 via3.json",
+                "keyboards/nuphy/halo96v2/ansi/keymaps/via/NuPhy Halo96v2 via3.json",
+            ],
+        )
+
     def test_release_target_order_is_preserved(self):
         targets = resolve_targets(self.manifest, "release")
 
@@ -46,6 +58,13 @@ class ReleaseManifestTest(unittest.TestCase):
     def test_resolve_targets_rejects_unknown_profile(self):
         with self.assertRaisesRegex(ManifestError, "profile"):
             resolve_targets(self.manifest, "debug")
+
+    def test_resolve_targets_rejects_non_object_record(self):
+        manifest = copy.deepcopy(self.manifest)
+        manifest["release_targets"][0] = []
+
+        with self.assertRaisesRegex(ManifestError, "JSON objects"):
+            resolve_targets(manifest, "release")
 
     def test_binary_name_sanitizes_tag_and_keeps_prefix(self):
         target = {
@@ -82,6 +101,17 @@ class ReleaseManifestTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ManifestError, "WORK_MODE"):
             validate_manifest(manifest, REPOSITORY_ROOT)
+
+    def test_malformed_target_field_types_raise_manifest_error(self):
+        fields = ("id", "keyboard", "layout", "keymap", "work_mode", "output_prefix")
+        for field in fields:
+            for invalid in ([], {}):
+                with self.subTest(field=field, invalid=type(invalid).__name__):
+                    manifest = copy.deepcopy(self.manifest)
+                    manifest["release_targets"][0][field] = invalid
+
+                    with self.assertRaisesRegex(ManifestError, f"{field} must be a string"):
+                        validate_manifest(manifest, REPOSITORY_ROOT)
 
     def test_unsupported_board_layout_is_rejected(self):
         manifest = copy.deepcopy(self.manifest)
@@ -148,6 +178,14 @@ class ReleaseManifestTest(unittest.TestCase):
             path.write_text("{broken", encoding="utf-8")
 
             with self.assertRaises(ManifestError):
+                load_manifest(path)
+
+    def test_invalid_utf8_raises_manifest_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "invalid-utf8.json"
+            path.write_bytes(b"\x80")
+
+            with self.assertRaisesRegex(ManifestError, "UTF-8"):
                 load_manifest(path)
 
     def test_manifest_loader_rejects_non_object_json(self):

@@ -14,6 +14,7 @@ This directory contains the NuPhy keyboards maintained in this tree, along with 
 ## Shared Docs
 
 - [Nuphy keyboard instructions](./instructions.md)
+- [NuPhy support matrix](./support-matrix.md)
 - [Shared common implementation notes](./common/README.md)
 
 ## Notes

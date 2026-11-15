@@ -224,9 +224,11 @@ void exit_deep_sleep(void) {
     gpio_write_pin_high(NRF_WAKEUP_PIN);
 #endif
 
-    led_pwr_wake_handle();
-
     stm32_clock_init();
+
+    // After STOP mode the MCU runs on HSI until stm32_clock_init(); restoring the
+    // LEDs before that would drive WS2812 timing from the wrong clock.
+    led_pwr_wake_handle();
 
     if (tim6_enabled) TIM_Cmd(TIM6, ENABLE);
 
@@ -287,10 +289,13 @@ void side_rgb_refresh(void);
 
 void led_pwr_wake_handle(void) {
     if (rgb_led_powered_off) {
-        rgb_matrix_set_color_all(0, 0, 0);
-        pwr_rgb_led_on();
+        // Re-init the driver and start streaming an all-black frame while the
+        // LED rail is still off, so the LEDs never latch stale or glitched data
+        // (seen as a full-board flash) when power comes back.
         rgb_matrix_driver.init();
+        rgb_matrix_set_color_all(0, 0, 0);
         rgb_matrix_update_pwm_buffers();
+        pwr_rgb_led_on();
     }
     if (side_led_powered_off) {
         pwr_side_led_on();
